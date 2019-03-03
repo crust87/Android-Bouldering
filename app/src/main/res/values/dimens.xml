@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="default_line_width">2dp</dimen>
+    <dimen name="default_anchor_size">10dp</dimen>
+
+    <dimen name="default_box_size">16dp</dimen>
+    <dimen name="min_box_Size">9dp</dimen>
+    <dimen name ="special_line_gap">3dp</dimen>
+
+    <dimen name="toolbox_height">52dp</dimen>
+
+    <dimen name="list_spacing">15dp</dimen>
+
+    <dimen name="list_round">8dp</dimen>
+
+    <dimen name="header_height">206dp</dimen>
+
+    <dimen name="default_text_size">12dp</dimen>
+
+    <dimen name="main_menu_text_size">20sp</dimen>
+</resources>

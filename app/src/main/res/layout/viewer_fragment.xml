@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.kayadami.bouldering.app.viewer.ViewerViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".app.viewer.ViewerFragment">
+
+        <com.kayadami.bouldering.editor.EditorView
+            android:id="@+id/editorView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:anchor_size="20dp"
+            app:bouldering="@{viewModel.bouldering}"
+            app:box_color="#ffffff"
+            app:box_type="circle"
+            app:line_width="2dp" />
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:minHeight="?attr/actionBarSize"
+            android:visibility="@{viewModel.isShow ? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:theme="@style/toolbarIconColor" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{viewModel.isProgress ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageSolved"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:onClick="@{(view)->viewModel.toggleSolved()}"
+            android:selected="@{viewModel.isSolved}"
+            android:src="@drawable/is_solved"
+            android:visibility="@{viewModel.isShow ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <com.kayadami.bouldering.utils.KeyboardDetectableEditText
+            android:id="@+id/textTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="16dp"
+            android:background="@null"
+            android:focusable="false"
+            android:includeFontPadding="false"
+            android:inputType="text"
+            android:maxLines="1"
+            android:text="@{viewModel.title}"
+            android:textColor="#ffffff"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:visibility="@{viewModel.isShow ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/imageSolved"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/imageSolved" />
+
+        <TextView
+            android:id="@+id/textDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="@{viewModel.lastModify}"
+            android:textColor="#ffffff"
+            android:textSize="14sp"
+            android:visibility="@{viewModel.isShow ? View.VISIBLE : View.GONE}"
+            app:layout_constraintLeft_toLeftOf="@id/textTitle"
+            app:layout_constraintRight_toRightOf="@id/textTitle"
+            app:layout_constraintTop_toTopOf="@id/imageSolved" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

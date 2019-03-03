@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+        <import type="android.view.View.OnClickListener" />
+
+        <variable
+            name="bouldering"
+            type="com.kayadami.bouldering.editor.data.Bouldering" />
+
+        <variable
+            name="imageLoader"
+            type="com.kayadami.bouldering.utils.ImageLoader" />
+
+        <variable
+            name="listener"
+            type="android.view.View.OnClickListener" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{listener}">
+
+        <ImageView
+            android:id="@+id/imageThumbnail"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:duplicateParentState="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:scaleType="centerCrop"
+            app:loadImage="@{imageLoader.load(imageThumbnail, bouldering)}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:textColor="#ffffff"
+            android:textSize="12sp"
+            android:text="@{bouldering.getDate()}"
+            app:layout_constraintBottom_toBottomOf="@+id/imageThumbnail"
+            app:layout_constraintLeft_toLeftOf="@+id/imageThumbnail" />
+
+        <TextView
+            android:id="@+id/textSolved"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="@string/solved"
+            android:textColor="#ffffff"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:visibility="@{bouldering.isSolved ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/imageThumbnail"
+            app:layout_constraintRight_toRightOf="@+id/imageThumbnail" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.kayadami.bouldering.app.editor.EditorViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".app.editor.EditorActivity">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:theme="@style/toolbarDark"
+            app:title="@{viewModel.title}" />
+
+        <com.kayadami.bouldering.editor.EditorView
+            android:id="@+id/editorView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:anchor_size="20dp"
+            app:bouldering="@{viewModel.bouldering}"
+            app:box_color="#ffffff"
+            app:box_type="circle"
+            app:layout_constraintBottom_toTopOf="@+id/layoutTools"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:line_width="2dp" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{viewModel.isProgress ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/layoutTools"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/toolbox_height"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+
+            <RelativeLayout
+                android:id="@+id/layoutProblemTool"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{viewModel.isBoulderToolShow ? View.VISIBLE : View.GONE}">
+
+                <TextView
+                    android:id="@+id/buttonClear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingLeft="18dp"
+                    android:paddingRight="18dp"
+                    android:text="@string/editor_clear"
+                    android:textColor="#ff4072" />
+
+                <TextView
+                    android:id="@+id/buttonColor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:gravity="center"
+                    android:paddingLeft="18dp"
+                    android:paddingRight="18dp"
+                    android:text="@string/editor_change_color"
+                    android:textColor="#ffffff" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layoutHolderTool"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{viewModel.isHolderToolShow ? View.VISIBLE : View.GONE}">
+
+                <TextView
+                    android:id="@+id/buttonDelete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingLeft="18dp"
+                    android:paddingRight="18dp"
+                    android:text="@string/delete"
+                    android:textColor="#ff4072" />
+
+                <CheckBox
+                    android:id="@+id/checkNumberedHolder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_toLeftOf="@+id/checkSpecialHolder"
+                    android:paddingRight="8dp"
+                    android:text="@string/editor_number"
+                    android:theme="@style/checkBoxStyle"
+                    android:checked="@{viewModel.isNumberHolder}"
+                    android:enabled="@{viewModel.isNumberEnabled}" />
+
+                <CheckBox
+                    android:id="@+id/checkSpecialHolder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:paddingRight="18dp"
+                    android:text="@string/editor_start_top"
+                    android:theme="@style/checkBoxStyle"
+                    android:checked="@{viewModel.isSpecialHolder}" />
+
+            </RelativeLayout>
+
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -1,0 +1,34 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppThemeLight" parent="AppTheme">
+        <item name="colorControlHighlight">@color/ripple_material_light</item>
+    </style>
+
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#000000</item>
+        <item name="colorPrimaryDark">#000000</item>
+        <item name="colorAccent">#ff4072</item>
+    </style>
+
+    <style name="checkBoxStyle" parent="Base.Theme.AppCompat">
+        <item name="colorAccent">#ffffff</item>
+        <item name="android:textColorSecondary">#ffffff</item>
+    </style>
+
+    <style name="colorPickerDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">#15161c</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
+
+    <style name="toolbarIconColor" parent="AppTheme">
+        <item name="android:textColorSecondary">#ffffff</item>
+    </style>
+
+    <style name="toolbarDark" parent="AppTheme">
+        <item name="android:background">#000000</item>
+        <item name="android:textColorPrimary">#ffffff</item>
+    </style>
+
+</resources>
