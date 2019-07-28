@@ -3,6 +3,7 @@ package com.kayadami.bouldering.app
 import android.content.Context
 import android.view.WindowManager
 import com.kayadami.bouldering.R
+import com.kayadami.bouldering.app.editor.EditorResourceManager
 import com.kayadami.bouldering.app.editor.EditorViewModel
 import com.kayadami.bouldering.app.main.MainViewModel
 import com.kayadami.bouldering.app.setting.SettingViewModel
@@ -30,6 +31,8 @@ object Injection {
             single { ImageGenerator(get()) }
             single { RoundedCornersTransformation(context.resources.getDimension(R.dimen.list_round).toInt(), 0) }
             single { ImageLoader(get()) }
+
+            single { EditorResourceManager(context)}
 
             viewModel { EditorViewModel(get(), get()) }
             viewModel { MainViewModel(get(), get()) }

@@ -74,16 +74,6 @@ class ViewerFragment : Fragment() {
                 }
             }
 
-            onProblemListener = object : EditorView.OnProblemListener {
-                override fun onLoadingStart() {
-                    viewModel.isProgress.set(true)
-                }
-
-                override fun onLoadingFinish() {
-                    viewModel.isProgress.set(false)
-                }
-            }
-
             setIsViewer(true)
         }
 

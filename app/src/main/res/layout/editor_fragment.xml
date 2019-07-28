@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
 
         <variable
@@ -34,8 +35,10 @@
             android:layout_height="0dp"
             app:anchor_size="20dp"
             app:bouldering="@{viewModel.bouldering}"
+            app:isLoading="@={viewModel.isProgress}"
             app:box_color="#ffffff"
             app:box_type="circle"
+            app:selectedHolder="@={viewModel.selectedHolder}"
             app:layout_constraintBottom_toTopOf="@+id/layoutTools"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -64,13 +67,14 @@
                 android:id="@+id/layoutProblemTool"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="@{viewModel.isBoulderToolShow ? View.VISIBLE : View.GONE}">
+                android:visibility="@{viewModel.problemToolVisibility ?? View.VISIBLE}">
 
                 <TextView
                     android:id="@+id/buttonClear"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
+                    android:onClick="@{() -> editorView.clear()}"
                     android:paddingLeft="18dp"
                     android:paddingRight="18dp"
                     android:text="@string/editor_clear"
@@ -82,6 +86,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:gravity="center"
+                    android:onClick="@{()->viewModel.openColorChooser()}"
                     android:paddingLeft="18dp"
                     android:paddingRight="18dp"
                     android:text="@string/editor_change_color"
@@ -93,13 +98,14 @@
                 android:id="@+id/layoutHolderTool"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="@{viewModel.isHolderToolShow ? View.VISIBLE : View.GONE}">
+                android:visibility="@{viewModel.holderToolVisibility ?? View.GONE}">
 
                 <TextView
                     android:id="@+id/buttonDelete"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
+                    android:onClick="@{()->editorView.deleteSelectedHolder()}"
                     android:paddingLeft="18dp"
                     android:paddingRight="18dp"
                     android:text="@string/delete"
@@ -110,21 +116,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_toLeftOf="@+id/checkSpecialHolder"
+                    android:checked="@{viewModel.isNumberHolder}"
+                    android:enabled="@{viewModel.isNumberEnabled}"
                     android:paddingRight="8dp"
                     android:text="@string/editor_number"
-                    android:theme="@style/checkBoxStyle"
-                    android:checked="@{viewModel.isNumberHolder}"
-                    android:enabled="@{viewModel.isNumberEnabled}" />
+                    android:theme="@style/checkBoxStyle" />
 
                 <CheckBox
                     android:id="@+id/checkSpecialHolder"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
+                    android:checked="@{viewModel.isSpecialHolder}"
                     android:paddingRight="18dp"
                     android:text="@string/editor_start_top"
-                    android:theme="@style/checkBoxStyle"
-                    android:checked="@{viewModel.isSpecialHolder}" />
+                    android:theme="@style/checkBoxStyle" />
 
             </RelativeLayout>
 

@@ -4,11 +4,11 @@ import android.app.Activity
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
-import com.kayadami.bouldering.Event
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.setSupportActionBar
@@ -16,10 +16,6 @@ import com.kayadami.bouldering.app.supportActionBar
 import com.kayadami.bouldering.databinding.EditorFragmentBinding
 import com.kayadami.bouldering.editor.EditorView
 import kotlinx.android.synthetic.main.editor_fragment.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class EditorFragment : Fragment() {
@@ -33,22 +29,6 @@ class EditorFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         setHasOptionsMenu(true)
-
-        arguments?.let { arguments ->
-            val path = EditorFragmentArgs.fromBundle(arguments).imagePath
-            val id = EditorFragmentArgs.fromBundle(arguments).boulderingId
-
-            viewModel.load(path, id)
-        }
-
-        with(viewModel) {
-            finishEditEvent.observe(this@EditorFragment, Observer { event ->
-                event.getContentIfNotHandled()?.let {
-                    activity?.setResult(Activity.RESULT_OK)
-                    navigateUp()
-                }
-            })
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -70,23 +50,41 @@ class EditorFragment : Fragment() {
             setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
-        buttonColor.setOnClickListener {
-            colorPickerDialog = ColorPickerDialogBuilder
-                    .with(context, R.style.colorPickerDialog)
-                    .initialColor(editorView.color)
-                    .wheelType(com.flask.colorpicker.ColorPickerView.WHEEL_TYPE.CIRCLE)
-                    .density(6)
-                    .lightnessSliderOnly()
-                    .setPositiveButton("OK") { _, selectedColor, _ -> editorView.color = selectedColor }
-                    .build()
-                    .apply {
-                        show()
-                    }
+        arguments?.let { arguments ->
+            val path = EditorFragmentArgs.fromBundle(arguments).imagePath
+            val id = EditorFragmentArgs.fromBundle(arguments).boulderingId
+
+            viewModel.load(path, id)
         }
 
-        buttonClear.setOnClickListener { editorView.clear() }
+        viewModel.finishEditEvent.observe(this@EditorFragment, Observer { event ->
+            event.getContentIfNotHandled()?.let {
+                activity?.setResult(Activity.RESULT_OK)
+                navigateUp()
+            }
+        })
 
-        buttonDelete.setOnClickListener { editorView.deleteSelectedHolder() }
+        viewModel.openColorChooserEvent.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let {
+                colorPickerDialog = ColorPickerDialogBuilder
+                        .with(context, R.style.colorPickerDialog)
+                        .initialColor(editorView.color)
+                        .wheelType(com.flask.colorpicker.ColorPickerView.WHEEL_TYPE.CIRCLE)
+                        .density(6)
+                        .lightnessSliderOnly()
+                        .setPositiveButton("OK") { _, selectedColor, _ -> editorView.color = selectedColor }
+                        .build()
+                        .apply {
+                            show()
+                        }
+            }
+        })
+
+        viewModel.errorEvent.observe(this, Observer {
+            it.getContentIfNotHandled()?.let { message ->
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+        })
 
         checkNumberedHolder.setOnClickListener {
             viewModel.setOrder(checkNumberedHolder.isChecked)
@@ -107,20 +105,6 @@ class EditorFragment : Fragment() {
             editorView.sort()
             editorView.invalidate()
         }
-
-        editorView.setOnSelectedChangeListener { selectedHolder ->
-            viewModel.selectedHolder.value = selectedHolder
-        }
-
-        editorView.onProblemListener = object : EditorView.OnProblemListener {
-            override fun onLoadingStart() {
-                viewModel.isProgress.set(true)
-            }
-
-            override fun onLoadingFinish() {
-                viewModel.isProgress.set(false)
-            }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -137,27 +121,13 @@ class EditorFragment : Fragment() {
                 return true
             }
             R.id.actionDone -> {
-                doneEdit()
+                viewModel.done(editorView)
 
                 return true
             }
         }
 
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun doneEdit() = CoroutineScope(Dispatchers.Default).launch {
-        viewModel.isProgress.set(true)
-
-        viewModel.store(editorView)
-
-        viewModel.isProgress.set(false)
-
-        finishEdit()
-    }
-
-    private suspend fun finishEdit() = withContext(Dispatchers.Main) {
-        viewModel.finishEditEvent.value = Event(Unit)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {

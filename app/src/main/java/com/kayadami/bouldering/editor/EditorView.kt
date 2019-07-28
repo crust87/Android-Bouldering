@@ -24,8 +24,9 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
             options.color = color
             invalidate()
         }
-    var onSelectedChangeListener: OnSelectedChangeListener? = null
-    var onProblemListener: OnProblemListener? = null
+
+    private var onSelectedChangeListener: OnSelectedChangeListener? = null
+    private var onProblemListener: OnProblemListener? = null
     private var onClickListener: View.OnClickListener? = null
 
     // Components
@@ -46,9 +47,13 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
 
     // Working Variables
     private var editorTouchEvent = EditorTouchEvent.idle
-    private var selectedHolderBox: HolderBox? = null
     private var isLoadingFinish: Boolean = false
-    private var isAbleOpen: Boolean = false;
+    var isLoading: Boolean = false
+    private var isAbleOpen: Boolean = false
+
+    private var _selectedHolderBox: HolderBox? = null
+    val selectedHolderBox: HolderBox?
+        get() = _selectedHolderBox
 
     // Interface
     interface OnSelectedChangeListener {
@@ -97,7 +102,9 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
             viewWidth = width
             viewHeight = height
 
-            openImage()
+            if (isAbleOpen) {
+                openImage()
+            }
         }
     }
 
@@ -113,21 +120,16 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
 
         isAbleOpen = true
 
-        openImage()
+        if (viewWidth != 0 && viewHeight != 0) {
+            openImage()
+        }
     }
 
     private fun openImage() = CoroutineScope(Dispatchers.Main).launch {
-        if (viewWidth == 0 || viewHeight == 0) {
-            throw RuntimeException()
-        }
-
-        if (!isAbleOpen) {
-            throw RuntimeException()
-        }
-
         suppMatrix.reset()
 
         isLoadingFinish = false
+        isLoading = true
         onProblemListener?.onLoadingStart()
 
         val imageStream = FileInputStream(bouldering.path)
@@ -195,6 +197,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
         }
 
         isLoadingFinish = true
+        isLoading = false
         invalidate()
         onProblemListener?.onLoadingFinish()
     }
@@ -241,7 +244,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
     }
 
     fun clear() {
-        selectedHolderBox = null
+        _selectedHolderBox = null
         editorTouchEvent = EditorTouchEvent.idle
         holderBoxList.clear()
 
@@ -261,7 +264,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
     }
 
     fun deleteSelectedHolder() {
-        selectedHolderBox?.let {
+        _selectedHolderBox?.let {
             val holder = it
             deselectHolder()
             holderBoxList.remove(holder)
@@ -272,9 +275,9 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
     }
 
     private fun deselectHolder() {
-        selectedHolderBox?.let {
+        _selectedHolderBox?.let {
             it.isSelected = false
-            selectedHolderBox = null
+            _selectedHolderBox = null
             editorTouchEvent = EditorTouchEvent.deselecting
 
             onSelectedChangeListener?.onSelectedChange(null)
@@ -283,10 +286,10 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
 
     private fun selectHolder(holderBox: HolderBox) {
         holderBox.isSelected = true
-        selectedHolderBox = holderBox
+        _selectedHolderBox = holderBox
         editorTouchEvent = EditorTouchEvent.selecting
 
-        onSelectedChangeListener?.onSelectedChange(selectedHolderBox)
+        onSelectedChangeListener?.onSelectedChange(_selectedHolderBox)
     }
 
     private fun findHolder(x: Float, y: Float): HolderBox? {
@@ -317,7 +320,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
             if (holderBox == null) {
                 deselectHolder()
             } else {
-                if (selectedHolderBox != holderBox) {
+                if (_selectedHolderBox != holderBox) {
                     deselectHolder()
                     selectHolder(holderBox)
                 }
@@ -331,16 +334,16 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
         }
 
         if (editorTouchEvent == EditorTouchEvent.selecting) {
-            selectedHolderBox?.startTransforming(x, y)
+            _selectedHolderBox?.startTransforming(x, y)
             editorTouchEvent = EditorTouchEvent.transforming
         } else if (editorTouchEvent == EditorTouchEvent.transforming) {
-            selectedHolderBox?.keepTransforming(x, y)
+            _selectedHolderBox?.keepTransforming(x, y)
         }
     }
 
     private fun onTouchUp(x: Float, y: Float) {
         if (editorTouchEvent == EditorTouchEvent.transforming && !isViewer) {
-            selectedHolderBox?.finishTransforming()
+            _selectedHolderBox?.finishTransforming()
             editorTouchEvent = EditorTouchEvent.selecting
         } else if (editorTouchEvent == EditorTouchEvent.zooming || editorTouchEvent == EditorTouchEvent.moving) {
             editorTouchEvent = EditorTouchEvent.idle
@@ -452,7 +455,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
         suppMatrix.postTranslate(deltaX, deltaY)
     }
 
-    fun modify() : Bouldering = runBlocking(Dispatchers.Main) {
+    fun modify(): Bouldering = runBlocking(Dispatchers.Main) {
         deselectHolder()
         invalidate()
 
@@ -503,7 +506,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
         return bouldering
     }
 
-    private fun createBouldering() : Bouldering {
+    private fun createBouldering(): Bouldering {
         editorTouchEvent = EditorTouchEvent.idle
 
         try {
@@ -557,6 +560,10 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
 
     override fun setOnClickListener(l: View.OnClickListener?) {
         onClickListener = l
+    }
+
+    fun setOnProblemListener(listener: OnProblemListener) {
+        onProblemListener = listener
     }
 
     fun setOnSelectedChangeListener(action: (HolderBox?) -> Unit) {

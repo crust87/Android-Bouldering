@@ -1,55 +1,77 @@
 package com.kayadami.bouldering.app.editor
 
-import android.app.Application
-import android.widget.Toast
+import android.view.View
 import androidx.databinding.ObservableBoolean
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.*
 import com.kayadami.bouldering.Event
-import com.kayadami.bouldering.R
 import com.kayadami.bouldering.data.BoulderingDataSource
-import com.kayadami.bouldering.editor.BoulderingException
 import com.kayadami.bouldering.editor.EditorView
 import com.kayadami.bouldering.editor.HolderBox
 import com.kayadami.bouldering.editor.data.Bouldering
-import java.util.ArrayList
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.*
 
-class EditorViewModel(private val context: Application,
-                      private val repository: BoulderingDataSource) : AndroidViewModel(context) {
+class EditorViewModel(
+        private val repository: BoulderingDataSource,
+        private val resourceManager: EditorResourceManager
+) : ViewModel() {
 
-    val isProgress = ObservableBoolean(false)
-
-    var bouldering = MutableLiveData<Bouldering>()
-
-    val title : LiveData<String> = Transformations.map(bouldering) {
-        when (it.createdDate > 0) {
-            true -> context.resources.getString(R.string.editor_edit)
-            false -> context.resources.getString(R.string.editor_create)
+    private val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
+        throwable.message?.let {
+            _errorEvent.value = Event(it)
         }
     }
 
-    val selectedHolder = MutableLiveData<HolderBox?>().apply {
-        value = null
+    var bouldering = MutableLiveData<Bouldering>()
+    val selectedHolder = MutableLiveData<HolderBox?>()
+    val isProgress = ObservableBoolean(false)
+
+    val title: LiveData<String> = Transformations.map(bouldering) {
+        when (it.createdDate > 0) {
+            true -> resourceManager.editText
+            false -> resourceManager.createText
+        }
     }
-    val isBoulderToolShow : LiveData<Boolean> = Transformations.map(selectedHolder) {
-        it == null
+
+    val problemToolVisibility: LiveData<Int> = Transformations.map(selectedHolder) {
+        if (it == null) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
     }
-    val isHolderToolShow : LiveData<Boolean> = Transformations.map(selectedHolder) {
-        it != null
+    val holderToolVisibility: LiveData<Int> = Transformations.map(selectedHolder) {
+        if (it != null) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
     }
-    val isNumberHolder : LiveData<Boolean> = Transformations.map(selectedHolder) {
+
+    val isNumberHolder: LiveData<Boolean> = Transformations.map(selectedHolder) {
         it?.isInOrder ?: false
     }
-    val isSpecialHolder : LiveData<Boolean> = Transformations.map(selectedHolder) {
+    val isSpecialHolder: LiveData<Boolean> = Transformations.map(selectedHolder) {
         it?.isSpecial ?: false
     }
-    val isNumberEnabled : LiveData<Boolean> = Transformations.map(selectedHolder) {
+    val isNumberEnabled: LiveData<Boolean> = Transformations.map(selectedHolder) {
         it?.isNotSpecial ?: true
     }
 
-    val finishEditEvent = MutableLiveData<Event<Unit>>()
+    private val _finishEditEvent = MutableLiveData<Event<Unit>>()
+    val finishEditEvent: LiveData<Event<Unit>>
+        get() = _finishEditEvent
+
+    private val _openColorChooserEvent = MutableLiveData<Event<Unit>>()
+    val openColorChooserEvent: LiveData<Event<Unit>>
+        get() = _openColorChooserEvent
+
+    private val _errorEvent = MutableLiveData<Event<String>>()
+    val errorEvent: LiveData<Event<String>>
+        get() = _errorEvent
 
     fun setOrder(isChecked: Boolean) {
         selectedHolder.value?.isInOrder = isChecked
@@ -63,16 +85,20 @@ class EditorViewModel(private val context: Application,
         selectedHolder.value?.isSpecial = isChecked
     }
 
-    fun load(path: String, id: Long) {
-        bouldering.value = when {
-            id > 0 -> repository[id]
-            path.isNotEmpty() -> Bouldering(path, path, null, -1, -1, ArrayList(), 0)
-            else -> throw Exception()
+    fun load(path: String, id: Long) = viewModelScope.launch(exceptionHandler) {
+        bouldering.value = withContext(Dispatchers.IO) {
+            when {
+                id > 0 -> repository[id]
+                path.isNotEmpty() -> Bouldering(path, path, null, -1, -1, ArrayList(), 0)
+                else -> throw Exception()
+            }
         }
     }
 
-    fun store(editorView: EditorView) {
-        try {
+    fun done(editorView: EditorView) = viewModelScope.launch(exceptionHandler) {
+        isProgress.set(true)
+
+        withContext(Dispatchers.IO) {
             if (bouldering.value?.createdDate ?: -1 > 0) {
                 editorView.modify().let {
                     repository.restore()
@@ -82,8 +108,14 @@ class EditorViewModel(private val context: Application,
                     repository.add(it)
                 }
             }
-        } catch (e: BoulderingException) {
-            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
         }
+
+        isProgress.set(false)
+
+        _finishEditEvent.value = Event(Unit)
+    }
+
+    fun openColorChooser() {
+        _openColorChooserEvent.value = Event(Unit)
     }
 }

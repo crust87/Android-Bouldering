@@ -23,6 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:anchor_size="20dp"
+            app:isLoading="@={viewModel.isProgress}"
             app:bouldering="@{viewModel.bouldering}"
             app:box_color="#ffffff"
             app:box_type="circle"
