@@ -14,6 +14,7 @@ object PermissionChecker {
     const val REQUEST_GALLERY = 101
     const val REQUEST_EXPORT = 102
     const val REQUEST_IMPORT = 103
+    const val REQUEST_SAVE = 104
 
     fun check(context: Context): Boolean {
         val read = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)

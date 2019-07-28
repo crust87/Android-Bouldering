@@ -9,6 +9,12 @@
         />
 
     <item
+        android:id="@+id/actionSaveAsImage"
+        android:title="@string/save"
+        app:showAsAction="never"
+        />
+
+    <item
         android:id="@+id/actionModify"
         android:title="@string/edit"
         app:showAsAction="never" />

@@ -8,6 +8,7 @@
     <string name="delete">DELETE</string>
     <string name="edit">EDIT</string>
     <string name="share">SHARE</string>
+    <string name="save">SAVE INTO GALLERY</string>
     <string name="done">DONE</string>
     <string name="export_problem">EXPORT</string>
     <string name="import_problem">IMPORT</string>

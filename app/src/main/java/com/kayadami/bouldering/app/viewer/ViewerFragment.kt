@@ -1,6 +1,7 @@
 package com.kayadami.bouldering.app.viewer
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.EditorInfo
@@ -15,6 +16,7 @@ import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
 import com.kayadami.bouldering.databinding.ViewerFragmentBinding
+import com.kayadami.bouldering.utils.PermissionChecker
 import kotlinx.android.synthetic.main.viewer_fragment.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -52,6 +54,12 @@ class ViewerFragment : Fragment() {
         })
 
         viewModel.errorEvent.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        viewModel.finishSaveEvent.observe(this, Observer {
             it?.getContentIfNotHandled()?.let {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             }
@@ -141,9 +149,28 @@ class ViewerFragment : Fragment() {
 
                 return true
             }
+            R.id.actionSaveAsImage -> {
+                if (PermissionChecker.check(requireContext())) {
+                    viewModel.saveImage()
+                } else {
+                    PermissionChecker.request(this@ViewerFragment, PermissionChecker.REQUEST_SAVE)
+                }
+
+                return true
+            }
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (requestCode == PermissionChecker.REQUEST_SAVE) {
+                viewModel.saveImage()
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
     }
 
     private fun openKeyboard(v: View) {

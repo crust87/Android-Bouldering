@@ -3,6 +3,7 @@ package com.kayadami.bouldering.app.viewer
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Environment
 import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.*
 import com.crashlytics.android.Crashlytics
@@ -64,6 +65,10 @@ class ViewerViewModel(
     val openShareEvent: LiveData<Event<Intent>>
         get() = _openShareEvent
 
+    private val _finishSaveEvent = MutableLiveData<Event<String>>()
+    val finishSaveEvent: LiveData<Event<String>>
+        get() = _finishSaveEvent
+
     fun start(id: Long) {
         bouldering.value = repository[id]
         isSolved.set(bouldering.value?.isSolved == true)
@@ -99,40 +104,64 @@ class ViewerViewModel(
     fun openShare() = viewModelScope.launch(exceptionHandler) {
         isProgress.set(true)
 
-        try {
-            val uri = withContext(Dispatchers.Default) { createShareImage() }
+        val uri = withContext(Dispatchers.Default) {
+            val bitmap = imageGenerator.createImage(bouldering.value!!)
 
-            val intent = Intent()
-            intent.action = Intent.ACTION_SEND
-            intent.type = "image/*"
+            val outFile = File(FileUtil.applicationDirectory, "share_" + System.currentTimeMillis() + ".jpg")
 
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            intent.putExtra(Intent.EXTRA_SUBJECT, "")
-            intent.putExtra(Intent.EXTRA_TEXT, "")
-            intent.putExtra(Intent.EXTRA_STREAM, uri)
+            if (!outFile.createNewFile()) {
+                throw ImageGenerateException("Fail to Create File!")
+            }
 
-            _openShareEvent.value = Event(Intent.createChooser(intent, "Share Image"))
-        } catch (e: Throwable) {
-            throw Exception("FAIL TO SHARE")
+            val outStream = FileOutputStream(outFile)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outStream)
+            outStream.flush()
+            outStream.close()
+
+            Uri.parse(outFile.absolutePath)
         }
+
+        val intent = Intent()
+        intent.action = Intent.ACTION_SEND
+        intent.type = "image/*"
+
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        intent.putExtra(Intent.EXTRA_SUBJECT, "")
+        intent.putExtra(Intent.EXTRA_TEXT, "")
+        intent.putExtra(Intent.EXTRA_STREAM, uri)
 
         isProgress.set(false)
+
+        _openShareEvent.value = Event(Intent.createChooser(intent, "Share Image"))
     }
 
-    private fun createShareImage(): Uri {
-        val bitmap = imageGenerator.createImage(bouldering.value!!)
+    fun saveImage() = viewModelScope.launch(exceptionHandler) {
+        isProgress.set(true)
 
-        val outFile = File(FileUtil.applicationDirectory, "share_" + System.currentTimeMillis() + ".jpg")
+        val path = withContext(Dispatchers.Default) {
+            val bitmap = imageGenerator.createImage(bouldering.value!!)
 
-        if (!outFile.createNewFile()) {
-            throw ImageGenerateException("Fail to Create File!")
+            val dir = File(Environment.getExternalStorageDirectory(), "Bouldering")
+            if (!dir.exists()) {
+                dir.mkdir()
+            }
+
+            val outFile = File(dir, "bouldering_" + System.currentTimeMillis() + ".jpg")
+
+            if (!outFile.createNewFile()) {
+                throw ImageGenerateException("Fail to Create File!")
+            }
+
+            val outStream = FileOutputStream(outFile)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outStream)
+            outStream.flush()
+            outStream.close()
+
+            outFile.absolutePath
         }
 
-        val outStream = FileOutputStream(outFile)
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outStream)
-        outStream.flush()
-        outStream.close()
+        _finishSaveEvent.value = Event(path)
 
-        return Uri.parse(outFile.absolutePath)
+        isProgress.set(false)
     }
 }
