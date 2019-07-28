@@ -14,9 +14,10 @@ import com.kayadami.bouldering.data.StorageDataSource
 import com.kayadami.bouldering.editor.ImageGenerator
 import com.kayadami.bouldering.utils.ImageLoader
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
-import org.koin.android.viewmodel.ext.koin.viewModel
-import org.koin.dsl.module.Module
-import org.koin.dsl.module.module
+import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.core.module.Module
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
 object Injection {
 
