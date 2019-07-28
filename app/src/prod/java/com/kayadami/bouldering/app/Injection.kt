@@ -37,7 +37,7 @@ object Injection {
             viewModel { EditorViewModel(get(), get()) }
             viewModel { MainViewModel(get(), get()) }
             viewModel { SettingViewModel(get(), get()) }
-            viewModel { ViewerViewModel(get(), get(), get()) }
+            viewModel { ViewerViewModel(get(), get()) }
         }
     }
 }

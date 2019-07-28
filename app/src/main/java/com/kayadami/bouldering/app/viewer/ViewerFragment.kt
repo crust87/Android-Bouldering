@@ -1,7 +1,6 @@
 package com.kayadami.bouldering.app.viewer
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.EditorInfo
@@ -16,11 +15,7 @@ import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
 import com.kayadami.bouldering.databinding.ViewerFragmentBinding
-import com.kayadami.bouldering.editor.EditorView
 import kotlinx.android.synthetic.main.viewer_fragment.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class ViewerFragment : Fragment() {
@@ -44,9 +39,21 @@ class ViewerFragment : Fragment() {
         fragmentBinding.viewModel = viewModel
         fragmentBinding.lifecycleOwner = this
 
-        viewModel.openEditorEvent.observe(this, Observer { event ->
-            event.getContentIfNotHandled()?.let { id ->
+        viewModel.openEditorEvent.observe(this, Observer {
+            it.getContentIfNotHandled()?.let { id ->
                 openEditor(id)
+            }
+        })
+
+        viewModel.openShareEvent.observe(this , Observer {
+            it?.getContentIfNotHandled()?.let {
+                startActivity(it)
+            }
+        })
+
+        viewModel.errorEvent.observe(this, Observer {
+            it?.getContentIfNotHandled()?.let {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             }
         })
 
@@ -130,7 +137,7 @@ class ViewerFragment : Fragment() {
                 return true
             }
             R.id.actionShare -> {
-                openShare()
+                viewModel.openShare()
 
                 return true
             }
@@ -171,27 +178,5 @@ class ViewerFragment : Fragment() {
         }.also {
             navigate(it)
         }
-    }
-
-    private fun openShare() = CoroutineScope(Dispatchers.Default).launch {
-        viewModel.isProgress.set(true)
-
-        try {
-            val uri = viewModel.createShareImage()
-
-            val intent = Intent()
-            intent.action = Intent.ACTION_SEND
-            intent.type = "image/*"
-
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "")
-            intent.putExtra(android.content.Intent.EXTRA_TEXT, "")
-            intent.putExtra(Intent.EXTRA_STREAM, uri)
-            startActivity(Intent.createChooser(intent, "Share Image"))
-        } catch (e: Throwable) {
-            Toast.makeText(context, "FAIL TO SHARE", Toast.LENGTH_SHORT).show()
-        }
-
-        viewModel.isProgress.set(false)
     }
 }
