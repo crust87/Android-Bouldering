@@ -44,8 +44,8 @@ class OpenSourceLicenseFragment : Fragment() {
         recyclerView.adapter = OpenSourceLicenseAdapter(repository.getOpenSourceList())
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             android.R.id.home -> {
                 navigateUp()
 

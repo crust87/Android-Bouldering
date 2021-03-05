@@ -1,7 +1,7 @@
 package com.kayadami.bouldering.data
 
 import android.content.Context
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.kayadami.bouldering.editor.data.Bouldering
 import com.kayadami.bouldering.utils.FileUtil
@@ -44,7 +44,7 @@ class StorageDataSource(private val context: Context) {
                 FileUtil.copy(imageSource, imageDest)
                 FileUtil.copy(thumbSource, thumbDest)
             } catch (e: IOException) {
-                Crashlytics.logException(e)
+                FirebaseCrashlytics.getInstance().recordException(e)
                 throw e
             }
         }
@@ -84,7 +84,7 @@ class StorageDataSource(private val context: Context) {
 
                 boulderingList.add(problem)
             } catch (e: IOException) {
-                Crashlytics.logException(e)
+                FirebaseCrashlytics.getInstance().recordException(e)
 
                 throw e
             }

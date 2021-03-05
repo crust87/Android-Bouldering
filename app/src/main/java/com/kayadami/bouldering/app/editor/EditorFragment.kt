@@ -57,14 +57,14 @@ class EditorFragment : Fragment() {
             viewModel.load(path, id)
         }
 
-        viewModel.finishEditEvent.observe(this@EditorFragment, Observer { event ->
+        viewModel.finishEditEvent.observe(viewLifecycleOwner, Observer { event ->
             event.getContentIfNotHandled()?.let {
                 activity?.setResult(Activity.RESULT_OK)
                 navigateUp()
             }
         })
 
-        viewModel.openColorChooserEvent.observe(this, Observer {
+        viewModel.openColorChooserEvent.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let {
                 colorPickerDialog = ColorPickerDialogBuilder
                         .with(context, R.style.colorPickerDialog)
@@ -80,7 +80,7 @@ class EditorFragment : Fragment() {
             }
         })
 
-        viewModel.errorEvent.observe(this, Observer {
+        viewModel.errorEvent.observe(viewLifecycleOwner, Observer {
             it.getContentIfNotHandled()?.let { message ->
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
@@ -107,13 +107,13 @@ class EditorFragment : Fragment() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 
         inflater?.inflate(R.menu.menu_editor, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item?.itemId) {
             android.R.id.home -> {
                 navigateUp()
@@ -130,7 +130,7 @@ class EditorFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
 
         if (colorPickerDialog?.isShowing == true) {

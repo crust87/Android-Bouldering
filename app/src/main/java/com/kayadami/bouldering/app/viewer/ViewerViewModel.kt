@@ -6,7 +6,7 @@ import android.net.Uri
 import android.os.Environment
 import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.*
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.kayadami.bouldering.Event
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.editor.ImageGenerateException
@@ -27,7 +27,7 @@ class ViewerViewModel(
 ) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-        Crashlytics.logException(throwable)
+        FirebaseCrashlytics.getInstance().recordException(throwable)
         throwable.printStackTrace()
 
         throwable.message?.let {

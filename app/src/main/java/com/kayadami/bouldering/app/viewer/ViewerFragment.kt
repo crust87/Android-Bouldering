@@ -41,25 +41,25 @@ class ViewerFragment : Fragment() {
         fragmentBinding.viewModel = viewModel
         fragmentBinding.lifecycleOwner = this
 
-        viewModel.openEditorEvent.observe(this, Observer {
+        viewModel.openEditorEvent.observe(viewLifecycleOwner, Observer {
             it.getContentIfNotHandled()?.let { id ->
                 openEditor(id)
             }
         })
 
-        viewModel.openShareEvent.observe(this , Observer {
+        viewModel.openShareEvent.observe(viewLifecycleOwner , Observer {
             it?.getContentIfNotHandled()?.let {
                 startActivity(it)
             }
         })
 
-        viewModel.errorEvent.observe(this, Observer {
+        viewModel.errorEvent.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             }
         })
 
-        viewModel.finishSaveEvent.observe(this, Observer {
+        viewModel.finishSaveEvent.observe(viewLifecycleOwner, Observer {
             it?.getContentIfNotHandled()?.let {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             }
@@ -121,14 +121,14 @@ class ViewerFragment : Fragment() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 
-        inflater?.inflate(R.menu.menu_viewer, menu)
+        inflater.inflate(R.menu.menu_viewer, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             android.R.id.home -> {
                 navigateUp()
 
