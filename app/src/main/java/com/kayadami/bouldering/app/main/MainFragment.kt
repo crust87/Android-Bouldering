@@ -10,7 +10,6 @@ import android.provider.MediaStore
 import android.view.*
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigate
@@ -49,7 +48,7 @@ class MainFragment : Fragment() {
         adapter = BoulderingAdapter(viewModel, get())
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         fragmentBinding = MainFragmentBinding.inflate(inflater, container, false)
         fragmentBinding.viewModel = viewModel
         fragmentBinding.lifecycleOwner = this
@@ -60,25 +59,19 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.openBoulderingEvent.observe(viewLifecycleOwner, Observer { event ->
-            event.getContentIfNotHandled()?.let { position ->
-                if (position >= 0) {
-                    openViewer(viewModel[position])
-                }
+        viewModel.openBoulderingEvent.observe(viewLifecycleOwner) {
+            if (it >= 0) {
+                openViewer(viewModel[it])
             }
-        })
+        }
 
-        viewModel.openCameraEvent.observe(viewLifecycleOwner, Observer { event ->
-            event.getContentIfNotHandled()?.let {
-                this@MainFragment.openCamera()
-            }
-        })
+        viewModel.openCameraEvent.observe(viewLifecycleOwner) {
+            this@MainFragment.openCamera()
+        }
 
-        viewModel.openGalleryEvent.observe(viewLifecycleOwner, Observer { event ->
-            event.getContentIfNotHandled()?.let {
-                this@MainFragment.openGallery()
-            }
-        })
+        viewModel.openGalleryEvent.observe(viewLifecycleOwner) {
+            this@MainFragment.openGallery()
+        }
 
         recyclerView.layoutManager = layoutManager
         recyclerView.addItemDecoration(itemDecoration)

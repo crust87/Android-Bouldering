@@ -3,7 +3,7 @@ package com.kayadami.bouldering.app.editor
 import android.view.View
 import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.*
-import com.kayadami.bouldering.Event
+import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.editor.EditorView
 import com.kayadami.bouldering.editor.HolderBox
@@ -21,7 +21,7 @@ class EditorViewModel(
 
     private val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
         throwable.message?.let {
-            _errorEvent.value = Event(it)
+            errorEvent.value = it
         }
     }
 
@@ -61,23 +61,15 @@ class EditorViewModel(
         it?.isNotSpecial ?: true
     }
 
-    private val _finishEditEvent = MutableLiveData<Event<Unit>>()
-    val finishEditEvent: LiveData<Event<Unit>>
-        get() = _finishEditEvent
-
-    private val _openColorChooserEvent = MutableLiveData<Event<Unit>>()
-    val openColorChooserEvent: LiveData<Event<Unit>>
-        get() = _openColorChooserEvent
-
-    private val _errorEvent = MutableLiveData<Event<String>>()
-    val errorEvent: LiveData<Event<String>>
-        get() = _errorEvent
+    val finishEditEvent = SingleLiveEvent<Unit>()
+    val openColorChooserEvent = SingleLiveEvent<Unit>()
+    val errorEvent = SingleLiveEvent<String>()
 
     fun setOrder(isChecked: Boolean) {
         selectedHolder.value?.isInOrder = isChecked
 
         if (selectedHolder.value?.isInOrder == true) {
-            selectedHolder.value?.index = kotlin.Int.MAX_VALUE
+            selectedHolder.value?.index = Int.MAX_VALUE
         }
     }
 
@@ -112,10 +104,10 @@ class EditorViewModel(
 
         isProgress.set(false)
 
-        _finishEditEvent.value = Event(Unit)
+        finishEditEvent.call()
     }
 
     fun openColorChooser() {
-        _openColorChooserEvent.value = Event(Unit)
+        openColorChooserEvent.call()
     }
 }

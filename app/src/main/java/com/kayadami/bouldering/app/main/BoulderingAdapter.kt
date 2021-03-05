@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.kayadami.bouldering.Event
 import com.kayadami.bouldering.constants.Orientation
 import com.kayadami.bouldering.databinding.BoulderingCellBinding
 import com.kayadami.bouldering.databinding.EmptyCellBinding
@@ -60,7 +59,7 @@ open class BoulderingAdapter(val viewModel: MainViewModel, val imageLoader: Imag
         init {
             binding.imageLoader = imageLoader
             binding.setListener {
-                viewModel.openBoulderingEvent.value = Event(currentPosition)
+                viewModel.openBoulderingEvent.value = currentPosition
             }
         }
 

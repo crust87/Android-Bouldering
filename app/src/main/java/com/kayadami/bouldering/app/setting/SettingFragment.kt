@@ -28,7 +28,7 @@ class SettingFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         fragmentBinding = SettingFragmentBinding.inflate(inflater, container, false)
         fragmentBinding.viewModel = viewModel
         fragmentBinding.lifecycleOwner = this

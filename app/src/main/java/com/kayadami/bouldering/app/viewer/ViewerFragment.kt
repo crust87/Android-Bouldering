@@ -9,7 +9,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
@@ -36,34 +35,26 @@ class ViewerFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         fragmentBinding = ViewerFragmentBinding.inflate(inflater, container, false)
         fragmentBinding.viewModel = viewModel
         fragmentBinding.lifecycleOwner = this
 
-        viewModel.openEditorEvent.observe(viewLifecycleOwner, Observer {
-            it.getContentIfNotHandled()?.let { id ->
-                openEditor(id)
-            }
-        })
+        viewModel.openEditorEvent.observe(viewLifecycleOwner) {
+            openEditor(it)
+        }
 
-        viewModel.openShareEvent.observe(viewLifecycleOwner , Observer {
-            it?.getContentIfNotHandled()?.let {
-                startActivity(it)
-            }
-        })
+        viewModel.openShareEvent.observe(viewLifecycleOwner) {
+            startActivity(it)
+        }
 
-        viewModel.errorEvent.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            }
-        })
+        viewModel.errorEvent.observe(viewLifecycleOwner) {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
 
-        viewModel.finishSaveEvent.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            }
-        })
+        viewModel.finishSaveEvent.observe(viewLifecycleOwner) {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
 
         return fragmentBinding.root
     }
@@ -75,7 +66,7 @@ class ViewerFragment : Fragment() {
         supportActionBar?.run {
             title = ""
             setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(com.kayadami.bouldering.R.drawable.ic_back)
+            setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
         with(editorView) {
@@ -93,7 +84,7 @@ class ViewerFragment : Fragment() {
         }
 
         with(textTitle) {
-            setOnClickListener { v ->
+            setOnClickListener {
                 if (!isFocusableInTouchMode) {
                     isFocusableInTouchMode = true
                     if (requestFocus()) {
@@ -108,7 +99,7 @@ class ViewerFragment : Fragment() {
                     hideKeyboard()
                     isFocusable = false
                     viewModel.setTitle(text.toString())
-                     true
+                    true
                 } else {
                     false
                 }

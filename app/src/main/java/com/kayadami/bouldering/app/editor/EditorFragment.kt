@@ -7,14 +7,12 @@ import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
 import com.kayadami.bouldering.databinding.EditorFragmentBinding
-import com.kayadami.bouldering.editor.EditorView
 import kotlinx.android.synthetic.main.editor_fragment.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -31,7 +29,7 @@ class EditorFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         fragmentBinding = EditorFragmentBinding.inflate(inflater, container, false)
         fragmentBinding.viewModel = viewModel
         fragmentBinding.lifecycleOwner = this
@@ -44,6 +42,7 @@ class EditorFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setSupportActionBar(toolbar)
+
         supportActionBar?.run {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowCustomEnabled(true)
@@ -57,34 +56,28 @@ class EditorFragment : Fragment() {
             viewModel.load(path, id)
         }
 
-        viewModel.finishEditEvent.observe(viewLifecycleOwner, Observer { event ->
-            event.getContentIfNotHandled()?.let {
-                activity?.setResult(Activity.RESULT_OK)
-                navigateUp()
-            }
-        })
+        viewModel.finishEditEvent.observe(viewLifecycleOwner) {
+            activity?.setResult(Activity.RESULT_OK)
+            navigateUp()
+        }
 
-        viewModel.openColorChooserEvent.observe(viewLifecycleOwner, Observer {
-            it?.getContentIfNotHandled()?.let {
-                colorPickerDialog = ColorPickerDialogBuilder
-                        .with(context, R.style.colorPickerDialog)
-                        .initialColor(editorView.color)
-                        .wheelType(com.flask.colorpicker.ColorPickerView.WHEEL_TYPE.CIRCLE)
-                        .density(6)
-                        .lightnessSliderOnly()
-                        .setPositiveButton("OK") { _, selectedColor, _ -> editorView.color = selectedColor }
-                        .build()
-                        .apply {
-                            show()
-                        }
-            }
-        })
+        viewModel.openColorChooserEvent.observe(viewLifecycleOwner) {
+            colorPickerDialog = ColorPickerDialogBuilder
+                    .with(context, R.style.colorPickerDialog)
+                    .initialColor(editorView.color)
+                    .wheelType(com.flask.colorpicker.ColorPickerView.WHEEL_TYPE.CIRCLE)
+                    .density(6)
+                    .lightnessSliderOnly()
+                    .setPositiveButton("OK") { _, selectedColor, _ -> editorView.color = selectedColor }
+                    .build()
+                    .apply {
+                        show()
+                    }
+        }
 
-        viewModel.errorEvent.observe(viewLifecycleOwner, Observer {
-            it.getContentIfNotHandled()?.let { message ->
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            }
-        })
+        viewModel.errorEvent.observe(viewLifecycleOwner) {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
 
         checkNumberedHolder.setOnClickListener {
             viewModel.setOrder(checkNumberedHolder.isChecked)
@@ -110,11 +103,11 @@ class EditorFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 
-        inflater?.inflate(R.menu.menu_editor, menu)
+        inflater.inflate(R.menu.menu_editor, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item?.itemId) {
+        when (item.itemId) {
             android.R.id.home -> {
                 navigateUp()
 
