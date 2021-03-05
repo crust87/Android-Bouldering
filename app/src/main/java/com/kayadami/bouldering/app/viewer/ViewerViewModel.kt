@@ -5,9 +5,10 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import androidx.databinding.ObservableBoolean
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import com.crashlytics.android.Crashlytics
-import com.kayadami.bouldering.Event
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.editor.ImageGenerateException
 import com.kayadami.bouldering.editor.ImageGenerator
@@ -21,17 +22,17 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
-class ViewerViewModel(
-        private val repository: BoulderingDataSource,
-        private val imageGenerator: ImageGenerator
+class ViewerViewModel @ViewModelInject constructor(
+        val repository: BoulderingDataSource,
+        val imageGenerator: ImageGenerator
 ) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-        Crashlytics.logException(throwable)
+        FirebaseCrashlytics.getInstance().recordException(throwable)
         throwable.printStackTrace()
 
         throwable.message?.let {
-            _errorEvent.value = Event(it)
+            errorEvent.value = it
         }
     }
 
@@ -53,21 +54,10 @@ class ViewerViewModel(
 
     val isSolved = ObservableBoolean()
 
-    private val _openEditorEvent = MutableLiveData<Event<Long>>()
-    val openEditorEvent: LiveData<Event<Long>>
-        get() = _openEditorEvent
-
-    private val _errorEvent = MutableLiveData<Event<String>>()
-    val errorEvent: LiveData<Event<String>>
-        get() = _errorEvent
-
-    private val _openShareEvent = MutableLiveData<Event<Intent>>()
-    val openShareEvent: LiveData<Event<Intent>>
-        get() = _openShareEvent
-
-    private val _finishSaveEvent = MutableLiveData<Event<String>>()
-    val finishSaveEvent: LiveData<Event<String>>
-        get() = _finishSaveEvent
+    val openEditorEvent = SingleLiveEvent<Long>()
+    val errorEvent = SingleLiveEvent<String>()
+    val openShareEvent = SingleLiveEvent<Intent>()
+    val finishSaveEvent = SingleLiveEvent<String>()
 
     fun start(id: Long) {
         bouldering.value = repository[id]
@@ -76,7 +66,7 @@ class ViewerViewModel(
 
     fun openEditor() {
         bouldering.value?.let {
-            _openEditorEvent.value = Event(it.createdDate)
+            openEditorEvent.value = it.createdDate
         }
     }
 
@@ -132,7 +122,7 @@ class ViewerViewModel(
 
         isProgress.set(false)
 
-        _openShareEvent.value = Event(Intent.createChooser(intent, "Share Image"))
+        openShareEvent.value = Intent.createChooser(intent, "Share Image")
     }
 
     fun saveImage() = viewModelScope.launch(exceptionHandler) {
@@ -160,7 +150,7 @@ class ViewerViewModel(
             outFile.absolutePath
         }
 
-        _finishSaveEvent.value = Event(path)
+        finishSaveEvent.value = path
 
         isProgress.set(false)
     }

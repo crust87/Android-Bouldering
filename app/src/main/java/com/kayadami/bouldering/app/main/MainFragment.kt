@@ -10,7 +10,7 @@ import android.provider.MediaStore
 import android.view.*
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigate
@@ -21,15 +21,22 @@ import com.kayadami.bouldering.databinding.MainFragmentBinding
 import com.kayadami.bouldering.editor.data.Bouldering
 import com.kayadami.bouldering.list.GridSpacingItemDecoration
 import com.kayadami.bouldering.utils.FileUtil
+import com.kayadami.bouldering.image.FragmentImageLoader
+import com.kayadami.bouldering.image.ImageLoader
 import com.kayadami.bouldering.utils.PermissionChecker
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.main_fragment.*
-import org.koin.android.ext.android.get
-import org.koin.android.viewmodel.ext.android.viewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainFragment : Fragment() {
 
+    @Inject
+    @FragmentImageLoader
+    lateinit var imageLoader: ImageLoader
+
     private lateinit var fragmentBinding: MainFragmentBinding
-    private val viewModel: MainViewModel by viewModel()
+    private val viewModel: MainViewModel by viewModels()
 
     private lateinit var appBarManager: AppBarManager
     private val layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -46,32 +53,10 @@ class MainFragment : Fragment() {
         appBarManager = AppBarManager(activity)
         appBarManager.offsetBound = resources.getDimension(R.dimen.header_height) / 2
 
-        with(viewModel) {
-            openBoulderingEvent.observe(this@MainFragment, Observer { event ->
-                event.getContentIfNotHandled()?.let { position ->
-                    if (position >= 0) {
-                        openViewer(viewModel[position])
-                    }
-                }
-            })
-
-            openCameraEvent.observe(this@MainFragment, Observer { event ->
-                event.getContentIfNotHandled()?.let {
-                    this@MainFragment.openCamera()
-                }
-            })
-
-            openGalleryEvent.observe(this@MainFragment, Observer { event ->
-                event.getContentIfNotHandled()?.let {
-                    this@MainFragment.openGallery()
-                }
-            })
-        }
-
-        adapter = BoulderingAdapter(viewModel, get())
+        adapter = BoulderingAdapter(viewModel, imageLoader)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         fragmentBinding = MainFragmentBinding.inflate(inflater, container, false)
         fragmentBinding.viewModel = viewModel
         fragmentBinding.lifecycleOwner = this
@@ -81,6 +66,20 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.openBoulderingEvent.observe(viewLifecycleOwner) {
+            if (it >= 0) {
+                openViewer(viewModel[it])
+            }
+        }
+
+        viewModel.openCameraEvent.observe(viewLifecycleOwner) {
+            this@MainFragment.openCamera()
+        }
+
+        viewModel.openGalleryEvent.observe(viewLifecycleOwner) {
+            this@MainFragment.openGallery()
+        }
 
         recyclerView.layoutManager = layoutManager
         recyclerView.addItemDecoration(itemDecoration)
@@ -108,21 +107,21 @@ class MainFragment : Fragment() {
         appBar.removeOnOffsetChangedListener(appBarManager)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 
-        inflater?.inflate(R.menu.menu_main, menu)
+        inflater.inflate(R.menu.menu_main, menu)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?) {
-        menu?.getItem(0)?.isVisible = !appBarManager.appBarExpanded
-        menu?.getItem(1)?.isVisible = !appBarManager.appBarExpanded
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.getItem(0)?.isVisible = !appBarManager.appBarExpanded
+        menu.getItem(1)?.isVisible = !appBarManager.appBarExpanded
 
         super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.actionSetting -> openSetting()
             R.id.actionCamera -> viewModel.openCamera()
             R.id.actionGallery -> viewModel.openGallery()

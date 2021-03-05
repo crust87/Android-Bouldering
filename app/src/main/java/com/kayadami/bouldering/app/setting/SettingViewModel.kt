@@ -3,14 +3,19 @@ package com.kayadami.bouldering.app.setting
 import android.app.Application
 import android.widget.Toast
 import androidx.databinding.ObservableBoolean
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import com.kayadami.bouldering.data.BoulderingDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SettingViewModel(var context: Application, var repository: BoulderingDataSource) : AndroidViewModel(context) {
+class SettingViewModel @ViewModelInject constructor(
+        var context: Application,
+        var repository: BoulderingDataSource
+) : ViewModel() {
 
     val isProgress: ObservableBoolean = ObservableBoolean(false)
 

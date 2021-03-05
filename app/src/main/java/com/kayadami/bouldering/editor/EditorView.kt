@@ -209,7 +209,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
             return
         }
 
-        canvas.matrix = suppMatrix
+        canvas.setMatrix(suppMatrix)
         canvas.drawBitmap(imageBitmap, null, options.bound, imagePaint)
 
         mask.draw(canvas, holderBoxList)

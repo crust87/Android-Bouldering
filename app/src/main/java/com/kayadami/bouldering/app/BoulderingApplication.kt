@@ -2,21 +2,14 @@ package com.kayadami.bouldering.app
 
 import android.app.Application
 import com.kayadami.bouldering.utils.DateUtils
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.context.startKoin
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class BoulderingApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
 
         DateUtils.initialize(applicationContext)
-
-        startKoin {
-            androidContext(this@BoulderingApplication)
-            modules(
-                Injection.get(this@BoulderingApplication)
-            )
-        }
     }
 }

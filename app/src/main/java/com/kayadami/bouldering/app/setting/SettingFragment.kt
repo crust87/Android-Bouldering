@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.databinding.SettingFragmentBinding
@@ -14,13 +15,14 @@ import com.kayadami.bouldering.utils.PermissionChecker
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.setting_fragment.*
-import org.koin.android.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class SettingFragment : Fragment() {
 
     private lateinit var fragmentBinding: SettingFragmentBinding
-    private val viewModel: SettingViewModel by viewModel()
+    private val viewModel: SettingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +30,7 @@ class SettingFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         fragmentBinding = SettingFragmentBinding.inflate(inflater, container, false)
         fragmentBinding.viewModel = viewModel
         fragmentBinding.lifecycleOwner = this
@@ -60,8 +62,8 @@ class SettingFragment : Fragment() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             android.R.id.home -> {
                 navigateUp()
 

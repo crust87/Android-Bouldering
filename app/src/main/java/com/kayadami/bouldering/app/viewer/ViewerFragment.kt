@@ -9,7 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.fragment.app.viewModels
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
@@ -17,13 +17,14 @@ import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
 import com.kayadami.bouldering.databinding.ViewerFragmentBinding
 import com.kayadami.bouldering.utils.PermissionChecker
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.viewer_fragment.*
-import org.koin.android.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class ViewerFragment : Fragment() {
 
     private lateinit var fragmentBinding: ViewerFragmentBinding
-    private val viewModel: ViewerViewModel by viewModel()
+    private val viewModel: ViewerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,34 +37,26 @@ class ViewerFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         fragmentBinding = ViewerFragmentBinding.inflate(inflater, container, false)
         fragmentBinding.viewModel = viewModel
         fragmentBinding.lifecycleOwner = this
 
-        viewModel.openEditorEvent.observe(this, Observer {
-            it.getContentIfNotHandled()?.let { id ->
-                openEditor(id)
-            }
-        })
+        viewModel.openEditorEvent.observe(viewLifecycleOwner) {
+            openEditor(it)
+        }
 
-        viewModel.openShareEvent.observe(this , Observer {
-            it?.getContentIfNotHandled()?.let {
-                startActivity(it)
-            }
-        })
+        viewModel.openShareEvent.observe(viewLifecycleOwner) {
+            startActivity(it)
+        }
 
-        viewModel.errorEvent.observe(this, Observer {
-            it?.getContentIfNotHandled()?.let {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            }
-        })
+        viewModel.errorEvent.observe(viewLifecycleOwner) {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
 
-        viewModel.finishSaveEvent.observe(this, Observer {
-            it?.getContentIfNotHandled()?.let {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            }
-        })
+        viewModel.finishSaveEvent.observe(viewLifecycleOwner) {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
 
         return fragmentBinding.root
     }
@@ -75,7 +68,7 @@ class ViewerFragment : Fragment() {
         supportActionBar?.run {
             title = ""
             setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(com.kayadami.bouldering.R.drawable.ic_back)
+            setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
         with(editorView) {
@@ -93,7 +86,7 @@ class ViewerFragment : Fragment() {
         }
 
         with(textTitle) {
-            setOnClickListener { v ->
+            setOnClickListener {
                 if (!isFocusableInTouchMode) {
                     isFocusableInTouchMode = true
                     if (requestFocus()) {
@@ -108,7 +101,7 @@ class ViewerFragment : Fragment() {
                     hideKeyboard()
                     isFocusable = false
                     viewModel.setTitle(text.toString())
-                     true
+                    true
                 } else {
                     false
                 }
@@ -121,14 +114,14 @@ class ViewerFragment : Fragment() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 
-        inflater?.inflate(R.menu.menu_viewer, menu)
+        inflater.inflate(R.menu.menu_viewer, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             android.R.id.home -> {
                 navigateUp()
 
