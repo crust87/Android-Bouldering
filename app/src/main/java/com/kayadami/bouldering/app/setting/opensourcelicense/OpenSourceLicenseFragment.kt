@@ -6,19 +6,23 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
 import com.kayadami.bouldering.data.BoulderingDataSource
+import com.kayadami.bouldering.databinding.OpenSourceLicenseFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.open_source_license_fragment.*
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class OpenSourceLicenseFragment : Fragment() {
 
     @Inject
     lateinit var repository: BoulderingDataSource
+
+    lateinit var fragmentBinding: OpenSourceLicenseFragmentBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +31,9 @@ class OpenSourceLicenseFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.open_source_license_fragment, container, false)
+        fragmentBinding = OpenSourceLicenseFragmentBinding.inflate(inflater, container, false)
+
+        return fragmentBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,8 +47,7 @@ class OpenSourceLicenseFragment : Fragment() {
             setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = OpenSourceLicenseAdapter(repository.getOpenSourceList())
+        fragmentBinding.recyclerView.adapter = OpenSourceLicenseAdapter(repository.getOpenSourceList())
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

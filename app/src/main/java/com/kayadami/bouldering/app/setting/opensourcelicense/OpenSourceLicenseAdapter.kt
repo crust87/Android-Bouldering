@@ -1,14 +1,14 @@
 package com.kayadami.bouldering.app.setting.opensourcelicense
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kayadami.bouldering.databinding.OpenSourceLicenseCellBinding
 import com.kayadami.bouldering.list.ViewHolder
-import kotlinx.android.extensions.LayoutContainer
 
-class OpenSourceLicenseAdapter(val list: List<OpenSourceLicense>) : RecyclerView.Adapter<OpenSourceLicenseAdapter.OpenSourceLicenseViewHolder>() {
+class OpenSourceLicenseAdapter(
+        val list: List<OpenSourceLicense>
+) : RecyclerView.Adapter<OpenSourceLicenseAdapter.OpenSourceLicenseViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = OpenSourceLicenseCellBinding.inflate(LayoutInflater.from(parent.context), parent, false).run {
         OpenSourceLicenseViewHolder(this)

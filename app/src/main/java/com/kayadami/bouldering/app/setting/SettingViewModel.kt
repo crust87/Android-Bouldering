@@ -1,10 +1,12 @@
 package com.kayadami.bouldering.app.setting
 
 import android.app.Application
+import android.view.View
 import android.widget.Toast
 import androidx.databinding.ObservableBoolean
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kayadami.bouldering.data.BoulderingDataSource
 import kotlinx.coroutines.CoroutineScope
@@ -17,14 +19,14 @@ class SettingViewModel @ViewModelInject constructor(
         var repository: BoulderingDataSource
 ) : ViewModel() {
 
-    val isProgress: ObservableBoolean = ObservableBoolean(false)
+    val progressVisibility = MutableLiveData<Int>()
 
     fun exportAll() = CoroutineScope(Dispatchers.Main).launch {
-        isProgress.set(true)
+        progressVisibility.value = View.VISIBLE
 
         val isSuccess = withContext(Dispatchers.Default) { repository.exportAll() }
 
-        isProgress.set(false)
+        progressVisibility.value = View.GONE
 
         if (isSuccess) {
             Toast.makeText(context, "SUCCESS!", Toast.LENGTH_SHORT).show()
@@ -34,11 +36,11 @@ class SettingViewModel @ViewModelInject constructor(
     }
 
     fun importAll() = CoroutineScope(Dispatchers.Main).launch {
-        isProgress.set(true)
+        progressVisibility.value = View.VISIBLE
 
         val isSuccess = withContext(Dispatchers.Default) { repository.importAll() }
 
-        isProgress.set(false)
+        progressVisibility.value = View.GONE
 
         if (isSuccess) {
             Toast.makeText(context, "SUCCESS!", Toast.LENGTH_SHORT).show()
