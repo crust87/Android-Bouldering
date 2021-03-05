@@ -3,9 +3,7 @@ package com.kayadami.bouldering.app.setting
 import android.app.Application
 import android.view.View
 import android.widget.Toast
-import androidx.databinding.ObservableBoolean
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.kayadami.bouldering.data.BoulderingDataSource

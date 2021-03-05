@@ -1,20 +1,23 @@
 package com.kayadami.bouldering.app.setting
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigate
-import com.kayadami.bouldering.databinding.SettingFragmentBinding
-import com.kayadami.bouldering.utils.PermissionChecker
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
+import com.kayadami.bouldering.databinding.SettingFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.setting_fragment.*
 
@@ -74,34 +77,68 @@ class SettingFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (requestCode == PermissionChecker.REQUEST_EXPORT) {
-                exportAll()
-            } else if (requestCode == PermissionChecker.REQUEST_IMPORT) {
-                importAll()
-            }
-        } else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    val exportPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        permissions.entries.forEach {
+            Log.e("DEBUG", "${it.key} = ${it.value}")
         }
+        val granted = permissions.entries.map {
+            it.value
+        }.all {
+            it
+        }
+
+        if (granted) {
+            exportAll()
+        }
+    }
+    val importPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        permissions.entries.forEach {
+            Log.e("DEBUG", "${it.key} = ${it.value}")
+        }
+        val granted = permissions.entries.map {
+            it.value
+        }.all {
+            it
+        }
+
+        if (granted) {
+            importAll()
+        }
+    }
+
+    fun checkPermission(): Boolean {
+        val read = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+        val write = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+        return read == PackageManager.PERMISSION_GRANTED && write == PackageManager.PERMISSION_GRANTED
     }
 
     private fun exportAll() {
         context?.let {
-            if (PermissionChecker.check(it)) {
+            if (checkPermission()) {
                 viewModel.exportAll()
             } else {
-                PermissionChecker.request(this@SettingFragment, PermissionChecker.REQUEST_EXPORT)
+                exportPermissionLauncher.launch(
+                        arrayOf(
+                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        )
+                )
             }
         }
     }
 
     private fun importAll() {
         context?.let {
-            if (PermissionChecker.check(it)) {
+            if (checkPermission()) {
                 viewModel.importAll()
             } else {
-                PermissionChecker.request(this@SettingFragment, PermissionChecker.REQUEST_IMPORT)
+                importPermissionLauncher.launch(
+                        arrayOf(
+                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        )
+                )
             }
         }
     }
