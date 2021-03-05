@@ -8,16 +8,14 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.signature.ObjectKey
 import com.kayadami.bouldering.app.GlideApp
 import com.kayadami.bouldering.editor.data.Bouldering
-import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 import java.io.File
 
-abstract class ImageLoader(private val transformation: RoundedCornersTransformation) {
+abstract class ImageLoader() {
 
     fun load(imageView: ImageView, bouldering: Bouldering): Int {
         GlideApp.with(imageView)
                 .load(File(bouldering.thumb))
                 .fitCenter()
-                .transform(transformation)
                 .signature(ObjectKey(bouldering.lastModify.toString()))
                 .into(imageView)
 
@@ -27,27 +25,24 @@ abstract class ImageLoader(private val transformation: RoundedCornersTransformat
     abstract fun start()
 
     class ActivityImageLoader(
-            val activity: Activity,
-            val transformation: RoundedCornersTransformation
-    ) : ImageLoader(transformation) {
+            val activity: Activity
+    ) : ImageLoader() {
         override fun start() {
             Log.d("WTF", "ActivityImageLoader start")
         }
     }
 
     class FragmentImageLoader(
-            val fragment: Fragment,
-            val transformation: RoundedCornersTransformation
-    ) : ImageLoader(transformation) {
+            val fragment: Fragment
+    ) : ImageLoader() {
         override fun start() {
             Log.d("WTF", "FragmentImageLoader start")
         }
     }
 
     class ApplicationImageLoader(
-            val context: Context,
-            val transformation: RoundedCornersTransformation
-    ) : ImageLoader(transformation) {
+            val context: Context
+    ) : ImageLoader() {
         override fun start() {
             Log.d("WTF", "ApplicationImageLoader start")
         }
@@ -55,24 +50,21 @@ abstract class ImageLoader(private val transformation: RoundedCornersTransformat
 
     object Builder {
         fun create(
-                activity: Activity,
-                transformation: RoundedCornersTransformation
+                activity: Activity
         ): ImageLoader {
-            return ActivityImageLoader(activity, transformation)
+            return ActivityImageLoader(activity)
         }
 
         fun create(
-                fragment: Fragment,
-                transformation: RoundedCornersTransformation
+                fragment: Fragment
         ): ImageLoader {
-            return FragmentImageLoader(fragment, transformation)
+            return FragmentImageLoader(fragment)
         }
 
         fun create(
-                context: Context,
-                transformation: RoundedCornersTransformation
+                context: Context
         ): ImageLoader {
-            return ApplicationImageLoader(context, transformation)
+            return ApplicationImageLoader(context)
         }
     }
 }

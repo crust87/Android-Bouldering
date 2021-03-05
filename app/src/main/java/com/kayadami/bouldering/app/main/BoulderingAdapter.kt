@@ -8,13 +8,22 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.kayadami.bouldering.constants.Orientation
 import com.kayadami.bouldering.databinding.BoulderingCellBinding
 import com.kayadami.bouldering.databinding.EmptyCellBinding
-import com.kayadami.bouldering.list.ViewHolder
+import com.kayadami.bouldering.editor.data.Bouldering
 import com.kayadami.bouldering.image.ImageLoader
+import com.kayadami.bouldering.list.ViewHolder
 
 open class BoulderingAdapter(
         val viewModel: MainViewModel,
         val imageLoader: ImageLoader
 ) : RecyclerView.Adapter<ViewHolder>() {
+
+    val list = ArrayList<Bouldering>()
+
+    fun setList(newList: List<Bouldering>) {
+        list.clear()
+        list.addAll(newList)
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val ratio = when (viewType) {
@@ -25,26 +34,32 @@ open class BoulderingAdapter(
         }
 
         return when (ratio != null) {
-            true -> BoulderingCellBinding.inflate(LayoutInflater.from(parent.context), parent, false).run {
-                (imageThumbnail.layoutParams as? ConstraintLayout.LayoutParams)?.let {
-                    it.dimensionRatio = ratio
+            true -> BoulderingCellBinding.inflate(LayoutInflater.from(parent.context), parent, false).let {
+                (it.imageThumbnail.layoutParams as? ConstraintLayout.LayoutParams)?.dimensionRatio = ratio
+                it.imageLoader = this@BoulderingAdapter.imageLoader
+
+                BoulderingViewHolder(it)
+            }
+            false -> EmptyCellBinding.inflate(LayoutInflater.from(parent.context), parent, false).let {
+                it.root.layoutParams = StaggeredGridLayoutManager.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                ).apply {
+                    isFullSpan = true
                 }
 
-                BoulderingViewHolder(this, viewModel, this@BoulderingAdapter.imageLoader)
-            }
-            false -> EmptyCellBinding.inflate(LayoutInflater.from(parent.context), parent, false).run {
-                EmptyViewHolder(this)
+                EmptyViewHolder(it)
             }
         }
     }
 
-    override fun getItemViewType(position: Int) = when (viewModel.isNotEmpty()) {
-        true -> viewModel[position].viewType
+    override fun getItemViewType(position: Int) = when (list.isNotEmpty()) {
+        true -> list[position].viewType
         false -> Orientation.NONE
     }
 
-    override fun getItemCount() = when (viewModel.isNotEmpty()) {
-        true -> viewModel.size
+    override fun getItemCount() = when (list.isNotEmpty()) {
+        true -> list.size
         false -> 1
     }
 
@@ -52,37 +67,30 @@ open class BoulderingAdapter(
         holder.bind(position)
     }
 
-    class BoulderingViewHolder(private val binding: BoulderingCellBinding,
-                               private val viewModel: MainViewModel,
-                               imageLoader: ImageLoader) : ViewHolder(binding.root) {
-
-        private var currentPosition = -1
+    inner class BoulderingViewHolder(
+            val binding: BoulderingCellBinding
+    ) : ViewHolder(binding.root) {
 
         init {
-            binding.imageLoader = imageLoader
             binding.setListener {
-                viewModel.openBoulderingEvent.value = currentPosition
+                binding.bouldering?.let {
+                    viewModel.openBoulderingEvent.value = it
+                }
             }
         }
 
         override fun bind(position: Int) {
-            currentPosition = position
-            binding.bouldering = viewModel[position]
+            binding.bouldering = list[position]
         }
 
         override fun recycle() {
-            currentPosition = -1
+            binding.bouldering = null
         }
     }
 
-    class EmptyViewHolder(binding: EmptyCellBinding) : ViewHolder(binding.root) {
-
-        init {
-            itemView.layoutParams = StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT).apply {
-                isFullSpan = true
-            }
-        }
-
+    class EmptyViewHolder(
+            binding: EmptyCellBinding
+    ) : ViewHolder(binding.root) {
         override fun bind(position: Int) {
             // DO NOTHING
         }

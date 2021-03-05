@@ -6,7 +6,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
 @Module
 @InstallIn(ApplicationComponent::class)
@@ -15,10 +14,8 @@ object ApplicationImageLoaderModule {
     @ApplicationImageLoader
     @Provides
     fun providerApplicationImageLoader(
-            @ApplicationContext context: Context,
-            transformation: RoundedCornersTransformation
+            @ApplicationContext context: Context
     ) = ImageLoader.Builder.create(
-            context,
-            transformation
+            context
     )
 }

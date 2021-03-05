@@ -1,12 +1,25 @@
 package com.kayadami.bouldering.data
 
+import android.util.Log
 import com.kayadami.bouldering.app.setting.opensourcelicense.OpenSourceLicense
 import com.kayadami.bouldering.editor.data.Bouldering
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class BoulderingRepository(var preferences: PreferencesDataSource, var storage: StorageDataSource) : BoulderingDataSource {
 
-    override fun get(): ArrayList<Bouldering> {
-        return preferences.get()
+    private var _listChannel: Channel<List<Bouldering>>? = null
+
+    override fun list() = flow {
+        _listChannel = Channel()
+
+        emit(preferences.get())
+
+        _listChannel?.consumeEach {
+            emit(it)
+        }
     }
 
     override operator fun get(createDate: Long): Bouldering? {

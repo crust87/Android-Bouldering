@@ -9,6 +9,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.view.*
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -36,6 +37,7 @@ class MainFragment : Fragment() {
     lateinit var imageLoader: ImageLoader
 
     private lateinit var fragmentBinding: MainFragmentBinding
+
     private val viewModel: MainViewModel by viewModels()
 
     private lateinit var appBarManager: AppBarManager
@@ -67,10 +69,12 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.list.observe(viewLifecycleOwner) {
+            adapter.setList(it)
+        }
+
         viewModel.openBoulderingEvent.observe(viewLifecycleOwner) {
-            if (it >= 0) {
-                openViewer(viewModel[it])
-            }
+            openViewer(it)
         }
 
         viewModel.openCameraEvent.observe(viewLifecycleOwner) {
@@ -91,12 +95,8 @@ class MainFragment : Fragment() {
         supportActionBar?.title = ""
 
         setOrientation(resources.configuration.orientation)
-    }
 
-    override fun onResume() {
-        super.onResume()
-
-        adapter.notifyDataSetChanged()
+        ViewCompat.requestApplyInsets(fragmentBinding.layoutContainer)
     }
 
     override fun onDestroyView() {

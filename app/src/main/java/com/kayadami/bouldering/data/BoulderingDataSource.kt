@@ -2,10 +2,11 @@ package com.kayadami.bouldering.data
 
 import com.kayadami.bouldering.app.setting.opensourcelicense.OpenSourceLicense
 import com.kayadami.bouldering.editor.data.Bouldering
+import kotlinx.coroutines.flow.Flow
 
 interface BoulderingDataSource {
 
-    fun get(): ArrayList<Bouldering>
+    fun list(): Flow<List<Bouldering>>
 
     operator fun get(createDate: Long): Bouldering?
 
