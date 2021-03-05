@@ -24,10 +24,4 @@ object ImageModule {
             context.resources.getDimension(R.dimen.list_round).toInt(),
             0
     )
-
-    @Provides
-    @Singleton
-    fun provideImageGenerator(
-            @ApplicationContext context: Context
-    ) = ImageGenerator(context.getSystemService(Context.WINDOW_SERVICE) as WindowManager)
 }
