@@ -1,7 +1,6 @@
 package com.kayadami.bouldering.app.main
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -10,7 +9,7 @@ import com.kayadami.bouldering.constants.Orientation
 import com.kayadami.bouldering.databinding.BoulderingCellBinding
 import com.kayadami.bouldering.databinding.EmptyCellBinding
 import com.kayadami.bouldering.list.ViewHolder
-import com.kayadami.bouldering.utils.ImageLoader
+import com.kayadami.bouldering.image.ImageLoader
 
 open class BoulderingAdapter(
         val viewModel: MainViewModel,

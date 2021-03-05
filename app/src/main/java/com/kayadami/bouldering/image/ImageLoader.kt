@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.utils
+package com.kayadami.bouldering.image
 
 import android.app.Activity
 import android.content.Context

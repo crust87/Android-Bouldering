@@ -21,8 +21,8 @@ import com.kayadami.bouldering.databinding.MainFragmentBinding
 import com.kayadami.bouldering.editor.data.Bouldering
 import com.kayadami.bouldering.list.GridSpacingItemDecoration
 import com.kayadami.bouldering.utils.FileUtil
-import com.kayadami.bouldering.utils.FragmentImageLoader
-import com.kayadami.bouldering.utils.ImageLoader
+import com.kayadami.bouldering.image.FragmentImageLoader
+import com.kayadami.bouldering.image.ImageLoader
 import com.kayadami.bouldering.utils.PermissionChecker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.main_fragment.*

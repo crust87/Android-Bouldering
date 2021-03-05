@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.utils
+package com.kayadami.bouldering.image
 
 import javax.inject.Qualifier
 
