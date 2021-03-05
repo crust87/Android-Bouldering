@@ -28,7 +28,7 @@ class SettingViewModel @ViewModelInject constructor(
     val requestImportPermissionEvent = SingleLiveEvent<Unit>()
 
     fun exportAll() = viewModelScope.launch(Dispatchers.Main) {
-        if (permissionChecker.check()) {
+        if (permissionChecker.checkReadWrite()) {
             progressVisibility.value = View.VISIBLE
 
             val isSuccess = try {
@@ -52,7 +52,7 @@ class SettingViewModel @ViewModelInject constructor(
     }
 
     fun importAll() = viewModelScope.launch(Dispatchers.Main) {
-        if (permissionChecker.check()) {
+        if (permissionChecker.checkReadWrite()) {
             progressVisibility.value = View.VISIBLE
 
             val isSuccess = try {

@@ -13,6 +13,7 @@ import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.databinding.SettingFragmentBinding
+import com.kayadami.bouldering.utils.PermissionChecker2.Companion.isAllGranted
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,12 +22,6 @@ class SettingFragment : Fragment() {
     private lateinit var fragmentBinding: SettingFragmentBinding
 
     private val viewModel: SettingViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setHasOptionsMenu(true)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         fragmentBinding = SettingFragmentBinding.inflate(inflater, container, false).apply {
@@ -73,8 +68,6 @@ class SettingFragment : Fragment() {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
     }
-
-    fun Map<String, Boolean>.isAllGranted() = entries.map { it.value }.all { it }
 
     val exportPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
         if (permissions.isAllGranted()) {

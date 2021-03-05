@@ -15,6 +15,7 @@ import com.kayadami.bouldering.editor.ImageGenerator
 import com.kayadami.bouldering.editor.data.Bouldering
 import com.kayadami.bouldering.utils.DateUtils
 import com.kayadami.bouldering.utils.FileUtil
+import com.kayadami.bouldering.utils.PermissionChecker2
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,7 +25,8 @@ import java.io.FileOutputStream
 
 class ViewerViewModel @ViewModelInject constructor(
         val repository: BoulderingDataSource,
-        val imageGenerator: ImageGenerator
+        val imageGenerator: ImageGenerator,
+        val permissionChecker: PermissionChecker2
 ) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
@@ -32,7 +34,7 @@ class ViewerViewModel @ViewModelInject constructor(
         throwable.printStackTrace()
 
         throwable.message?.let {
-            errorEvent.value = it
+            toastEvent.value = it
         }
     }
 
@@ -55,9 +57,10 @@ class ViewerViewModel @ViewModelInject constructor(
     val isSolved = ObservableBoolean()
 
     val openEditorEvent = SingleLiveEvent<Long>()
-    val errorEvent = SingleLiveEvent<String>()
+    val toastEvent = SingleLiveEvent<String>()
     val openShareEvent = SingleLiveEvent<Intent>()
     val finishSaveEvent = SingleLiveEvent<String>()
+    val requestSavePermissionEvent = SingleLiveEvent<Unit>()
 
     fun start(id: Long) {
         bouldering.value = repository[id]
@@ -126,32 +129,36 @@ class ViewerViewModel @ViewModelInject constructor(
     }
 
     fun saveImage() = viewModelScope.launch(exceptionHandler) {
-        isProgress.set(true)
+        if (permissionChecker.checkWrite()) {
+            isProgress.set(true)
 
-        val path = withContext(Dispatchers.Default) {
-            val bitmap = imageGenerator.createImage(bouldering.value!!)
+            val path = withContext(Dispatchers.IO) {
+                val bitmap = imageGenerator.createImage(bouldering.value!!)
 
-            val dir = File(Environment.getExternalStorageDirectory(), "Bouldering")
-            if (!dir.exists()) {
-                dir.mkdir()
+                val dir = File(Environment.getExternalStorageDirectory(), "Bouldering")
+                if (!dir.exists()) {
+                    dir.mkdir()
+                }
+
+                val outFile = File(dir, "bouldering_" + System.currentTimeMillis() + ".jpg")
+
+                if (!outFile.createNewFile()) {
+                    throw ImageGenerateException("Fail to Create File!")
+                }
+
+                val outStream = FileOutputStream(outFile)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outStream)
+                outStream.flush()
+                outStream.close()
+
+                outFile.absolutePath
             }
 
-            val outFile = File(dir, "bouldering_" + System.currentTimeMillis() + ".jpg")
+            finishSaveEvent.value = path
 
-            if (!outFile.createNewFile()) {
-                throw ImageGenerateException("Fail to Create File!")
-            }
-
-            val outStream = FileOutputStream(outFile)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outStream)
-            outStream.flush()
-            outStream.close()
-
-            outFile.absolutePath
+            isProgress.set(false)
+        } else {
+            requestSavePermissionEvent.call()
         }
-
-        finishSaveEvent.value = path
-
-        isProgress.set(false)
     }
 }
