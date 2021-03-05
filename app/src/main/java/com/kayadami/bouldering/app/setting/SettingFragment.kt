@@ -1,30 +1,25 @@
 package com.kayadami.bouldering.app.setting
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
-import com.kayadami.bouldering.app.setSupportActionBar
-import com.kayadami.bouldering.app.supportActionBar
 import com.kayadami.bouldering.databinding.SettingFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.setting_fragment.*
 
 @AndroidEntryPoint
 class SettingFragment : Fragment() {
 
     private lateinit var fragmentBinding: SettingFragmentBinding
+
     private val viewModel: SettingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,9 +29,11 @@ class SettingFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        fragmentBinding = SettingFragmentBinding.inflate(inflater, container, false)
-        fragmentBinding.viewModel = viewModel
-        fragmentBinding.lifecycleOwner = this
+        fragmentBinding = SettingFragmentBinding.inflate(inflater, container, false).apply {
+            viewModel = this@SettingFragment.viewModel
+            lifecycleOwner = this@SettingFragment
+
+        }
 
         return fragmentBinding.root
     }
@@ -44,108 +41,60 @@ class SettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setSupportActionBar(toolbar)
-        supportActionBar?.run {
-            setTitle(R.string.setting)
-            setDisplayHomeAsUpEnabled(true)
-            setDisplayShowTitleEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_back)
+        fragmentBinding.toolbar.setTitle(R.string.setting)
+        fragmentBinding.toolbar.setNavigationIcon(R.drawable.ic_back)
+        fragmentBinding.toolbar.setNavigationOnClickListener {
+            navigateUp()
         }
 
-        buttonExport.setOnClickListener {
-            exportAll()
-        }
-
-        buttonImport.setOnClickListener {
-            importAll()
-        }
-
-        buttonOpenSourceLicense.setOnClickListener {
+        fragmentBinding.buttonOpenSourceLicense.setOnClickListener {
             openOpenSourceLicenseFragment()
         }
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                navigateUp()
-
-                return true
-            }
+        viewModel.requestExportPermissionEvent.observe(viewLifecycleOwner) {
+            exportPermissionLauncher.launch(
+                    arrayOf(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+            )
         }
 
-        return super.onOptionsItemSelected(item)
+        viewModel.requestImportPermissionEvent.observe(viewLifecycleOwner) {
+            importPermissionLauncher.launch(
+                    arrayOf(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+            )
+        }
+
+        viewModel.toastEvent.observe(viewLifecycleOwner) {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
     }
+
+    fun Map<String, Boolean>.isAllGranted() = entries.map { it.value }.all { it }
 
     val exportPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-        permissions.entries.forEach {
-            Log.e("DEBUG", "${it.key} = ${it.value}")
-        }
-        val granted = permissions.entries.map {
-            it.value
-        }.all {
-            it
-        }
-
-        if (granted) {
-            exportAll()
+        if (permissions.isAllGranted()) {
+            viewModel.exportAll()
+        } else {
+            viewModel.toastEvent.value = "NO PERMISSIONS!"
         }
     }
+
     val importPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-        permissions.entries.forEach {
-            Log.e("DEBUG", "${it.key} = ${it.value}")
-        }
-        val granted = permissions.entries.map {
-            it.value
-        }.all {
-            it
-        }
-
-        if (granted) {
-            importAll()
-        }
-    }
-
-    fun checkPermission(): Boolean {
-        val read = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
-        val write = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-
-        return read == PackageManager.PERMISSION_GRANTED && write == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun exportAll() {
-        context?.let {
-            if (checkPermission()) {
-                viewModel.exportAll()
-            } else {
-                exportPermissionLauncher.launch(
-                        arrayOf(
-                                Manifest.permission.READ_EXTERNAL_STORAGE,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        )
-                )
-            }
-        }
-    }
-
-    private fun importAll() {
-        context?.let {
-            if (checkPermission()) {
-                viewModel.importAll()
-            } else {
-                importPermissionLauncher.launch(
-                        arrayOf(
-                                Manifest.permission.READ_EXTERNAL_STORAGE,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        )
-                )
-            }
+        if (permissions.isAllGranted()) {
+            viewModel.importAll()
+        } else {
+            viewModel.toastEvent.value = "NO PERMISSIONS!"
         }
     }
 
     private fun openOpenSourceLicenseFragment() {
-        SettingFragmentDirections.actionSettingFragmentToOpenSourceLicenseFragment().also {
-            navigate(it)
-        }
+        navigate(
+                SettingFragmentDirections.actionSettingFragmentToOpenSourceLicenseFragment()
+        )
     }
 }

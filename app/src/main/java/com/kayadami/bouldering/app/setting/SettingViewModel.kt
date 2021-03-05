@@ -1,49 +1,77 @@
 package com.kayadami.bouldering.app.setting
 
-import android.app.Application
 import android.view.View
-import android.widget.Toast
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.data.BoulderingDataSource
-import kotlinx.coroutines.CoroutineScope
+import com.kayadami.bouldering.utils.PermissionChecker2
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 class SettingViewModel @ViewModelInject constructor(
-        var context: Application,
-        var repository: BoulderingDataSource
+        val repository: BoulderingDataSource,
+        val permissionChecker: PermissionChecker2
 ) : ViewModel() {
 
     val progressVisibility = MutableLiveData<Int>()
 
-    fun exportAll() = CoroutineScope(Dispatchers.Main).launch {
-        progressVisibility.value = View.VISIBLE
+    val toastEvent = SingleLiveEvent<String>()
 
-        val isSuccess = withContext(Dispatchers.Default) { repository.exportAll() }
+    val requestExportPermissionEvent = SingleLiveEvent<Unit>()
 
-        progressVisibility.value = View.GONE
+    val requestImportPermissionEvent = SingleLiveEvent<Unit>()
 
-        if (isSuccess) {
-            Toast.makeText(context, "SUCCESS!", Toast.LENGTH_SHORT).show()
+    fun exportAll() = viewModelScope.launch(Dispatchers.Main) {
+        if (permissionChecker.check()) {
+            progressVisibility.value = View.VISIBLE
+
+            val isSuccess = try {
+                withContext(Dispatchers.IO) { repository.exportAll() }
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
+
+                false
+            }
+
+            progressVisibility.value = View.GONE
+
+            toastEvent.value = if (isSuccess) {
+                "SUCCESS!"
+            } else {
+                "FAIL!"
+            }
         } else {
-            Toast.makeText(context, "FAIL!", Toast.LENGTH_SHORT).show()
+            requestExportPermissionEvent.call()
         }
     }
 
-    fun importAll() = CoroutineScope(Dispatchers.Main).launch {
-        progressVisibility.value = View.VISIBLE
+    fun importAll() = viewModelScope.launch(Dispatchers.Main) {
+        if (permissionChecker.check()) {
+            progressVisibility.value = View.VISIBLE
 
-        val isSuccess = withContext(Dispatchers.Default) { repository.importAll() }
+            val isSuccess = try {
+                withContext(Dispatchers.IO) { repository.importAll() }
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
 
-        progressVisibility.value = View.GONE
+                false
+            }
 
-        if (isSuccess) {
-            Toast.makeText(context, "SUCCESS!", Toast.LENGTH_SHORT).show()
+            progressVisibility.value = View.GONE
+
+            toastEvent.value = if (isSuccess) {
+                "SUCCESS!"
+            } else {
+                "FAIL!"
+            }
         } else {
-            Toast.makeText(context, "FAIL!", Toast.LENGTH_SHORT).show()
+            requestImportPermissionEvent.call()
         }
     }
 }

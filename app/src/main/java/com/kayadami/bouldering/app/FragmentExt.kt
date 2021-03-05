@@ -36,10 +36,15 @@ fun Fragment.navigateUp() {
     }
 }
 
-fun Fragment.setSupportActionBar(toolbar: Toolbar) {
+fun Fragment.setSupportActionBar(toolbar: Toolbar): ActionBar? {
     val actionBarActivity = activity
-    if (actionBarActivity is AppCompatActivity) {
+
+    return if (actionBarActivity is AppCompatActivity) {
         actionBarActivity.setSupportActionBar(toolbar)
+
+        supportActionBar
+    } else {
+        null
     }
 }
 
