@@ -1,12 +1,14 @@
 package com.kayadami.bouldering.app.main
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.ViewModel
 import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.editor.data.Bouldering
 
-class MainViewModel(context: Application, val repository: BoulderingDataSource) : AndroidViewModel(context) {
+class MainViewModel @ViewModelInject constructor(
+        val repository: BoulderingDataSource
+) : ViewModel() {
 
     var photoPath: String? = null
 

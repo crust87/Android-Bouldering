@@ -12,7 +12,10 @@ import com.kayadami.bouldering.databinding.EmptyCellBinding
 import com.kayadami.bouldering.list.ViewHolder
 import com.kayadami.bouldering.utils.ImageLoader
 
-open class BoulderingAdapter(val viewModel: MainViewModel, val imageLoader: ImageLoader) : RecyclerView.Adapter<ViewHolder>() {
+open class BoulderingAdapter(
+        val viewModel: MainViewModel,
+        val imageLoader: ImageLoader
+) : RecyclerView.Adapter<ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val ratio = when (viewType) {

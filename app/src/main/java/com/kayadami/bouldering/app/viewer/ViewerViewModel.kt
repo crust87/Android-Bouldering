@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import androidx.databinding.ObservableBoolean
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.kayadami.bouldering.SingleLiveEvent
@@ -21,9 +22,9 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
-class ViewerViewModel(
-        private val repository: BoulderingDataSource,
-        private val imageGenerator: ImageGenerator
+class ViewerViewModel @ViewModelInject constructor(
+        val repository: BoulderingDataSource,
+        val imageGenerator: ImageGenerator
 ) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->

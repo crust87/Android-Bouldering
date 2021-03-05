@@ -2,6 +2,7 @@ package com.kayadami.bouldering.app.editor
 
 import android.view.View
 import androidx.databinding.ObservableBoolean
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.data.BoulderingDataSource
@@ -14,9 +15,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class EditorViewModel(
-        private val repository: BoulderingDataSource,
-        private val resourceManager: EditorResourceManager
+class EditorViewModel @ViewModelInject constructor(
+        val repository: BoulderingDataSource,
+        val resourceManager: EditorResourceManager
 ) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->

@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
@@ -16,13 +17,14 @@ import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
 import com.kayadami.bouldering.databinding.ViewerFragmentBinding
 import com.kayadami.bouldering.utils.PermissionChecker
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.viewer_fragment.*
-import org.koin.android.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class ViewerFragment : Fragment() {
 
     private lateinit var fragmentBinding: ViewerFragmentBinding
-    private val viewModel: ViewerViewModel by viewModel()
+    private val viewModel: ViewerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

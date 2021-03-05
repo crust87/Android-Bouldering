@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import android.view.*
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigate
@@ -20,15 +21,22 @@ import com.kayadami.bouldering.databinding.MainFragmentBinding
 import com.kayadami.bouldering.editor.data.Bouldering
 import com.kayadami.bouldering.list.GridSpacingItemDecoration
 import com.kayadami.bouldering.utils.FileUtil
+import com.kayadami.bouldering.utils.FragmentImageLoader
+import com.kayadami.bouldering.utils.ImageLoader
 import com.kayadami.bouldering.utils.PermissionChecker
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.main_fragment.*
-import org.koin.android.ext.android.get
-import org.koin.android.viewmodel.ext.android.viewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainFragment : Fragment() {
 
+    @Inject
+    @FragmentImageLoader
+    lateinit var imageLoader: ImageLoader
+
     private lateinit var fragmentBinding: MainFragmentBinding
-    private val viewModel: MainViewModel by viewModel()
+    private val viewModel: MainViewModel by viewModels()
 
     private lateinit var appBarManager: AppBarManager
     private val layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -45,7 +53,7 @@ class MainFragment : Fragment() {
         appBarManager = AppBarManager(activity)
         appBarManager.offsetBound = resources.getDimension(R.dimen.header_height) / 2
 
-        adapter = BoulderingAdapter(viewModel, get())
+        adapter = BoulderingAdapter(viewModel, imageLoader)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

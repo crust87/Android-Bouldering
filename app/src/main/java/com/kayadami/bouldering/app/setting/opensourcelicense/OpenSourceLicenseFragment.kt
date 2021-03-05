@@ -13,11 +13,12 @@ import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
 import com.kayadami.bouldering.data.BoulderingDataSource
 import kotlinx.android.synthetic.main.open_source_license_fragment.*
-import org.koin.android.ext.android.inject
+import javax.inject.Inject
 
 class OpenSourceLicenseFragment : Fragment() {
 
-    private val repository: BoulderingDataSource by inject()
+    @Inject
+    lateinit var repository: BoulderingDataSource
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

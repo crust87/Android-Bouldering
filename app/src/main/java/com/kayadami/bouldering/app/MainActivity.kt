@@ -3,7 +3,9 @@ package com.kayadami.bouldering.app
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.kayadami.bouldering.R
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
