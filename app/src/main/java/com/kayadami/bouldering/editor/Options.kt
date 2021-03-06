@@ -28,7 +28,7 @@ class Options {
         observers.add(o)
     }
 
-    fun addOptionObserver(action: ()->Unit) {
+    fun addOptionObserver(action: () -> Unit) {
         observers.add(object: OptionObserver {
             override fun onBoundChanged() {
                 action()
