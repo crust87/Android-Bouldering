@@ -2,7 +2,6 @@ package com.kayadami.bouldering.app.viewer
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.EditorInfo
@@ -18,9 +17,7 @@ import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.databinding.ViewerFragmentBinding
 import com.kayadami.bouldering.utils.PermissionChecker
-import com.kayadami.bouldering.utils.PermissionChecker2.Companion.isAllGranted
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.viewer_fragment.*
 
 @AndroidEntryPoint
 class ViewerFragment : Fragment() {
@@ -85,12 +82,12 @@ class ViewerFragment : Fragment() {
 
         with(fragmentBinding.editorView) {
             setOnClickListener {
-                if (textTitle.isFocusableInTouchMode) {
+                if (fragmentBinding.textTitle.isFocusableInTouchMode) {
                     hideKeyboard()
-                    textTitle.isFocusable = false
-                    viewModel.setTitle(textTitle.text.toString())
+                    fragmentBinding.textTitle.isFocusable = false
+                    viewModel.setTitle(fragmentBinding.textTitle.text.toString())
                 } else {
-                    viewModel.isShow.set(!viewModel.isShow.get())
+                    viewModel.toggleInfoVisibility()
                 }
             }
 
@@ -147,6 +144,10 @@ class ViewerFragment : Fragment() {
             )
         }
 
+        viewModel.navigateUpEvent.observe(viewLifecycleOwner) {
+            navigateUp()
+        }
+
         viewModel.start(args.boulderingId)
     }
 
@@ -178,7 +179,6 @@ class ViewerFragment : Fragment() {
                 .setMessage(R.string.alert_delete)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     viewModel.remove()
-                    navigateUp()
                 }
                 .setNegativeButton(android.R.string.no, null)
                 .show()
