@@ -1,19 +1,21 @@
 package com.kayadami.bouldering.app.editor
 
 import android.view.View
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.editor.EditorView
 import com.kayadami.bouldering.editor.HolderBox
 import com.kayadami.bouldering.editor.data.Bouldering
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
+import javax.inject.Inject
 
-class EditorViewModel @ViewModelInject constructor(
+@HiltViewModel
+class EditorViewModel @Inject constructor(
         val repository: BoulderingDataSource,
         val resourceManager: EditorResourceManager
 ) : ViewModel() {

@@ -5,9 +5,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import android.view.View
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.editor.ImageGenerateException
@@ -16,13 +14,16 @@ import com.kayadami.bouldering.editor.data.Bouldering
 import com.kayadami.bouldering.utils.DateUtils
 import com.kayadami.bouldering.utils.FileUtil
 import com.kayadami.bouldering.utils.PermissionChecker2
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import javax.inject.Inject
 
-class ViewerViewModel @ViewModelInject constructor(
+@HiltViewModel
+class ViewerViewModel @Inject constructor(
         val repository: BoulderingDataSource,
         val imageGenerator: ImageGenerator,
         val permissionChecker: PermissionChecker2
@@ -125,7 +126,7 @@ class ViewerViewModel @ViewModelInject constructor(
 
             openShareEvent.value = Intent.createChooser(intent, "Share Image")
         } catch (e: Exception) {
-            FirebaseCrashlytics.getInstance().recordException(e)
+            // TODO Record Exception
 
             toastEvent.value = e.message
         }
@@ -162,7 +163,7 @@ class ViewerViewModel @ViewModelInject constructor(
 
                 finishSaveEvent.value = path
             } catch (e: Exception) {
-                FirebaseCrashlytics.getInstance().recordException(e)
+                // TODO Record Exception
 
                 toastEvent.value = e.message
             }

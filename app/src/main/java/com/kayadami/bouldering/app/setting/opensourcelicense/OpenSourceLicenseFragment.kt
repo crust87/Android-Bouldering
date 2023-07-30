@@ -13,7 +13,6 @@ import com.kayadami.bouldering.app.supportActionBar
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.databinding.OpenSourceLicenseFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.open_source_license_fragment.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -39,7 +38,7 @@ class OpenSourceLicenseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(fragmentBinding.toolbar)
         supportActionBar?.run {
             setTitle(R.string.open_source_license)
             setDisplayHomeAsUpEnabled(true)

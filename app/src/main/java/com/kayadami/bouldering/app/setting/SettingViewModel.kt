@@ -1,20 +1,20 @@
 package com.kayadami.bouldering.app.setting
 
 import android.view.View
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.utils.PermissionChecker2
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.Exception
+import javax.inject.Inject
 
-class SettingViewModel @ViewModelInject constructor(
+@HiltViewModel
+class SettingViewModel @Inject constructor(
         val repository: BoulderingDataSource,
         val permissionChecker: PermissionChecker2
 ) : ViewModel() {
@@ -34,7 +34,7 @@ class SettingViewModel @ViewModelInject constructor(
             val isSuccess = try {
                 withContext(Dispatchers.IO) { repository.exportAll() }
             } catch (e: Exception) {
-                FirebaseCrashlytics.getInstance().recordException(e)
+                // TODO Record Exception
 
                 false
             }
@@ -58,7 +58,7 @@ class SettingViewModel @ViewModelInject constructor(
             val isSuccess = try {
                 withContext(Dispatchers.IO) { repository.importAll() }
             } catch (e: Exception) {
-                FirebaseCrashlytics.getInstance().recordException(e)
+                // TODO Record Exception
 
                 false
             }

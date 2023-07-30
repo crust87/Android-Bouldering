@@ -26,7 +26,6 @@ import com.kayadami.bouldering.image.FragmentImageLoader
 import com.kayadami.bouldering.image.ImageLoader
 import com.kayadami.bouldering.utils.PermissionChecker
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.main_fragment.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -85,13 +84,13 @@ class MainFragment : Fragment() {
             this@MainFragment.openGallery()
         }
 
-        recyclerView.layoutManager = layoutManager
-        recyclerView.addItemDecoration(itemDecoration)
-        recyclerView.adapter = adapter
+        fragmentBinding.recyclerView.layoutManager = layoutManager
+        fragmentBinding.recyclerView.addItemDecoration(itemDecoration)
+        fragmentBinding.recyclerView.adapter = adapter
 
-        appBar.addOnOffsetChangedListener(appBarManager)
+        fragmentBinding.appBar.addOnOffsetChangedListener(appBarManager)
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(fragmentBinding.toolbar)
         supportActionBar?.title = ""
 
         setOrientation(resources.configuration.orientation)
@@ -102,9 +101,9 @@ class MainFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
 
-        recyclerView.layoutManager = null
-        recyclerView.removeItemDecoration(itemDecoration)
-        appBar.removeOnOffsetChangedListener(appBarManager)
+        fragmentBinding.recyclerView.layoutManager = null
+        fragmentBinding.recyclerView.removeItemDecoration(itemDecoration)
+        fragmentBinding.appBar.removeOnOffsetChangedListener(appBarManager)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
