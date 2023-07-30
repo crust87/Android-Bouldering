@@ -1,11 +1,9 @@
 package com.kayadami.bouldering.data
 
-import android.util.Log
 import com.kayadami.bouldering.app.setting.opensourcelicense.OpenSourceLicense
 import com.kayadami.bouldering.editor.data.Bouldering
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class BoulderingRepository(var preferences: PreferencesDataSource, var storage: StorageDataSource) : BoulderingDataSource {

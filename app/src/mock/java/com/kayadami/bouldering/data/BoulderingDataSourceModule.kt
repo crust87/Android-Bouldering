@@ -10,17 +10,11 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object BoulderingModule {
+object BoulderingDataSourceModule {
 
     @Provides
     @Singleton
-    fun providePreferencesDataSource(
-            @ApplicationContext context: Context
-    ) = PreferencesDataSource(context)
-
-    @Provides
-    @Singleton
-    fun provideStorageDataSource(
-            @ApplicationContext context: Context
-    ) = StorageDataSource(context)
+    fun provideBoulderingDataSource(
+        @ApplicationContext context: Context
+    ): BoulderingDataSource = BoulderingTestRepository(context)
 }

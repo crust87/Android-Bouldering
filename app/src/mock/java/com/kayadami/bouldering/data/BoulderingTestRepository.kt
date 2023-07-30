@@ -5,7 +5,6 @@ import com.google.gson.Gson
 import com.kayadami.bouldering.app.setting.opensourcelicense.OpenSourceLicense
 import com.kayadami.bouldering.editor.data.Bouldering
 import com.kayadami.bouldering.utils.FileUtil
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.FileOutputStream
@@ -47,10 +46,8 @@ class BoulderingTestRepository(context: Context) : BoulderingDataSource {
         }
     }
 
-    override fun list(): Flow<List<Bouldering>> {
-        return flow {
-            emit(boulderingList)
-        }
+    override fun list() = flow {
+        emit(boulderingList)
     }
 
     override operator fun get(createDate: Long): Bouldering? {
