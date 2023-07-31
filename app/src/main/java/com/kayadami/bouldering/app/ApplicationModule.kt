@@ -26,4 +26,10 @@ object ApplicationModule {
     fun providePermissionChecker(
             @ApplicationContext context: Context
     ) = PermissionChecker2(context)
+
+    @Provides
+    @Singleton
+    fun provideResources(
+        @ApplicationContext context: Context
+    ) = context.resources
 }

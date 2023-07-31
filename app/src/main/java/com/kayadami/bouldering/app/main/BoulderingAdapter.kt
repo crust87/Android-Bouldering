@@ -9,13 +9,18 @@ import com.kayadami.bouldering.constants.Orientation
 import com.kayadami.bouldering.databinding.BoulderingCellBinding
 import com.kayadami.bouldering.databinding.EmptyCellBinding
 import com.kayadami.bouldering.editor.data.Bouldering
+import com.kayadami.bouldering.image.FragmentImageLoader
 import com.kayadami.bouldering.image.ImageLoader
 import com.kayadami.bouldering.list.ViewHolder
+import dagger.hilt.android.scopes.FragmentScoped
+import javax.inject.Inject
 
-open class BoulderingAdapter(
-        val viewModel: MainViewModel,
-        val imageLoader: ImageLoader
+@FragmentScoped
+open class BoulderingAdapter @Inject constructor(
+        @FragmentImageLoader val imageLoader: ImageLoader
 ) : RecyclerView.Adapter<ViewHolder>() {
+
+    private var _listener: BoulderingItemEvent? = null
 
     val list = ArrayList<Bouldering>()
 
@@ -74,7 +79,7 @@ open class BoulderingAdapter(
         init {
             binding.setListener {
                 binding.bouldering?.let {
-                    viewModel.openBoulderingEvent.value = it
+                    _listener?.onClick(it)
                 }
             }
         }
@@ -98,5 +103,21 @@ open class BoulderingAdapter(
         override fun recycle() {
             // DO NOTHING
         }
+    }
+
+    fun setBoulderingItemEventListener(l: ((bouldering: Bouldering) -> Unit)?) {
+        _listener = if (l == null) {
+            null
+        } else {
+            object: BoulderingItemEvent {
+                override fun onClick(bouldering: Bouldering) {
+                    l.invoke(bouldering)
+                }
+            }
+        }
+    }
+
+    interface BoulderingItemEvent {
+        fun onClick(bouldering: Bouldering)
     }
 }

@@ -21,6 +21,17 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object FileUtil {
+    
+    @Throws(IOException::class)
+    fun createImageFile(directory: File?): File? {
+        directory ?: return null
+
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageFileName = "JPEG_" + timeStamp + "_"
+        val image = File.createTempFile(imageFileName, ".jpg", directory)
+
+        return image
+    }
 
     val applicationDirectory: File?
         get() {
@@ -101,16 +112,5 @@ object FileUtil {
         br.close()
 
         return text.toString()
-    }
-
-    @Throws(IOException::class)
-    fun createImageFile(directory: File?): File? {
-        directory ?: return null
-
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val imageFileName = "JPEG_" + timeStamp + "_"
-        val image = File.createTempFile(imageFileName, ".jpg", directory)
-
-        return image
     }
 }

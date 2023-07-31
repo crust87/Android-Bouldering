@@ -15,8 +15,6 @@ class MainViewModel @Inject constructor(
         val repository: BoulderingDataSource
 ) : ViewModel() {
 
-    var photoPath: String? = null
-
     val list: LiveData<List<Bouldering>> by lazy {
         repository.list().asLiveData(viewModelScope.coroutineContext)
     }
@@ -26,10 +24,10 @@ class MainViewModel @Inject constructor(
     val openGalleryEvent = SingleLiveEvent<Unit>()
 
     fun openCamera() {
-        openCameraEvent.call()
+        openCameraEvent.value = Unit
     }
 
     fun openGallery() {
-        openGalleryEvent.call()
+        openGalleryEvent.value = Unit
     }
 }
