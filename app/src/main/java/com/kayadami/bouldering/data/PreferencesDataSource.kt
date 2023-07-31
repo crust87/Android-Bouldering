@@ -6,10 +6,14 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.kayadami.bouldering.utils.SharedPrefsHelper
 import com.kayadami.bouldering.editor.data.Bouldering
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PreferencesDataSource(private val context: Context) {
+@Singleton
+class PreferencesDataSource @Inject constructor(@ApplicationContext val context: Context) {
 
     companion object {
         const val KEY_PREFERENCES_NAME = "bouldering"
@@ -18,13 +22,17 @@ class PreferencesDataSource(private val context: Context) {
 
     private val gson: Gson = Gson()
     private var boulderingList: ArrayList<Bouldering>
-    private val sharedPrefsHelper: SharedPrefsHelper = SharedPrefsHelper(context.getSharedPreferences(KEY_PREFERENCES_NAME, Context.MODE_PRIVATE))
+    private val sharedPrefsHelper: SharedPrefsHelper =
+        SharedPrefsHelper(context.getSharedPreferences(KEY_PREFERENCES_NAME, Context.MODE_PRIVATE))
 
     init {
         val listString = sharedPrefsHelper[KEY_DATA_LIST, "[]"]
 
         if (!TextUtils.isEmpty(listString)) {
-            boulderingList = gson.fromJson<ArrayList<Bouldering>>(listString, object : TypeToken<ArrayList<Bouldering>>() {}.type) ?: ArrayList()
+            boulderingList = gson.fromJson<ArrayList<Bouldering>>(
+                listString,
+                object : TypeToken<ArrayList<Bouldering>>() {}.type
+            ) ?: ArrayList()
         } else {
             boulderingList = ArrayList()
         }

@@ -2,8 +2,7 @@ package com.kayadami.bouldering.app
 
 import android.content.Context
 import android.view.WindowManager
-import com.kayadami.bouldering.app.editor.EditorResourceManager
-import com.kayadami.bouldering.editor.ImageGenerator
+import androidx.core.content.ContextCompat
 import com.kayadami.bouldering.utils.PermissionChecker2
 import dagger.Module
 import dagger.Provides
@@ -18,15 +17,9 @@ object ApplicationModule {
 
     @Provides
     @Singleton
-    fun provideEditorResourceManager(
-            @ApplicationContext context: Context
-    ) = EditorResourceManager(context)
-
-    @Provides
-    @Singleton
-    fun provideImageGenerator(
-            @ApplicationContext context: Context
-    ) = ImageGenerator(context.getSystemService(Context.WINDOW_SERVICE) as WindowManager)
+    fun provideWindowManager(@ApplicationContext context: Context): WindowManager {
+        return ContextCompat.getSystemService(context, WindowManager::class.java)!!
+    }
 
     @Provides
     @Singleton

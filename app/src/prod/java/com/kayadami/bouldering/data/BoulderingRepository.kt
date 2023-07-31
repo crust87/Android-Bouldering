@@ -5,8 +5,14 @@ import com.kayadami.bouldering.editor.data.Bouldering
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class BoulderingRepository(var preferences: PreferencesDataSource, var storage: StorageDataSource) : BoulderingDataSource {
+@Singleton
+class BoulderingRepository @Inject constructor(
+    var preferences: PreferencesDataSource,
+    var storage: StorageDataSource
+) : BoulderingDataSource {
 
     private var _listChannel: Channel<List<Bouldering>>? = null
 
@@ -59,19 +65,31 @@ class BoulderingRepository(var preferences: PreferencesDataSource, var storage: 
         }
     }
 
-    override fun getOpenSourceList() : List<OpenSourceLicense> {
+    override fun getOpenSourceList(): List<OpenSourceLicense> {
         return ArrayList<OpenSourceLicense>().apply {
-            add(OpenSourceLicense("Android Architecture Blueprints",
+            add(
+                OpenSourceLicense(
+                    "Android Architecture Blueprints",
                     "https://github.com/googlesamples/android-architecture",
-                    "Copyright 2019 Google Inc.\nApache License, Version 2.0"))
+                    "Copyright 2019 Google Inc.\nApache License, Version 2.0"
+                )
+            )
 
-            add(OpenSourceLicense("PhotoView",
+            add(
+                OpenSourceLicense(
+                    "PhotoView",
                     "https://github.com/chrisbanes/PhotoView",
-                    "Copyright 2011, 2012 Chris Banes.\nApache License, Version 2.0"))
+                    "Copyright 2011, 2012 Chris Banes.\nApache License, Version 2.0"
+                )
+            )
 
-            add(OpenSourceLicense("Color Picker",
+            add(
+                OpenSourceLicense(
+                    "Color Picker",
                     "https://github.com/QuadFlask/colorpicker",
-                    "Copyright 2014-2017 QuadFlask.\nApache License, Version 2.0"))
+                    "Copyright 2014-2017 QuadFlask.\nApache License, Version 2.0"
+                )
+            )
         }
     }
 }

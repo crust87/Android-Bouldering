@@ -7,8 +7,11 @@ import com.kayadami.bouldering.editor.data.Bouldering
 import java.io.FileInputStream
 import java.io.InputStream
 import java.lang.NullPointerException
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ImageGenerator(private val windowManager: WindowManager) {
+@Singleton
+class ImageGenerator @Inject constructor (val windowManager: WindowManager) {
 
     private fun createImage(imagePath: String) : Bitmap {
         try {

@@ -4,12 +4,16 @@ import android.content.Context
 import com.google.gson.Gson
 import com.kayadami.bouldering.editor.data.Bouldering
 import com.kayadami.bouldering.utils.FileUtil
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class StorageDataSource(private val context: Context) {
+@Singleton
+class StorageDataSource @Inject constructor(@ApplicationContext val context: Context) {
 
     private val gson: Gson = Gson()
 
@@ -60,7 +64,7 @@ class StorageDataSource(private val context: Context) {
             if (!f.isDirectory) {
                 continue
             }
-            
+
             try {
                 val problemSource = File(f, "bouldering.json")
                 val imageSource = File(f, "image.jpg")

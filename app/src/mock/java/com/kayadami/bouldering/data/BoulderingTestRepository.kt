@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.kayadami.bouldering.app.setting.opensourcelicense.OpenSourceLicense
 import com.kayadami.bouldering.editor.data.Bouldering
 import com.kayadami.bouldering.utils.FileUtil
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.FileOutputStream
@@ -12,8 +13,13 @@ import java.io.IOException
 import java.io.InputStream
 import java.nio.charset.Charset
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class BoulderingTestRepository(context: Context) : BoulderingDataSource {
+@Singleton
+class BoulderingTestRepository @Inject constructor(
+    @ApplicationContext context: Context
+) : BoulderingDataSource {
 
     private val boulderingList = ArrayList<Bouldering>()
     private val gson: Gson = Gson()
@@ -21,7 +27,10 @@ class BoulderingTestRepository(context: Context) : BoulderingDataSource {
     init {
         context.assets.list("mock")?.all {
             try {
-                val problem = gson.fromJson(context.assets.open("mock/$it/bouldering.json").readTextAndClose(), Bouldering::class.java)
+                val problem = gson.fromJson(
+                    context.assets.open("mock/$it/bouldering.json").readTextAndClose(),
+                    Bouldering::class.java
+                )
                 val problemDir = File(context.filesDir, problem.createdDate.toString())
 
                 if (!problemDir.exists()) {
@@ -31,8 +40,14 @@ class BoulderingTestRepository(context: Context) : BoulderingDataSource {
                 val imageDest = File(problemDir, "image.jpg")
                 val thumbDest = File(problemDir, "thumb.jpg")
 
-                FileUtil.copy(context.assets.open("mock/$it/image.jpg"), FileOutputStream(imageDest))
-                FileUtil.copy(context.assets.open("mock/$it/thumb.jpg"), FileOutputStream(thumbDest))
+                FileUtil.copy(
+                    context.assets.open("mock/$it/image.jpg"),
+                    FileOutputStream(imageDest)
+                )
+                FileUtil.copy(
+                    context.assets.open("mock/$it/thumb.jpg"),
+                    FileOutputStream(thumbDest)
+                )
 
                 problem.path = imageDest.absolutePath
                 problem.thumb = thumbDest.absolutePath
@@ -79,17 +94,29 @@ class BoulderingTestRepository(context: Context) : BoulderingDataSource {
 
     override fun getOpenSourceList(): List<OpenSourceLicense> {
         return ArrayList<OpenSourceLicense>().apply {
-            add(OpenSourceLicense("Android Architecture Blueprints",
+            add(
+                OpenSourceLicense(
+                    "Android Architecture Blueprints",
                     "https://github.com/googlesamples/android-architecture",
-                    "Copyright 2019 Google Inc.\nApache License, Version 2.0"))
+                    "Copyright 2019 Google Inc.\nApache License, Version 2.0"
+                )
+            )
 
-            add(OpenSourceLicense("PhotoView",
+            add(
+                OpenSourceLicense(
+                    "PhotoView",
                     "https://github.com/chrisbanes/PhotoView",
-                    "Copyright 2011, 2012 Chris Banes.\nApache License, Version 2.0"))
+                    "Copyright 2011, 2012 Chris Banes.\nApache License, Version 2.0"
+                )
+            )
 
-            add(OpenSourceLicense("Color Picker",
+            add(
+                OpenSourceLicense(
+                    "Color Picker",
                     "https://github.com/QuadFlask/colorpicker",
-                    "Copyright 2014-2017 QuadFlask.\nApache License, Version 2.0"))
+                    "Copyright 2014-2017 QuadFlask.\nApache License, Version 2.0"
+                )
+            )
         }
     }
 }
