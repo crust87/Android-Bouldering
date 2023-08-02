@@ -1,11 +1,20 @@
 package com.kayadami.bouldering.app.viewer
 
+import android.content.ContentResolver
+import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
+import android.provider.MediaStore
+import android.util.Log
 import android.view.View
-import androidx.lifecycle.*
+import android.widget.EditText
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.editor.ImageGenerateException
@@ -13,20 +22,20 @@ import com.kayadami.bouldering.editor.ImageGenerator
 import com.kayadami.bouldering.editor.data.Bouldering
 import com.kayadami.bouldering.utils.DateUtils
 import com.kayadami.bouldering.utils.FileUtil
-import com.kayadami.bouldering.utils.PermissionChecker2
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class ViewerViewModel @Inject constructor(
-        val repository: BoulderingDataSource,
-        val imageGenerator: ImageGenerator,
-        val permissionChecker: PermissionChecker2
+    val repository: BoulderingDataSource,
+    val contentResolver: ContentResolver,
+    val imageGenerator: ImageGenerator,
 ) : ViewModel() {
 
     val bouldering = MutableLiveData<Bouldering>()
@@ -58,9 +67,11 @@ class ViewerViewModel @Inject constructor(
 
     val finishSaveEvent = SingleLiveEvent<String>()
 
-    val requestSavePermissionEvent = SingleLiveEvent<Unit>()
-
     val navigateUpEvent = SingleLiveEvent<Unit>()
+
+    val openKeyboardEvent = SingleLiveEvent<EditText>()
+
+    val hideKeyboardEvent = SingleLiveEvent<Unit>()
 
     fun start(id: Long) {
         bouldering.value = repository[id]
@@ -101,7 +112,10 @@ class ViewerViewModel @Inject constructor(
             val uri = withContext(Dispatchers.Default) {
                 val bitmap = imageGenerator.createImage(bouldering.value!!)
 
-                val outFile = File(FileUtil.applicationDirectory, "share_" + System.currentTimeMillis() + ".jpg")
+                val outFile = File(
+                    FileUtil.applicationDirectory,
+                    "share_" + System.currentTimeMillis() + ".jpg"
+                )
 
                 if (!outFile.createNewFile()) {
                     throw ImageGenerateException("Fail to Create File!")
@@ -135,49 +149,62 @@ class ViewerViewModel @Inject constructor(
     }
 
     fun saveImage() = viewModelScope.launch(Dispatchers.Main) {
-        if (permissionChecker.checkWrite()) {
-            isProgress.value = true
+        isProgress.value = true
 
-            try {
-                val path = withContext(Dispatchers.IO) {
-                    val bitmap = imageGenerator.createImage(bouldering.value!!)
+        try {
+            val result = withContext(Dispatchers.IO) {
+                val bitmap = imageGenerator.createImage(bouldering.value!!)
 
-                    val dir = File(Environment.getExternalStorageDirectory(), "Bouldering")
-                    if (!dir.exists()) {
-                        dir.mkdir()
-                    }
-
-                    val outFile = File(dir, "bouldering_" + System.currentTimeMillis() + ".jpg")
-
-                    if (!outFile.createNewFile()) {
-                        throw ImageGenerateException("Fail to Create File!")
-                    }
-
-                    val outStream = FileOutputStream(outFile)
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outStream)
-                    outStream.flush()
-                    outStream.close()
-
-                    outFile.absolutePath
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.Images.ImageColumns.DISPLAY_NAME, "bouldering_" + System.currentTimeMillis() + ".jpg")
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM)
                 }
 
-                finishSaveEvent.value = path
-            } catch (e: Exception) {
-                // TODO Record Exception
+                val uri = contentResolver.insert(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    contentValues
+                ) ?: throw IOException("Failed to create new MediaStore record.")
 
-                toastEvent.value = e.message
-            }
+                contentResolver.openOutputStream(uri)?.use {
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, it)
 
-            isProgress.value = false
+                    it.close()
+                } ?: throw IOException("Failed to open Output Stream.")
+
+                uri.path
+            } ?: throw IOException("Failed to create image")
+
+            finishSaveEvent.value = result
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            toastEvent.value = e.message
+        }
+
+        isProgress.value = false
+    }
+
+    fun toggleInfoVisible(view: EditText) {
+
+        if (view.isFocusableInTouchMode) {
+            hideKeyboardEvent.value = Unit
+            view.isFocusable = false
+            setTitle(view.text.toString())
         } else {
-            requestSavePermissionEvent.call()
+            infoVisibility.value = when (infoVisibility.value) {
+                View.VISIBLE -> View.GONE
+                else -> View.VISIBLE
+            }
         }
     }
 
-    fun toggleInfoVisibility() {
-        infoVisibility.value = when (infoVisibility.value) {
-            View.VISIBLE -> View.GONE
-            else -> View.VISIBLE
+    fun enableEdit(view: EditText) {
+        if (!view.isFocusableInTouchMode) {
+            view.isFocusableInTouchMode = true
+            if (view.requestFocus()) {
+                openKeyboardEvent.value = view
+            }
         }
     }
 }

@@ -22,6 +22,7 @@
             android:id="@+id/editorView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:onClick="@{() -> viewModel.toggleInfoVisible(textTitle)}"
             app:anchor_size="20dp"
             app:bouldering="@{viewModel.bouldering}"
             app:box_color="#ffffff"
@@ -79,6 +80,7 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:visibility="@{viewModel.infoVisibility ?? View.VISIBLE}"
+            android:onClick="@{() -> viewModel.enableEdit(textTitle)}"
             app:layout_constraintBottom_toBottomOf="@id/imageSolved"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/imageSolved" />

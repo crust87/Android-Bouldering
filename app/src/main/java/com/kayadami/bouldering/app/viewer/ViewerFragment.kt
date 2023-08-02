@@ -1,13 +1,11 @@
 package com.kayadami.bouldering.app.viewer
 
-import android.Manifest
 import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -16,30 +14,31 @@ import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.databinding.ViewerFragmentBinding
-import com.kayadami.bouldering.utils.PermissionChecker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ViewerFragment : Fragment() {
 
-    private lateinit var fragmentBinding: ViewerFragmentBinding
+    private lateinit var binding: ViewerFragmentBinding
     private val viewModel: ViewerViewModel by viewModels()
 
     val args: ViewerFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        fragmentBinding = ViewerFragmentBinding.inflate(inflater, container, false).apply {
+        binding = ViewerFragmentBinding.inflate(inflater, container, false).apply {
             viewModel = this@ViewerFragment.viewModel
             lifecycleOwner = this@ViewerFragment
         }
 
-        return fragmentBinding.root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(fragmentBinding.toolbar) {
+        binding.editorView.setIsViewer(true)
+
+        with(binding.toolbar) {
             title = ""
             inflateMenu(R.menu.menu_viewer)
             setNavigationIcon(R.drawable.ic_back)
@@ -63,11 +62,6 @@ class ViewerFragment : Fragment() {
                     }
                     R.id.actionSaveAsImage -> {
                         viewModel.saveImage()
-                        if (PermissionChecker.check(requireContext())) {
-                            viewModel.saveImage()
-                        } else {
-                            PermissionChecker.request(this@ViewerFragment, PermissionChecker.REQUEST_SAVE)
-                        }
 
                         true
                     }
@@ -80,30 +74,7 @@ class ViewerFragment : Fragment() {
             }
         }
 
-        with(fragmentBinding.editorView) {
-            setOnClickListener {
-                if (fragmentBinding.textTitle.isFocusableInTouchMode) {
-                    hideKeyboard()
-                    fragmentBinding.textTitle.isFocusable = false
-                    viewModel.setTitle(fragmentBinding.textTitle.text.toString())
-                } else {
-                    viewModel.toggleInfoVisibility()
-                }
-            }
-
-            setIsViewer(true)
-        }
-
-        with(fragmentBinding.textTitle) {
-            setOnClickListener {
-                if (!isFocusableInTouchMode) {
-                    isFocusableInTouchMode = true
-                    if (requestFocus()) {
-                        openKeyboard(this)
-                    }
-                }
-            }
-
+        with(binding.textTitle) {
             setOnEditorActionListener { _, id, e ->
                 if (id == EditorInfo.IME_ACTION_SEARCH || id == EditorInfo.IME_ACTION_DONE ||
                         e.action == KeyEvent.ACTION_DOWN && e.keyCode == KeyEvent.KEYCODE_ENTER) {
@@ -138,25 +109,19 @@ class ViewerFragment : Fragment() {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
 
-        viewModel.requestSavePermissionEvent.observe(viewLifecycleOwner) {
-            savePermissionLauncher.launch(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )
-        }
-
         viewModel.navigateUpEvent.observe(viewLifecycleOwner) {
             navigateUp()
         }
 
-        viewModel.start(args.boulderingId)
-    }
-
-    val savePermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        if (isGranted) {
-            viewModel.saveImage()
-        } else {
-            viewModel.toastEvent.value = "NO PERMISSIONS!"
+        viewModel.openKeyboardEvent.observe(viewLifecycleOwner) {
+            openKeyboard(it)
         }
+
+        viewModel.hideKeyboardEvent.observe(viewLifecycleOwner) {
+            hideKeyboard()
+        }
+
+        viewModel.start(args.boulderingId)
     }
 
     private fun openKeyboard(v: View) {

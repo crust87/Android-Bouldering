@@ -32,4 +32,10 @@ object ApplicationModule {
     fun provideResources(
         @ApplicationContext context: Context
     ) = context.resources
+
+    @Provides
+    @Singleton
+    fun provideContentResolver(
+        @ApplicationContext context: Context
+    ) = context.contentResolver
 }
