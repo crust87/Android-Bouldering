@@ -17,34 +17,34 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class EditorFragment : Fragment() {
 
-    private lateinit var fragmentBinding: EditorFragmentBinding
+    lateinit var binding: EditorFragmentBinding
 
-    private val viewModel: EditorViewModel by viewModels()
-
-    private var colorPickerDialog: AlertDialog? = null
+    val viewModel: EditorViewModel by viewModels()
 
     val aras: EditorFragmentArgs by navArgs()
 
+    var colorPickerDialog: AlertDialog? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        fragmentBinding = EditorFragmentBinding.inflate(inflater, container, false).apply {
+        binding = EditorFragmentBinding.inflate(inflater, container, false).apply {
             viewModel = this@EditorFragment.viewModel
             lifecycleOwner = this@EditorFragment
         }
 
-        return fragmentBinding.root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(fragmentBinding.toolbar) {
+        with(binding.toolbar) {
             inflateMenu(R.menu.menu_editor)
             setNavigationIcon(R.drawable.ic_back)
 
             setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.actionDone -> {
-                        viewModel.done(fragmentBinding.editorView)
+                        viewModel.done(binding.editorView)
 
                         true
                     }
@@ -58,18 +58,18 @@ class EditorFragment : Fragment() {
         }
 
         viewModel.sortEvent.observe(viewLifecycleOwner) {
-            fragmentBinding.editorView.sort()
-            fragmentBinding.editorView.invalidate()
+            binding.editorView.sort()
+            binding.editorView.invalidate()
         }
 
         viewModel.openColorChooserEvent.observe(viewLifecycleOwner) {
             colorPickerDialog = ColorPickerDialogBuilder
                     .with(context, R.style.colorPickerDialog)
-                    .initialColor(fragmentBinding.editorView.color)
+                    .initialColor(binding.editorView.color)
                     .wheelType(com.flask.colorpicker.ColorPickerView.WHEEL_TYPE.CIRCLE)
                     .density(6)
                     .lightnessSliderOnly()
-                    .setPositiveButton("OK") { _, selectedColor, _ -> fragmentBinding.editorView.color = selectedColor }
+                    .setPositiveButton("OK") { _, selectedColor, _ -> binding.editorView.color = selectedColor }
                     .build()
                     .apply {
                         show()
@@ -84,7 +84,7 @@ class EditorFragment : Fragment() {
             navigateUp()
         }
 
-        viewModel.load(aras.imagePath, aras.boulderingId)
+        viewModel.init(aras.imagePath, aras.boulderingId)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
