@@ -80,7 +80,7 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:visibility="@{viewModel.infoVisibility ?? View.VISIBLE}"
-            android:onClick="@{() -> viewModel.enableEdit(textTitle)}"
+            android:onClick="@{() -> viewModel.editTitle(textTitle)}"
             app:layout_constraintBottom_toBottomOf="@id/imageSolved"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/imageSolved" />

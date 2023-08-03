@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import androidx.lifecycle.LiveData
@@ -17,17 +16,13 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.data.BoulderingDataSource
-import com.kayadami.bouldering.editor.ImageGenerateException
 import com.kayadami.bouldering.editor.ImageGenerator
 import com.kayadami.bouldering.editor.data.Bouldering
 import com.kayadami.bouldering.utils.DateUtils
-import com.kayadami.bouldering.utils.FileUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 import javax.inject.Inject
 
@@ -73,7 +68,7 @@ class ViewerViewModel @Inject constructor(
 
     val hideKeyboardEvent = SingleLiveEvent<Unit>()
 
-    fun start(id: Long) {
+    fun init(id: Long) {
         bouldering.value = repository[id]
     }
 
@@ -102,32 +97,14 @@ class ViewerViewModel @Inject constructor(
             repository.remove(it)
         }
 
-        navigateUpEvent.call()
+        navigateUpEvent.value = Unit
     }
 
     fun openShare() = viewModelScope.launch(Dispatchers.Main) {
         isProgress.value = true
 
         try {
-            val uri = withContext(Dispatchers.Default) {
-                val bitmap = imageGenerator.createImage(bouldering.value!!)
-
-                val outFile = File(
-                    FileUtil.applicationDirectory,
-                    "share_" + System.currentTimeMillis() + ".jpg"
-                )
-
-                if (!outFile.createNewFile()) {
-                    throw ImageGenerateException("Fail to Create File!")
-                }
-
-                val outStream = FileOutputStream(outFile)
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outStream)
-                outStream.flush()
-                outStream.close()
-
-                Uri.parse(outFile.absolutePath)
-            }
+            val uri = saveImageInternal("share_")
 
             val intent = Intent()
             intent.action = Intent.ACTION_SEND
@@ -140,7 +117,7 @@ class ViewerViewModel @Inject constructor(
 
             openShareEvent.value = Intent.createChooser(intent, "Share Image")
         } catch (e: Exception) {
-            // TODO Record Exception
+            e.printStackTrace()
 
             toastEvent.value = e.message
         }
@@ -152,30 +129,9 @@ class ViewerViewModel @Inject constructor(
         isProgress.value = true
 
         try {
-            val result = withContext(Dispatchers.IO) {
-                val bitmap = imageGenerator.createImage(bouldering.value!!)
+            val uri = saveImageInternal()
 
-                val contentValues = ContentValues().apply {
-                    put(MediaStore.Images.ImageColumns.DISPLAY_NAME, "bouldering_" + System.currentTimeMillis() + ".jpg")
-                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM)
-                }
-
-                val uri = contentResolver.insert(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    contentValues
-                ) ?: throw IOException("Failed to create new MediaStore record.")
-
-                contentResolver.openOutputStream(uri)?.use {
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, it)
-
-                    it.close()
-                } ?: throw IOException("Failed to open Output Stream.")
-
-                uri.path
-            } ?: throw IOException("Failed to create image")
-
-            finishSaveEvent.value = result
+            finishSaveEvent.value = uri.path
         } catch (e: Exception) {
             e.printStackTrace()
 
@@ -186,7 +142,6 @@ class ViewerViewModel @Inject constructor(
     }
 
     fun toggleInfoVisible(view: EditText) {
-
         if (view.isFocusableInTouchMode) {
             hideKeyboardEvent.value = Unit
             view.isFocusable = false
@@ -199,12 +154,37 @@ class ViewerViewModel @Inject constructor(
         }
     }
 
-    fun enableEdit(view: EditText) {
+    fun editTitle(view: EditText) {
         if (!view.isFocusableInTouchMode) {
             view.isFocusableInTouchMode = true
             if (view.requestFocus()) {
                 openKeyboardEvent.value = view
             }
+        }
+    }
+
+    private suspend fun saveImageInternal(extraName: String = ""): Uri {
+        return withContext(Dispatchers.IO) {
+            val bitmap = imageGenerator.createImage(bouldering.value!!)
+
+            val contentValues = ContentValues().apply {
+                put(MediaStore.Images.ImageColumns.DISPLAY_NAME, "bouldering_${extraName}${System.currentTimeMillis()}.jpg")
+                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM)
+            }
+
+            val uri = contentResolver.insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                contentValues
+            ) ?: throw IOException("Failed to create new MediaStore record.")
+
+            contentResolver.openOutputStream(uri)?.use {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, it)
+
+                it.close()
+            } ?: throw IOException("Failed to open Output Stream.")
+
+            uri
         }
     }
 }
