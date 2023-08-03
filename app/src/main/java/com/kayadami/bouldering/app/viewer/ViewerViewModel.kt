@@ -1,32 +1,27 @@
 package com.kayadami.bouldering.app.viewer
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.net.Uri
-import android.os.Environment
 import android.view.View
-import androidx.lifecycle.*
+import android.widget.EditText
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.SingleLiveEvent
+import com.kayadami.bouldering.app.domain.SaveImageUseCase
 import com.kayadami.bouldering.data.BoulderingDataSource
-import com.kayadami.bouldering.editor.ImageGenerateException
-import com.kayadami.bouldering.editor.ImageGenerator
 import com.kayadami.bouldering.editor.data.Bouldering
 import com.kayadami.bouldering.utils.DateUtils
-import com.kayadami.bouldering.utils.FileUtil
-import com.kayadami.bouldering.utils.PermissionChecker2
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Inject
 
 @HiltViewModel
 class ViewerViewModel @Inject constructor(
-        val repository: BoulderingDataSource,
-        val imageGenerator: ImageGenerator,
-        val permissionChecker: PermissionChecker2
+    val repository: BoulderingDataSource,
+    val saveImageUseCase: SaveImageUseCase,
 ) : ViewModel() {
 
     val bouldering = MutableLiveData<Bouldering>()
@@ -58,11 +53,13 @@ class ViewerViewModel @Inject constructor(
 
     val finishSaveEvent = SingleLiveEvent<String>()
 
-    val requestSavePermissionEvent = SingleLiveEvent<Unit>()
-
     val navigateUpEvent = SingleLiveEvent<Unit>()
 
-    fun start(id: Long) {
+    val openKeyboardEvent = SingleLiveEvent<EditText>()
+
+    val hideKeyboardEvent = SingleLiveEvent<Unit>()
+
+    fun init(id: Long) {
         bouldering.value = repository[id]
     }
 
@@ -91,29 +88,14 @@ class ViewerViewModel @Inject constructor(
             repository.remove(it)
         }
 
-        navigateUpEvent.call()
+        navigateUpEvent.value = Unit
     }
 
     fun openShare() = viewModelScope.launch(Dispatchers.Main) {
         isProgress.value = true
 
         try {
-            val uri = withContext(Dispatchers.Default) {
-                val bitmap = imageGenerator.createImage(bouldering.value!!)
-
-                val outFile = File(FileUtil.applicationDirectory, "share_" + System.currentTimeMillis() + ".jpg")
-
-                if (!outFile.createNewFile()) {
-                    throw ImageGenerateException("Fail to Create File!")
-                }
-
-                val outStream = FileOutputStream(outFile)
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outStream)
-                outStream.flush()
-                outStream.close()
-
-                Uri.parse(outFile.absolutePath)
-            }
+            val uri = saveImageUseCase(bouldering.value!!, "share_")
 
             val intent = Intent()
             intent.action = Intent.ACTION_SEND
@@ -126,7 +108,7 @@ class ViewerViewModel @Inject constructor(
 
             openShareEvent.value = Intent.createChooser(intent, "Share Image")
         } catch (e: Exception) {
-            // TODO Record Exception
+            e.printStackTrace()
 
             toastEvent.value = e.message
         }
@@ -135,49 +117,40 @@ class ViewerViewModel @Inject constructor(
     }
 
     fun saveImage() = viewModelScope.launch(Dispatchers.Main) {
-        if (permissionChecker.checkWrite()) {
-            isProgress.value = true
+        isProgress.value = true
 
-            try {
-                val path = withContext(Dispatchers.IO) {
-                    val bitmap = imageGenerator.createImage(bouldering.value!!)
+        try {
+            val uri = saveImageUseCase(bouldering.value!!)
 
-                    val dir = File(Environment.getExternalStorageDirectory(), "Bouldering")
-                    if (!dir.exists()) {
-                        dir.mkdir()
-                    }
+            finishSaveEvent.value = uri.path
+        } catch (e: Exception) {
+            e.printStackTrace()
 
-                    val outFile = File(dir, "bouldering_" + System.currentTimeMillis() + ".jpg")
+            toastEvent.value = e.message
+        }
 
-                    if (!outFile.createNewFile()) {
-                        throw ImageGenerateException("Fail to Create File!")
-                    }
+        isProgress.value = false
+    }
 
-                    val outStream = FileOutputStream(outFile)
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outStream)
-                    outStream.flush()
-                    outStream.close()
-
-                    outFile.absolutePath
-                }
-
-                finishSaveEvent.value = path
-            } catch (e: Exception) {
-                // TODO Record Exception
-
-                toastEvent.value = e.message
-            }
-
-            isProgress.value = false
+    fun toggleInfoVisible(view: EditText) {
+        if (view.isFocusableInTouchMode) {
+            hideKeyboardEvent.value = Unit
+            view.isFocusable = false
+            setTitle(view.text.toString())
         } else {
-            requestSavePermissionEvent.call()
+            infoVisibility.value = when (infoVisibility.value) {
+                View.VISIBLE -> View.GONE
+                else -> View.VISIBLE
+            }
         }
     }
 
-    fun toggleInfoVisibility() {
-        infoVisibility.value = when (infoVisibility.value) {
-            View.VISIBLE -> View.GONE
-            else -> View.VISIBLE
+    fun editTitle(view: EditText) {
+        if (!view.isFocusableInTouchMode) {
+            view.isFocusableInTouchMode = true
+            if (view.requestFocus()) {
+                openKeyboardEvent.value = view
+            }
         }
     }
 }

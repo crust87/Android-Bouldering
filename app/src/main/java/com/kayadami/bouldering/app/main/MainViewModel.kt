@@ -19,7 +19,6 @@ class MainViewModel @Inject constructor(
         repository.list().asLiveData(viewModelScope.coroutineContext)
     }
 
-    val openBoulderingEvent = SingleLiveEvent<Bouldering>()
     val openCameraEvent = SingleLiveEvent<Unit>()
     val openGalleryEvent = SingleLiveEvent<Unit>()
 
