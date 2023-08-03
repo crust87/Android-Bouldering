@@ -117,15 +117,11 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         adapter.setBoulderingItemEventListener {
-            viewModel.openBoulderingEvent.value = it
+            openViewer(it)
         }
 
         viewModel.list.observe(viewLifecycleOwner) {
             adapter.setList(it)
-        }
-
-        viewModel.openBoulderingEvent.observe(viewLifecycleOwner) {
-            openViewer(it)
         }
 
         viewModel.openCameraEvent.observe(viewLifecycleOwner) {

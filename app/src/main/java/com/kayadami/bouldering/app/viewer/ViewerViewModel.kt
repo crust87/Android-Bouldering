@@ -1,12 +1,6 @@
 package com.kayadami.bouldering.app.viewer
 
-import android.content.ContentResolver
-import android.content.ContentValues
 import android.content.Intent
-import android.graphics.Bitmap
-import android.net.Uri
-import android.os.Environment
-import android.provider.MediaStore
 import android.view.View
 import android.widget.EditText
 import androidx.lifecycle.LiveData
@@ -15,22 +9,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.SingleLiveEvent
+import com.kayadami.bouldering.app.domain.SaveImageUseCase
 import com.kayadami.bouldering.data.BoulderingDataSource
-import com.kayadami.bouldering.editor.ImageGenerator
 import com.kayadami.bouldering.editor.data.Bouldering
 import com.kayadami.bouldering.utils.DateUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class ViewerViewModel @Inject constructor(
     val repository: BoulderingDataSource,
-    val contentResolver: ContentResolver,
-    val imageGenerator: ImageGenerator,
+    val saveImageUseCase: SaveImageUseCase,
 ) : ViewModel() {
 
     val bouldering = MutableLiveData<Bouldering>()
@@ -104,7 +95,7 @@ class ViewerViewModel @Inject constructor(
         isProgress.value = true
 
         try {
-            val uri = saveImageInternal("share_")
+            val uri = saveImageUseCase(bouldering.value!!, "share_")
 
             val intent = Intent()
             intent.action = Intent.ACTION_SEND
@@ -129,7 +120,7 @@ class ViewerViewModel @Inject constructor(
         isProgress.value = true
 
         try {
-            val uri = saveImageInternal()
+            val uri = saveImageUseCase(bouldering.value!!)
 
             finishSaveEvent.value = uri.path
         } catch (e: Exception) {
@@ -160,31 +151,6 @@ class ViewerViewModel @Inject constructor(
             if (view.requestFocus()) {
                 openKeyboardEvent.value = view
             }
-        }
-    }
-
-    private suspend fun saveImageInternal(extraName: String = ""): Uri {
-        return withContext(Dispatchers.IO) {
-            val bitmap = imageGenerator.createImage(bouldering.value!!)
-
-            val contentValues = ContentValues().apply {
-                put(MediaStore.Images.ImageColumns.DISPLAY_NAME, "bouldering_${extraName}${System.currentTimeMillis()}.jpg")
-                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM)
-            }
-
-            val uri = contentResolver.insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues
-            ) ?: throw IOException("Failed to create new MediaStore record.")
-
-            contentResolver.openOutputStream(uri)?.use {
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, it)
-
-                it.close()
-            } ?: throw IOException("Failed to open Output Stream.")
-
-            uri
         }
     }
 }
