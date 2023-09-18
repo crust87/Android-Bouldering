@@ -37,14 +37,26 @@ class BoulderingRepository @Inject constructor(
 
     override fun add(bouldering: Bouldering) {
         database.boulderingDao().insertAll(bouldering)
+
+        database.boulderingDao().getAll().let {
+            _listChannel?.trySend(it)
+        }
     }
 
     override fun update(bouldering: Bouldering) {
         database.boulderingDao().update(bouldering)
+
+        database.boulderingDao().getAll().let {
+            _listChannel?.trySend(it)
+        }
     }
 
     override fun remove(bouldering: Bouldering) {
         database.boulderingDao().delete(bouldering)
+
+        database.boulderingDao().getAll().let {
+            _listChannel?.trySend(it)
+        }
     }
 
     override fun getOpenSourceList(): List<OpenSourceLicense> {
