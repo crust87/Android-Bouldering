@@ -1,6 +1,5 @@
 package com.kayadami.bouldering.data
 
-import com.kayadami.bouldering.app.setting.opensourcelicense.OpenSourceLicense
 import com.kayadami.bouldering.data.type.Bouldering
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -56,34 +55,6 @@ class BoulderingRepository @Inject constructor(
 
         database.boulderingDao().getAll().let {
             _listChannel?.trySend(it)
-        }
-    }
-
-    override fun getOpenSourceList(): List<OpenSourceLicense> {
-        return ArrayList<OpenSourceLicense>().apply {
-            add(
-                OpenSourceLicense(
-                    "Android Architecture Blueprints",
-                    "https://github.com/googlesamples/android-architecture",
-                    "Copyright 2019 Google Inc.\nApache License, Version 2.0"
-                )
-            )
-
-            add(
-                OpenSourceLicense(
-                    "PhotoView",
-                    "https://github.com/chrisbanes/PhotoView",
-                    "Copyright 2011, 2012 Chris Banes.\nApache License, Version 2.0"
-                )
-            )
-
-            add(
-                OpenSourceLicense(
-                    "Color Picker",
-                    "https://github.com/QuadFlask/colorpicker",
-                    "Copyright 2014-2017 QuadFlask.\nApache License, Version 2.0"
-                )
-            )
         }
     }
 }
