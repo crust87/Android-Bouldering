@@ -28,6 +28,7 @@
 ## Update
 ### 2023-09-18
 - README.md 추가
+- Editor 코드 개선
 ### 2023-08-03
 - 라이브러리 최신화
 - Main, Viewer 코드 개선
