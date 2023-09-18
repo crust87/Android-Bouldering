@@ -13,9 +13,8 @@
    - '공유하기'를 통해 카카오톡 등으로 볼더링 문제를 공유할 수 있어요.
 
 ## Screenshot
-![Home Screenshot](./img/01.png "Home Screenshot")
-![Viewer Screenshot](./img/02.png "Viewer Screenshot")
-![Editor Screenshot](./img/03.png "Editor Screenshot")
+![Home Screenshot](./img/home.png "Home Screenshot")
+![Editor Screenshot](./img/editor.png "Editor Screenshot")
 
 ## 사용 기술
 - Kotlin-MVVM
