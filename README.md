@@ -21,22 +21,21 @@
 - Canvas
 - Hilt
 - Navigation Component
+- Room
 - Kotlin Coroutine
-- Gson
+- Moshi
 - Glide
 
 ## Update
 ### 2023-09-18
 - README.md 추가
 - Editor 코드 개선
+- Room 추가 및 Gson -> Moshi 마이그레이션
 ### 2023-08-03
 - 라이브러리 최신화
 - Main, Viewer 코드 개선
-- 이미지 저장 로직 11 업데이트 대응 
-
+- 이미지 저장 로직 11 업데이트 대응
 ## TODO
-- Editor 로직 개선
-- 파일 시스템 이용 로직 Room Migration, Gson -> Moshi
 - 테스트 코드 정상화 및 추가 테스트 작성
 - Android Jetpack Compose 버전
 - React Native 버전
