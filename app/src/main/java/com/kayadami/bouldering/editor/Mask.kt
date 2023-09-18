@@ -1,7 +1,7 @@
 package com.kayadami.bouldering.editor
 
 import android.graphics.*
-import com.kayadami.bouldering.editor.data.Holder
+import com.kayadami.bouldering.data.type.Holder
 
 class Mask (private var options: Options) {
 

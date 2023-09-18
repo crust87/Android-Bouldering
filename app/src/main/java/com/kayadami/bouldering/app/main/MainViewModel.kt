@@ -6,7 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.data.BoulderingDataSource
-import com.kayadami.bouldering.editor.data.Bouldering
+import com.kayadami.bouldering.data.type.Bouldering
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

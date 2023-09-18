@@ -2,10 +2,9 @@ package com.kayadami.bouldering.app.viewer
 
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.kayadami.bouldering.app.main.MainViewModel
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.editor.ImageGenerator
-import com.kayadami.bouldering.editor.data.Bouldering
+import com.kayadami.bouldering.data.type.Bouldering
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule

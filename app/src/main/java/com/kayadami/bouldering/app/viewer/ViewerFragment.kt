@@ -107,7 +107,7 @@ class ViewerFragment : Fragment() {
         }
 
         viewModel.openEditorEvent.observe(viewLifecycleOwner) {
-            openEditor(it)
+            openEditor(it.id)
         }
 
         viewModel.openShareEvent.observe(viewLifecycleOwner) {
@@ -165,7 +165,7 @@ class ViewerFragment : Fragment() {
             .show()
     }
 
-    private fun openEditor(id: Long) {
+    private fun openEditor(id: Int) {
         navigate(
             ViewerFragmentDirections.actionViewerFragmentToEditorFragment(id)
         )

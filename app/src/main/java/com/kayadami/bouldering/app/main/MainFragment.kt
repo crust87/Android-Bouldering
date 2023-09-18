@@ -27,7 +27,7 @@ import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
 import com.kayadami.bouldering.databinding.MainFragmentBinding
-import com.kayadami.bouldering.editor.data.Bouldering
+import com.kayadami.bouldering.data.type.Bouldering
 import com.kayadami.bouldering.image.FragmentImageLoader
 import com.kayadami.bouldering.image.ImageLoader
 import com.kayadami.bouldering.list.GridSpacingItemDecoration
@@ -180,7 +180,7 @@ class MainFragment : Fragment() {
 
     private fun openViewer(data: Bouldering) {
         MainFragmentDirections.actionMainFragmentToViewerFragment().apply {
-            boulderingId = data.createdDate
+            boulderingId = data.id
         }.also {
             navigate(it)
         }

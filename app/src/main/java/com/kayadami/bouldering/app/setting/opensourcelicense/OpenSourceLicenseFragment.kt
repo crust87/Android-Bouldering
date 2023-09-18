@@ -13,6 +13,7 @@ import com.kayadami.bouldering.app.supportActionBar
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.databinding.OpenSourceLicenseFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.ArrayList
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -46,7 +47,7 @@ class OpenSourceLicenseFragment : Fragment() {
             setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
-        fragmentBinding.recyclerView.adapter = OpenSourceLicenseAdapter(repository.getOpenSourceList())
+        fragmentBinding.recyclerView.adapter = OpenSourceLicenseAdapter(getOpenSourceList())
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -59,5 +60,33 @@ class OpenSourceLicenseFragment : Fragment() {
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    fun getOpenSourceList(): List<OpenSourceLicense> {
+        return ArrayList<OpenSourceLicense>().apply {
+            add(
+                OpenSourceLicense(
+                    "Android Architecture Blueprints",
+                    "https://github.com/googlesamples/android-architecture",
+                    "Copyright 2019 Google Inc.\nApache License, Version 2.0"
+                )
+            )
+
+            add(
+                OpenSourceLicense(
+                    "PhotoView",
+                    "https://github.com/chrisbanes/PhotoView",
+                    "Copyright 2011, 2012 Chris Banes.\nApache License, Version 2.0"
+                )
+            )
+
+            add(
+                OpenSourceLicense(
+                    "Color Picker",
+                    "https://github.com/QuadFlask/colorpicker",
+                    "Copyright 2014-2017 QuadFlask.\nApache License, Version 2.0"
+                )
+            )
+        }
     }
 }

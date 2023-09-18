@@ -10,7 +10,7 @@
 
         <variable
             name="bouldering"
-            type="com.kayadami.bouldering.editor.data.Bouldering" />
+            type="com.kayadami.bouldering.data.type.Bouldering" />
 
         <variable
             name="imageLoader"

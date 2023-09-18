@@ -5,8 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import com.kayadami.bouldering.TestUtils
 import com.kayadami.bouldering.data.BoulderingDataSource
-import com.kayadami.bouldering.editor.data.Bouldering
-import org.junit.After
+import com.kayadami.bouldering.data.type.Bouldering
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
