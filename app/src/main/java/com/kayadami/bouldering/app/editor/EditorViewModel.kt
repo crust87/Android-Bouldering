@@ -8,7 +8,7 @@ import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.editor.EditorView
 import com.kayadami.bouldering.editor.HolderBox
-import com.kayadami.bouldering.editor.data.Bouldering
+import com.kayadami.bouldering.data.type.Bouldering
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ class EditorViewModel @Inject constructor(
     val bouldering = MutableLiveData<Bouldering>()
 
     val title: LiveData<String> = bouldering.map {
-        when (it.createdDate > 0) {
+        when (it.createdAt > 0) {
             true -> resources.getString(R.string.editor_edit)
             false -> resources.getString(R.string.editor_create)
         }
@@ -69,12 +69,12 @@ class EditorViewModel @Inject constructor(
 
     val navigateUpEvent = SingleLiveEvent<Unit>()
 
-    fun init(path: String, id: Long) = viewModelScope.launch(Dispatchers.Main) {
+    fun init(path: String, id: Int) = viewModelScope.launch(Dispatchers.Main) {
         try {
             bouldering.value = withContext(Dispatchers.IO) {
                 when {
                     id > 0 -> repository[id]
-                    path.isNotEmpty() -> Bouldering(path, path, null, -1, -1, ArrayList(), 0)
+                    path.isNotEmpty() -> Bouldering(0, path, path, null, false,null, -1, -1, ArrayList(), 0)
                     else -> null
                 }
             } ?: throw Exception("NO BOULDERING HAS BEEN FOUND")
@@ -88,9 +88,9 @@ class EditorViewModel @Inject constructor(
 
         try {
             withContext(Dispatchers.IO) {
-                if ((bouldering.value?.createdDate ?: -1) > 0) {
+                if ((bouldering.value?.createdAt ?: -1) > 0) {
                     editorView.modify().let {
-                        repository.restore()
+                        repository.update(it)
                     }
                 } else {
                     editorView.create().let {

@@ -3,11 +3,12 @@ package com.kayadami.bouldering.editor
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import androidx.exifinterface.media.ExifInterface
 import com.kayadami.bouldering.constants.Orientation
-import com.kayadami.bouldering.editor.data.Bouldering
-import com.kayadami.bouldering.editor.data.Holder
+import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.type.Holder
 import com.kayadami.bouldering.utils.FileUtil
 import kotlinx.coroutines.*
 import java.io.File
@@ -270,6 +271,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
 
             if (it.isSpecial) {
                 it.isInOrder = false
+                it.index = 0
             }
 
             invalidate()
@@ -490,7 +492,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
     }
 
     fun create(): Bouldering = runBlocking(Dispatchers.Main) {
-        if (bouldering.createdDate > 0) {
+        if (bouldering.createdAt > 0) {
             bouldering = modify()
             bouldering
         } else {
@@ -507,7 +509,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
         editorTouchEvent = EditorTouchEvent.idle
 
         try {
-            val problemDir = getProblemDir(bouldering.createdDate)
+            val problemDir = getProblemDir(bouldering.createdAt)
             val thumb = File(problemDir, "thumb.jpg")
             val color = String.format("#%06X", 0xFFFFFF and options.color)
             val currentTime = System.currentTimeMillis()
@@ -519,7 +521,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
 
             bouldering.thumb = thumb.absolutePath
             bouldering.color = color
-            bouldering.lastModify = currentTime
+            bouldering.updatedAt = currentTime
             bouldering.holderList = holderList
 
             val thumbnail = imageGenerator.createThumbnail(bouldering)
@@ -549,7 +551,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
             }
 
             FileUtil.copy(File(bouldering.path), path)
-            val bouldering = Bouldering(path.absolutePath, thumb.absolutePath, color, currentTime, currentTime, holderList, getOrientation(options.bound.width(), options.bound.height()))
+            val bouldering = Bouldering(0, path.absolutePath, thumb.absolutePath, null, false, color, currentTime, currentTime, holderList, getOrientation(options.bound.width(), options.bound.height()))
             val thumbnail = imageGenerator.createThumbnail(bouldering)
             FileUtil.store(thumbnail, thumb)
 

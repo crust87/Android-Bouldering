@@ -11,11 +11,12 @@ import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.app.domain.SaveImageUseCase
 import com.kayadami.bouldering.data.BoulderingDataSource
-import com.kayadami.bouldering.editor.data.Bouldering
+import com.kayadami.bouldering.data.type.Bouldering
 import com.kayadami.bouldering.utils.DateUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,7 +35,7 @@ class ViewerViewModel @Inject constructor(
     }
 
     val lastModify: LiveData<String> = bouldering.map {
-        DateUtils.convertDateTime(it.lastModify)
+        DateUtils.convertDateTime(it.updatedAt)
     }
 
     val isSolved: LiveData<Boolean> = bouldering.map {
@@ -45,7 +46,7 @@ class ViewerViewModel @Inject constructor(
 
     val infoVisibility = MutableLiveData(View.VISIBLE)
 
-    val openEditorEvent = SingleLiveEvent<Long>()
+    val openEditorEvent = SingleLiveEvent<Bouldering>()
 
     val toastEvent = SingleLiveEvent<String>()
 
@@ -59,33 +60,45 @@ class ViewerViewModel @Inject constructor(
 
     val hideKeyboardEvent = SingleLiveEvent<Unit>()
 
-    fun init(id: Long) {
-        bouldering.value = repository[id]
+    fun init(id: Int) = viewModelScope.launch(Dispatchers.Main) {
+        bouldering.value = withContext(Dispatchers.IO) {
+            repository[id]
+        }
     }
 
     fun openEditor() {
         bouldering.value?.let {
-            openEditorEvent.value = it.createdDate
+            openEditorEvent.value = it
         }
     }
 
-    fun toggleSolved() {
-        bouldering.value?.isSolved = !(isSolved.value == true)
-        bouldering.value = bouldering.value
-
-        repository.restore()
-    }
-
-    fun setTitle(newTitle: String?) {
-        bouldering.value?.title = newTitle
-        bouldering.value = bouldering.value
-
-        repository.restore()
-    }
-
-    fun remove() {
+    fun toggleSolved() = viewModelScope.launch(Dispatchers.Main) {
         bouldering.value?.let {
-            repository.remove(it)
+            it.isSolved = !it.isSolved
+            bouldering.value = it
+
+            withContext(Dispatchers.IO) {
+                repository.update(it)
+            }
+        }
+    }
+
+    fun setTitle(newTitle: String?) = viewModelScope.launch(Dispatchers.Main) {
+        bouldering.value?.let {
+            it.title = newTitle
+            bouldering.value = it
+
+            withContext(Dispatchers.IO) {
+                repository.update(it)
+            }
+        }
+    }
+
+    fun remove() = viewModelScope.launch(Dispatchers.Main) {
+        bouldering.value?.let {
+            withContext(Dispatchers.IO) {
+                repository.remove(it)
+            }
         }
 
         navigateUpEvent.value = Unit
