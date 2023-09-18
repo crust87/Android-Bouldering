@@ -262,6 +262,8 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
 
             sort()
             invalidate()
+
+            onSelectedChangeListener?.onSelectedChange(_selectedHolderBox)
         }
     }
 
@@ -274,7 +276,10 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
                 it.index = 0
             }
 
+            sort()
             invalidate()
+
+            onSelectedChangeListener?.onSelectedChange(_selectedHolderBox)
         }
     }
 
