@@ -1,7 +1,9 @@
 package com.kayadami.bouldering.app.editor
 
+import android.content.res.Resources
 import android.view.View
 import androidx.lifecycle.*
+import com.kayadami.bouldering.R
 import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.editor.EditorView
@@ -16,16 +18,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditorViewModel @Inject constructor(
-        val repository: BoulderingDataSource,
-        val resourceManager: EditorResourceManager
+    val repository: BoulderingDataSource,
+    val resources: Resources
 ) : ViewModel() {
 
     val bouldering = MutableLiveData<Bouldering>()
 
     val title: LiveData<String> = bouldering.map {
         when (it.createdDate > 0) {
-            true -> resourceManager.editText
-            false -> resourceManager.createText
+            true -> resources.getString(R.string.editor_edit)
+            false -> resources.getString(R.string.editor_create)
         }
     }
 
@@ -61,39 +63,13 @@ class EditorViewModel @Inject constructor(
 
     val isProgress = MutableLiveData(false)
 
-    val sortEvent = SingleLiveEvent<Unit>()
-
     val openColorChooserEvent = SingleLiveEvent<Unit>()
 
     val toastEvent = SingleLiveEvent<String>()
 
     val navigateUpEvent = SingleLiveEvent<Unit>()
 
-    fun toggleOrder() {
-        selectedHolder.value?.isInOrder = selectedHolder.value?.isInOrder != true
-
-        if (selectedHolder.value?.isInOrder == true) {
-            selectedHolder.value?.index = Int.MAX_VALUE
-        }
-
-        selectedHolder.value = selectedHolder.value
-
-        sortEvent.call()
-    }
-
-    fun toggleSpecial() {
-        selectedHolder.value?.isSpecial = selectedHolder.value?.isSpecial != true
-
-        if (selectedHolder.value?.isSpecial == true) {
-            selectedHolder.value?.isInOrder = false
-        }
-
-        selectedHolder.value = selectedHolder.value
-
-        sortEvent.call()
-    }
-
-    fun load(path: String, id: Long) = viewModelScope.launch(Dispatchers.Main) {
+    fun init(path: String, id: Long) = viewModelScope.launch(Dispatchers.Main) {
         try {
             bouldering.value = withContext(Dispatchers.IO) {
                 when {
@@ -112,7 +88,7 @@ class EditorViewModel @Inject constructor(
 
         try {
             withContext(Dispatchers.IO) {
-                if (bouldering.value?.createdDate ?: -1 > 0) {
+                if ((bouldering.value?.createdDate ?: -1) > 0) {
                     editorView.modify().let {
                         repository.restore()
                     }
@@ -123,7 +99,7 @@ class EditorViewModel @Inject constructor(
                 }
             }
 
-            navigateUpEvent.call()
+            navigateUpEvent.value = Unit
         } catch (e: Exception) {
             toastEvent.value = e.message
         }
@@ -132,6 +108,6 @@ class EditorViewModel @Inject constructor(
     }
 
     fun openColorChooser() {
-        openColorChooserEvent.call()
+        openColorChooserEvent.value = Unit
     }
 }
