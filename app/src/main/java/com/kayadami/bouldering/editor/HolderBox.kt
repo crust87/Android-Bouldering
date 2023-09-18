@@ -1,7 +1,6 @@
 package com.kayadami.bouldering.editor
 
 import android.graphics.*
-import android.util.Log
 import com.kayadami.bouldering.data.type.Holder
 
 class HolderBox constructor(private var options: Options) : Holder(), Comparable<HolderBox> {
@@ -230,7 +229,6 @@ class HolderBox constructor(private var options: Options) : Holder(), Comparable
     }
 
     fun convert(scale: Float): Holder {
-        Log.d("WTF2", "${isSpecial}")
         return Holder(x / scale, y / scale, radius / scale, isSpecial, isInOrder, index)
     }
 

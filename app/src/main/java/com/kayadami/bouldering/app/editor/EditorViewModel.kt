@@ -71,12 +71,10 @@ class EditorViewModel @Inject constructor(
 
     fun init(path: String, id: Int) = viewModelScope.launch(Dispatchers.Main) {
         try {
-            bouldering.value = withContext(Dispatchers.IO) {
-                when {
-                    id > 0 -> repository[id]
-                    path.isNotEmpty() -> Bouldering(0, path, path, null, false,null, -1, -1, ArrayList(), 0)
-                    else -> null
-                }
+            bouldering.value = when {
+                id > 0 -> repository.get(id)
+                path.isNotEmpty() -> Bouldering(0, path, path, null, false,null, -1, -1, ArrayList(), 0)
+                else -> null
             } ?: throw Exception("NO BOULDERING HAS BEEN FOUND")
         } catch (e: Exception) {
             toastEvent.value = e.message
@@ -87,15 +85,17 @@ class EditorViewModel @Inject constructor(
         isProgress.value = true
 
         try {
-            withContext(Dispatchers.IO) {
-                if ((bouldering.value?.createdAt ?: -1) > 0) {
-                    editorView.modify().let {
-                        repository.update(it)
-                    }
-                } else {
-                    editorView.create().let {
-                        repository.add(it)
-                    }
+            if ((bouldering.value?.id ?: 0) > 0) {
+                withContext(Dispatchers.IO) {
+                    editorView.modify()
+                }.let {
+                    repository.update(it)
+                }
+            } else {
+                withContext(Dispatchers.IO) {
+                    editorView.create()
+                }.let {
+                    repository.add(it)
                 }
             }
 

@@ -1,7 +1,6 @@
 package com.kayadami.bouldering.data
 
 import android.content.Context
-import android.util.Log
 import com.kayadami.bouldering.data.type.Bouldering
 import com.kayadami.bouldering.utils.FileUtil
 import com.squareup.moshi.Moshi
@@ -70,21 +69,20 @@ class BoulderingTestRepository @Inject constructor(
         emit(boulderingList)
     }
 
-    override operator fun get(id: Int): Bouldering? {
-        Log.d("WTF", "get ${id}")
+    override suspend fun get(id: Int): Bouldering? {
         return boulderingList.find { it.id == id }
     }
 
-    override fun add(bouldering: Bouldering) {
+    override suspend fun add(bouldering: Bouldering) {
         boulderingList.add(0, bouldering)
     }
 
-    override fun update(bouldering: Bouldering) {
+    override suspend fun update(bouldering: Bouldering) {
         val index = boulderingList.indexOf(bouldering)
         boulderingList[index] = bouldering
     }
 
-    override fun remove(bouldering: Bouldering) {
+    override suspend fun remove(bouldering: Bouldering) {
         boulderingList.remove(bouldering)
     }
 

@@ -30,30 +30,40 @@ class BoulderingRepository @Inject constructor(
         }
     }
 
-    override operator fun get(id: Int): Bouldering? {
-        return database.boulderingDao().get(id)
-    }
-
-    override fun add(bouldering: Bouldering) {
-        database.boulderingDao().insertAll(bouldering)
-
-        database.boulderingDao().getAll().let {
-            _listChannel?.trySend(it)
+    override suspend fun get(id: Int): Bouldering? {
+        return withContext(Dispatchers.IO) {
+            database.boulderingDao().get(id)
         }
     }
 
-    override fun update(bouldering: Bouldering) {
-        database.boulderingDao().update(bouldering)
-
-        database.boulderingDao().getAll().let {
-            _listChannel?.trySend(it)
+    override suspend fun add(bouldering: Bouldering) {
+        withContext(Dispatchers.IO) {
+            database.boulderingDao().insertAll(bouldering)
         }
+
+        invalidate()
     }
 
-    override fun remove(bouldering: Bouldering) {
-        database.boulderingDao().delete(bouldering)
+    override suspend fun update(bouldering: Bouldering) {
+        withContext(Dispatchers.IO) {
+            database.boulderingDao().update(bouldering)
+        }
 
-        database.boulderingDao().getAll().let {
+        invalidate()
+    }
+
+    override suspend fun remove(bouldering: Bouldering) {
+        withContext(Dispatchers.IO) {
+            database.boulderingDao().delete(bouldering)
+        }
+
+        invalidate()
+    }
+
+    private suspend fun invalidate() {
+        withContext(Dispatchers.IO) {
+            database.boulderingDao().getAll()
+        }.let {
             _listChannel?.trySend(it)
         }
     }

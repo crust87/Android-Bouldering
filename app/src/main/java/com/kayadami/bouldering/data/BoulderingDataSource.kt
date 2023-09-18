@@ -7,11 +7,11 @@ interface BoulderingDataSource {
 
     fun list(): Flow<List<Bouldering>>
 
-    operator fun get(id: Int): Bouldering?
+    suspend fun get(id: Int): Bouldering?
 
-    fun add(bouldering: Bouldering)
+    suspend fun add(bouldering: Bouldering)
 
-    fun update(bouldering: Bouldering)
+    suspend fun update(bouldering: Bouldering)
 
-    fun remove(bouldering: Bouldering)
+    suspend fun remove(bouldering: Bouldering)
 }

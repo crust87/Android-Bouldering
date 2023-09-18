@@ -1,6 +1,5 @@
 package com.kayadami.bouldering.data
 
-import android.util.Log
 import androidx.room.TypeConverter
 import com.kayadami.bouldering.data.type.Holder
 import com.squareup.moshi.Moshi
@@ -26,10 +25,6 @@ class HolderListConverters {
 
     @TypeConverter
     fun toJson(holderList: List<Holder>?): String? {
-        holderList?.forEach {
-            Log.d("WTF", "it.isSpecial ${it.isSpecial}")
-        }
-        Log.d("WTF", adapter.toJson(holderList))
         return adapter.toJson(holderList)
     }
 }

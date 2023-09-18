@@ -16,7 +16,6 @@ import com.kayadami.bouldering.utils.DateUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -61,9 +60,7 @@ class ViewerViewModel @Inject constructor(
     val hideKeyboardEvent = SingleLiveEvent<Unit>()
 
     fun init(id: Int) = viewModelScope.launch(Dispatchers.Main) {
-        bouldering.value = withContext(Dispatchers.IO) {
-            repository[id]
-        }
+        bouldering.value = repository.get(id)
     }
 
     fun openEditor() {
@@ -77,9 +74,7 @@ class ViewerViewModel @Inject constructor(
             it.isSolved = !it.isSolved
             bouldering.value = it
 
-            withContext(Dispatchers.IO) {
-                repository.update(it)
-            }
+            repository.update(it)
         }
     }
 
@@ -88,17 +83,13 @@ class ViewerViewModel @Inject constructor(
             it.title = newTitle
             bouldering.value = it
 
-            withContext(Dispatchers.IO) {
-                repository.update(it)
-            }
+            repository.update(it)
         }
     }
 
     fun remove() = viewModelScope.launch(Dispatchers.Main) {
         bouldering.value?.let {
-            withContext(Dispatchers.IO) {
-                repository.remove(it)
-            }
+            repository.remove(it)
         }
 
         navigateUpEvent.value = Unit
