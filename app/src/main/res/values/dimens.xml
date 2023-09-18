@@ -9,7 +9,7 @@
 
     <dimen name="toolbox_height">52dp</dimen>
 
-    <dimen name="list_spacing">15dp</dimen>
+    <dimen name="list_spacing">16dp</dimen>
 
     <dimen name="list_round">8dp</dimen>
 

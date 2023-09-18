@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#eaeaea"
     tools:context=".app.setting.opensourcelicense.OpenSourceLicenseFragment">
 
     <LinearLayout
@@ -25,6 +24,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="vertical"
+            tools:listitem="@layout/open_source_license_cell"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     </LinearLayout>
