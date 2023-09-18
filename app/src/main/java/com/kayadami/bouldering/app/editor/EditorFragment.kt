@@ -57,11 +57,6 @@ class EditorFragment : Fragment() {
             }
         }
 
-        viewModel.sortEvent.observe(viewLifecycleOwner) {
-            binding.editorView.sort()
-            binding.editorView.invalidate()
-        }
-
         viewModel.openColorChooserEvent.observe(viewLifecycleOwner) {
             colorPickerDialog = ColorPickerDialogBuilder
                     .with(context, R.style.colorPickerDialog)

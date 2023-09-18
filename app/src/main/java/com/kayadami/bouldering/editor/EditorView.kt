@@ -251,6 +251,31 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
         invalidate()
     }
 
+    fun toggleOrder() {
+        _selectedHolderBox?.let {
+            it.isInOrder = it.isInOrder != true
+
+            if (it.isInOrder) {
+                it.index = Int.MAX_VALUE
+            }
+
+            sort()
+            invalidate()
+        }
+    }
+
+    fun toggleSpecial() {
+        _selectedHolderBox?.let {
+            it.isSpecial = it.isSpecial != true
+
+            if (it.isSpecial) {
+                it.isInOrder = false
+            }
+
+            invalidate()
+        }
+    }
+
     fun sort() {
         holderBoxList.sort()
 

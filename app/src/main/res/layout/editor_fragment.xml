@@ -118,7 +118,7 @@
                     android:layout_toLeftOf="@+id/checkSpecialHolder"
                     android:checked="@{viewModel.isNumberHolder}"
                     android:enabled="@{viewModel.isNumberEnabled}"
-                    android:onClick="@{() -> viewModel.toggleOrder()}"
+                    android:onClick="@{() -> editorView.toggleOrder()}"
                     android:paddingRight="8dp"
                     android:text="@string/editor_number"
                     android:theme="@style/checkBoxStyle" />
@@ -129,7 +129,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:checked="@{viewModel.isSpecialHolder}"
-                    android:onClick="@{() -> viewModel.toggleSpecial()}"
+                    android:onClick="@{() -> editorView.toggleSpecial()}"
                     android:paddingRight="18dp"
                     android:text="@string/editor_start_top"
                     android:theme="@style/checkBoxStyle" />

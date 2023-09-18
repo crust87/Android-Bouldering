@@ -63,8 +63,6 @@ class EditorViewModel @Inject constructor(
 
     val isProgress = MutableLiveData(false)
 
-    val sortEvent = SingleLiveEvent<Unit>()
-
     val openColorChooserEvent = SingleLiveEvent<Unit>()
 
     val toastEvent = SingleLiveEvent<String>()
@@ -82,34 +80,6 @@ class EditorViewModel @Inject constructor(
             } ?: throw Exception("NO BOULDERING HAS BEEN FOUND")
         } catch (e: Exception) {
             toastEvent.value = e.message
-        }
-    }
-
-    fun toggleOrder() {
-        selectedHolder.value?.let {
-            it.isInOrder = it.isInOrder != true
-
-            if (it.isInOrder) {
-                it.index = Int.MAX_VALUE
-            }
-
-            selectedHolder.value = it
-
-            sortEvent.value = Unit
-        }
-    }
-
-    fun toggleSpecial() {
-        selectedHolder.value?.let {
-            it.isSpecial = it.isSpecial != true
-
-            if (it.isSpecial) {
-                it.isInOrder = false
-            }
-
-            selectedHolder.value = it
-
-            sortEvent.value = Unit
         }
     }
 
