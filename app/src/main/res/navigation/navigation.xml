@@ -51,8 +51,8 @@
 
         <argument
             android:name="boulderingId"
-            android:defaultValue="-1"
-            app:argType="integer" />
+            android:defaultValue="-1L"
+            app:argType="long" />
 
         <action
             android:id="@+id/action_viewerFragment_to_editorFragment"
@@ -60,7 +60,7 @@
 
             <argument
                 android:name="boulderingId"
-                app:argType="integer" />
+                app:argType="long" />
 
         </action>
 
@@ -79,8 +79,8 @@
 
         <argument
             android:name="boulderingId"
-            android:defaultValue="-1"
-            app:argType="integer" />
+            android:defaultValue="-1L"
+            app:argType="long" />
 
     </fragment>
 

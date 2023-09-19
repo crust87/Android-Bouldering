@@ -69,7 +69,7 @@ class BoulderingTestRepository @Inject constructor(
         emit(boulderingList)
     }
 
-    override suspend fun get(id: Int): Bouldering? {
+    override suspend fun get(id: Long): Bouldering? {
         return boulderingList.find { it.id == id }
     }
 

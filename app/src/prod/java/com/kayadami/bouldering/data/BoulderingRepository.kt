@@ -30,7 +30,7 @@ class BoulderingRepository @Inject constructor(
         }
     }
 
-    override suspend fun get(id: Int): Bouldering? {
+    override suspend fun get(id: Long): Bouldering? {
         return withContext(Dispatchers.IO) {
             database.boulderingDao().get(id)
         }

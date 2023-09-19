@@ -59,7 +59,7 @@ class ViewerViewModel @Inject constructor(
 
     val hideKeyboardEvent = SingleLiveEvent<Unit>()
 
-    fun init(id: Int) = viewModelScope.launch(Dispatchers.Main) {
+    fun init(id: Long) = viewModelScope.launch(Dispatchers.Main) {
         bouldering.value = repository.get(id)
     }
 

@@ -12,7 +12,7 @@ import com.kayadami.bouldering.data.type.Bouldering
 interface BoulderingDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg bouldering: Bouldering)
+    fun insertAll(vararg bouldering: Bouldering): List<Long>
 
     @Update
     fun update(vararg bouldering: Bouldering)
@@ -20,10 +20,13 @@ interface BoulderingDao {
     @Delete
     fun delete(bouldering: Bouldering)
 
+    @Query("DELETE FROM bouldering WHERE id = :id")
+    fun deleteByUserId(id: Long)
+
     @Query("SELECT * FROM bouldering")
     fun getAll(): List<Bouldering>
 
     @Query("SELECT * FROM bouldering WHERE id = :id")
-    fun get(id: Int): Bouldering?
+    fun get(id: Long): Bouldering?
 
 }
