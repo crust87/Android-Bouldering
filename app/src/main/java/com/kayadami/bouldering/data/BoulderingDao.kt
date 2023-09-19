@@ -5,8 +5,10 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.type.BoulderingWithComments
 
 @Dao
 interface BoulderingDao {
@@ -28,5 +30,9 @@ interface BoulderingDao {
 
     @Query("SELECT * FROM bouldering WHERE id = :id")
     fun get(id: Long): Bouldering?
+
+    @Transaction
+    @Query("SELECT * FROM bouldering WHERE id = :id")
+    fun getWithComments(id: Long): List<BoulderingWithComments>
 
 }
