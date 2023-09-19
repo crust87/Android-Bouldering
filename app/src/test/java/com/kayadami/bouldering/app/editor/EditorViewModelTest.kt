@@ -59,9 +59,11 @@ class EditorViewModelTest {
 
         val isNumberHolder = viewModel.isNumberHolder.getOrAwaitValue()
         val isSpecialHolder = viewModel.isSpecialHolder.getOrAwaitValue()
+        val isNumberEnabled = viewModel.isNumberEnabled.getOrAwaitValue()
 
         Assert.assertEquals(false, isNumberHolder)
         Assert.assertEquals(false, isSpecialHolder)
+        Assert.assertEquals(true, isNumberEnabled)
     }
 
     @Test
@@ -74,9 +76,11 @@ class EditorViewModelTest {
 
         val isNumberHolder = viewModel.isNumberHolder.getOrAwaitValue()
         val isSpecialHolder = viewModel.isSpecialHolder.getOrAwaitValue()
+        val isNumberEnabled = viewModel.isNumberEnabled.getOrAwaitValue()
 
         Assert.assertEquals(false, isNumberHolder)
         Assert.assertEquals(true, isSpecialHolder)
+        Assert.assertEquals(false, isNumberEnabled)
     }
 
     @Test
@@ -87,8 +91,10 @@ class EditorViewModelTest {
 
         val isNumberHolder = viewModel.isNumberHolder.getOrAwaitValue()
         val isSpecialHolder = viewModel.isSpecialHolder.getOrAwaitValue()
+        val isNumberEnabled = viewModel.isNumberEnabled.getOrAwaitValue()
 
         Assert.assertEquals(true, isNumberHolder)
         Assert.assertEquals(false, isSpecialHolder)
+        Assert.assertEquals(true, isNumberEnabled)
     }
 }
