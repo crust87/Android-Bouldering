@@ -27,6 +27,8 @@
 - Glide
 
 ## Update
+### 2023-09-19
+- Room Testing 추가
 ### 2023-09-18
 - README.md 추가
 - Editor 코드 개선
