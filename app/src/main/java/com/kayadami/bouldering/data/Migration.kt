@@ -9,4 +9,8 @@ object Migration {
             database.execSQL("CREATE TABLE IF NOT EXISTS `comment` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `text` TEXT NOT NULL, `boulderingId` INTEGER NOT NULL)")
         }
     }
+
+    fun asArray() = arrayOf(
+        MIGRATION_1_2
+    )
 }

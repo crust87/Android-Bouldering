@@ -19,6 +19,6 @@ object DataModule {
         return Room.databaseBuilder(
             context,
             AppDatabase::class.java, "database-bouldering"
-        ).addMigrations(Migration.MIGRATION_1_2).build()
+        ).addMigrations(*Migration.asArray()).build()
     }
 }
