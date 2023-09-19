@@ -25,7 +25,7 @@ class EditorViewModel @Inject constructor(
     val bouldering = MutableLiveData<Bouldering>()
 
     val title: LiveData<String> = bouldering.map {
-        when (it.createdAt > 0) {
+        when (it.id > 0) {
             true -> resources.getString(R.string.editor_edit)
             false -> resources.getString(R.string.editor_create)
         }
