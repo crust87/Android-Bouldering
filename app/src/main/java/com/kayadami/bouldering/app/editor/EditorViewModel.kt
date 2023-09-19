@@ -69,7 +69,7 @@ class EditorViewModel @Inject constructor(
 
     val navigateUpEvent = SingleLiveEvent<Unit>()
 
-    fun init(path: String, id: Int) = viewModelScope.launch(Dispatchers.Main) {
+    fun init(path: String, id: Long) = viewModelScope.launch(Dispatchers.Main) {
         try {
             bouldering.value = when {
                 id > 0 -> repository.get(id)

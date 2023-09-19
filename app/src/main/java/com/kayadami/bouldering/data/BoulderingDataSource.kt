@@ -7,7 +7,7 @@ interface BoulderingDataSource {
 
     fun list(): Flow<List<Bouldering>>
 
-    suspend fun get(id: Int): Bouldering?
+    suspend fun get(id: Long): Bouldering?
 
     suspend fun add(bouldering: Bouldering)
 

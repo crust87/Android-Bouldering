@@ -13,7 +13,7 @@ import java.util.*
 class Bouldering(
     @Json(name = "id")
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Long,
     @Json(name = "path")
     @ColumnInfo(name = "path")
     var path: String,

@@ -165,7 +165,7 @@ class ViewerFragment : Fragment() {
             .show()
     }
 
-    private fun openEditor(id: Int) {
+    private fun openEditor(id: Long) {
         navigate(
             ViewerFragmentDirections.actionViewerFragmentToEditorFragment(id)
         )

@@ -5,14 +5,16 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.type.BoulderingWithComments
 
 @Dao
 interface BoulderingDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg bouldering: Bouldering)
+    fun insertAll(vararg bouldering: Bouldering): List<Long>
 
     @Update
     fun update(vararg bouldering: Bouldering)
@@ -20,10 +22,17 @@ interface BoulderingDao {
     @Delete
     fun delete(bouldering: Bouldering)
 
+    @Query("DELETE FROM bouldering WHERE id = :id")
+    fun deleteByUserId(id: Long)
+
     @Query("SELECT * FROM bouldering")
     fun getAll(): List<Bouldering>
 
     @Query("SELECT * FROM bouldering WHERE id = :id")
-    fun get(id: Int): Bouldering?
+    fun get(id: Long): Bouldering?
+
+    @Transaction
+    @Query("SELECT * FROM bouldering WHERE id = :id")
+    fun getWithComments(id: Long): List<BoulderingWithComments>
 
 }
