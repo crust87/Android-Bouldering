@@ -10,5 +10,5 @@ import dagger.hilt.components.SingletonComponent
 interface BoulderingDataSourceModule {
 
     @Binds
-    fun bindBoulderingDataSource(boulderingTestRepository: BoulderingTestRepository): BoulderingDataSource
+    fun bindBoulderingDataSource(boulderingRepository: BoulderingMockRepository): BoulderingDataSource
 }

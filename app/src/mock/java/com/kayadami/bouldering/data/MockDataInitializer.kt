@@ -6,7 +6,6 @@ import com.kayadami.bouldering.utils.FileUtil
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -16,9 +15,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class BoulderingTestRepository @Inject constructor(
-    @ApplicationContext context: Context
-) : BoulderingDataSource {
+class MockDataInitializer @Inject constructor(@ApplicationContext val context: Context) {
 
     val moshi: Moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
@@ -26,10 +23,10 @@ class BoulderingTestRepository @Inject constructor(
 
     val adapter = moshi.adapter(Bouldering::class.java)
 
-    private val boulderingList = ArrayList<Bouldering>()
+    fun getMockList(): ArrayList<Bouldering> {
+        val boulderingList = ArrayList<Bouldering>()
 
-    init {
-        context.assets.list("mock")?.all {
+        context.assets.list("mock")?.forEach {
             try {
                 adapter.fromJson(
                     context.assets.open("mock/$it/bouldering.json").readTextAndClose(),
@@ -60,33 +57,12 @@ class BoulderingTestRepository @Inject constructor(
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-
-            true
         }
+
+        return boulderingList
     }
 
-    override fun list() = flow {
-        emit(boulderingList)
-    }
-
-    override suspend fun get(id: Long): Bouldering? {
-        return boulderingList.find { it.id == id }
-    }
-
-    override suspend fun add(bouldering: Bouldering) {
-        boulderingList.add(0, bouldering)
-    }
-
-    override suspend fun update(bouldering: Bouldering) {
-        val index = boulderingList.indexOf(bouldering)
-        boulderingList[index] = bouldering
-    }
-
-    override suspend fun remove(bouldering: Bouldering) {
-        boulderingList.remove(bouldering)
-    }
-
-    fun InputStream.readTextAndClose(charset: Charset = Charsets.UTF_8): String {
+    private fun InputStream.readTextAndClose(charset: Charset = Charsets.UTF_8): String {
         return this.bufferedReader(charset).use { it.readText() }
     }
 }

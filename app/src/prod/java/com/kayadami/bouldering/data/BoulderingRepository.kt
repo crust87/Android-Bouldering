@@ -1,10 +1,11 @@
 package com.kayadami.bouldering.data
 
 import com.kayadami.bouldering.data.type.Bouldering
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -14,20 +15,10 @@ class BoulderingRepository @Inject constructor(
     var database: AppDatabase
 ) : BoulderingDataSource {
 
-    private var _listChannel: Channel<List<Bouldering>>? = null
+    private var _listFlow = MutableStateFlow(emptyList<Bouldering>())
 
-    override fun list() = flow {
-        _listChannel = Channel()
-
-        val data = withContext(Dispatchers.IO) {
-            database.boulderingDao().getAll()
-        }
-
-        emit(data)
-
-        _listChannel?.consumeEach {
-            emit(it)
-        }
+    override fun list() = _listFlow.asStateFlow().also {
+        invalidate()
     }
 
     override suspend fun get(id: Long): Bouldering? {
@@ -60,11 +51,11 @@ class BoulderingRepository @Inject constructor(
         invalidate()
     }
 
-    private suspend fun invalidate() {
+    private fun invalidate() = CoroutineScope(Dispatchers.Main).launch {
         withContext(Dispatchers.IO) {
             database.boulderingDao().getAll()
         }.let {
-            _listChannel?.trySend(it)
+            _listFlow.emit(it)
         }
     }
 }
