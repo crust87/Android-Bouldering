@@ -86,7 +86,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:gravity="center"
-                    android:onClick="@{() -> viewModel.openColorChooser()}"
+                    android:onClick="@{() -> viewModel.openColorPicker()}"
                     android:paddingLeft="18dp"
                     android:paddingRight="18dp"
                     android:text="@string/editor_change_color"

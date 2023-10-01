@@ -4,13 +4,13 @@ import android.content.res.Resources
 import android.view.View
 import androidx.lifecycle.*
 import com.kayadami.bouldering.R
-import com.kayadami.bouldering.SingleLiveEvent
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.editor.EditorView
 import com.kayadami.bouldering.editor.HolderBox
 import com.kayadami.bouldering.data.type.Bouldering
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -63,11 +63,10 @@ class EditorViewModel @Inject constructor(
 
     val isProgress = MutableLiveData(false)
 
-    val openColorChooserEvent = SingleLiveEvent<Unit>()
-
-    val toastEvent = SingleLiveEvent<String>()
-
-    val navigateUpEvent = SingleLiveEvent<Unit>()
+    val eventChannel = MutableSharedFlow<EditorViewModelEvent>(
+        replay = 0,
+        extraBufferCapacity = 1,
+    )
 
     fun init(path: String, id: Long) = viewModelScope.launch(Dispatchers.Main) {
         try {
@@ -77,7 +76,7 @@ class EditorViewModel @Inject constructor(
                 else -> null
             } ?: throw Exception("NO BOULDERING HAS BEEN FOUND")
         } catch (e: Exception) {
-            toastEvent.value = e.message
+            eventChannel.tryEmit(ToastEvent(e.message))
         }
     }
 
@@ -99,15 +98,15 @@ class EditorViewModel @Inject constructor(
                 }
             }
 
-            navigateUpEvent.value = Unit
+            eventChannel.tryEmit(NavigateUpEvent)
         } catch (e: Exception) {
-            toastEvent.value = e.message
+            eventChannel.tryEmit(ToastEvent(e.message))
         }
 
         isProgress.value = false
     }
 
-    fun openColorChooser() {
-        openColorChooserEvent.value = Unit
+    fun openColorPicker() {
+        eventChannel.tryEmit(OpenColorPickerEvent)
     }
 }

@@ -7,12 +7,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.databinding.EditorFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class EditorFragment : Fragment() {
@@ -57,29 +61,21 @@ class EditorFragment : Fragment() {
             }
         }
 
-        viewModel.openColorChooserEvent.observe(viewLifecycleOwner) {
-            colorPickerDialog = ColorPickerDialogBuilder
-                    .with(context, R.style.colorPickerDialog)
-                    .initialColor(binding.editorView.color)
-                    .wheelType(com.flask.colorpicker.ColorPickerView.WHEEL_TYPE.CIRCLE)
-                    .density(6)
-                    .lightnessSliderOnly()
-                    .setPositiveButton("OK") { _, selectedColor, _ -> binding.editorView.color = selectedColor }
-                    .build()
-                    .apply {
-                        show()
-                    }
-        }
-
-        viewModel.toastEvent.observe(viewLifecycleOwner) {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-        }
-
-        viewModel.navigateUpEvent.observe(viewLifecycleOwner) {
-            navigateUp()
-        }
-
         viewModel.init(aras.imagePath, aras.boulderingId)
+
+        viewModel.eventChannel.onEach {
+            when(it) {
+                is OpenColorPickerEvent -> openColorPicker()
+                is NavigateUpEvent -> navigateUp()
+                is ToastEvent -> Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+            }
+        }.launchIn(lifecycleScope)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        lifecycleScope.coroutineContext.cancelChildren()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -90,5 +86,23 @@ class EditorFragment : Fragment() {
         }
 
         colorPickerDialog = null
+    }
+
+    private fun openColorPicker() {
+        colorPickerDialog = ColorPickerDialogBuilder
+            .with(context, R.style.colorPickerDialog)
+            .initialColor(binding.editorView.color)
+            .wheelType(com.flask.colorpicker.ColorPickerView.WHEEL_TYPE.CIRCLE)
+            .density(6)
+            .lightnessSliderOnly()
+            .setPositiveButton("OK") { _, selectedColor, _ -> binding.editorView.color = selectedColor }
+            .build()
+            .apply {
+                setOnDismissListener {
+                    colorPickerDialog = null
+                }
+
+                show()
+            }
     }
 }
