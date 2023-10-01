@@ -28,7 +28,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="?attr/actionBarSize"
-                app:theme="@style/toolbarDark" />
+                app:navigationIcon="@drawable/ic_back"
+                app:onNavigationClick="@{() -> viewModel.navigateUp()}"
+                app:theme="@style/toolbarDark"
+                app:title="@string/setting" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -86,6 +89,7 @@
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:gravity="center_vertical"
+                android:onClick="@{() -> viewModel.openOpenSourceLicense()}"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:text="@string/open_source_license"
