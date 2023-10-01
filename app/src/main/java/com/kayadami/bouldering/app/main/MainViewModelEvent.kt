@@ -2,14 +2,14 @@ package com.kayadami.bouldering.app.main
 
 import com.kayadami.bouldering.data.type.Bouldering
 
-sealed class MainViewModelEvent
+sealed interface MainViewModelEvent
 
-object OpenSettingEvent: MainViewModelEvent()
+object OpenSettingEvent: MainViewModelEvent
 
-class OpenViewerEvent(val data: Bouldering): MainViewModelEvent()
+class OpenViewerEvent(val data: Bouldering): MainViewModelEvent
 
-class OpenEditorEvent(val path: String): MainViewModelEvent()
+class OpenEditorEvent(val path: String): MainViewModelEvent
 
-object OpenCameraEvent: MainViewModelEvent()
+object OpenCameraEvent: MainViewModelEvent
 
-object OpenGalleryEvent: MainViewModelEvent()
+object OpenGalleryEvent: MainViewModelEvent

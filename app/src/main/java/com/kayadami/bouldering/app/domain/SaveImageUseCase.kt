@@ -20,7 +20,7 @@ class SaveImageUseCase @Inject constructor(
     val imageGenerator: ImageGenerator,
 ) {
 
-    operator suspend fun invoke(bouldering: Bouldering, extraName: String = ""): Uri {
+    suspend operator fun invoke(bouldering: Bouldering, extraName: String = ""): Uri {
         return withContext(Dispatchers.IO) {
             val bitmap = imageGenerator.createImage(bouldering)
 

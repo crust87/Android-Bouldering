@@ -28,6 +28,7 @@ import com.kayadami.bouldering.app.MainFragmentComponent
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
+import com.kayadami.bouldering.data.type.Bouldering
 import com.kayadami.bouldering.databinding.MainFragmentBinding
 import com.kayadami.bouldering.image.FragmentImageLoader
 import com.kayadami.bouldering.image.ImageLoader
@@ -147,8 +148,8 @@ class MainFragment : Fragment() {
         viewModel.eventChannel.onEach {
             when (it) {
                 is OpenSettingEvent -> openSetting()
-                is OpenViewerEvent -> openViewer(it)
-                is OpenEditorEvent -> openEditor(it)
+                is OpenViewerEvent -> openViewer(it.data)
+                is OpenEditorEvent -> openEditor(it.path)
                 is OpenCameraEvent -> openCamera()
                 is OpenGalleryEvent -> openGallery()
             }
@@ -189,17 +190,17 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun openViewer(event: OpenViewerEvent) {
+    private fun openViewer(data: Bouldering) {
         MainFragmentDirections.actionMainFragmentToViewerFragment().apply {
-            boulderingId = event.data.id
+            boulderingId = data.id
         }.also {
             navigate(it)
         }
     }
 
-    private fun openEditor(event: OpenEditorEvent) {
+    private fun openEditor(path: String) {
         MainFragmentDirections.actionMainFragmentToEditorFragment().apply {
-            imagePath = event.path
+            imagePath = path
         }.also {
             navigate(it)
         }
