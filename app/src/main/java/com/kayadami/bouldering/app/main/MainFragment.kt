@@ -1,5 +1,6 @@
 package com.kayadami.bouldering.app.main
 
+import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
@@ -20,6 +21,7 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.MainFragmentComponent
@@ -27,12 +29,14 @@ import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
 import com.kayadami.bouldering.databinding.MainFragmentBinding
-import com.kayadami.bouldering.data.type.Bouldering
 import com.kayadami.bouldering.image.FragmentImageLoader
 import com.kayadami.bouldering.image.ImageLoader
 import com.kayadami.bouldering.list.GridSpacingItemDecoration
 import com.kayadami.bouldering.utils.FileUtil
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -64,8 +68,11 @@ class MainFragment : Fragment() {
 
     private val requestOpenCamera =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            photoPath?.let {
-                openEditor(it)
+            val resultCode = it.resultCode
+            val path = photoPath
+
+            if (resultCode == Activity.RESULT_OK && path != null) {
+                viewModel.openEditor(path)
                 photoPath = null
             }
         }
@@ -74,7 +81,7 @@ class MainFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             result?.data?.data?.let {
                 val path = FileUtil.getRealPathFromURI(requireContext(), it)
-                openEditor(path)
+                viewModel.openEditor(path)
             }
         }
 
@@ -96,7 +103,7 @@ class MainFragment : Fragment() {
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 when (menuItem.itemId) {
-                    R.id.actionSetting -> openSetting()
+                    R.id.actionSetting -> viewModel.openSetting()
                     R.id.actionCamera -> viewModel.openCamera()
                     R.id.actionGallery -> viewModel.openGallery()
                 }
@@ -117,19 +124,11 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         adapter.setBoulderingItemEventListener {
-            openViewer(it)
+            viewModel.openViewer(it)
         }
 
         viewModel.list.observe(viewLifecycleOwner) {
             adapter.setList(it)
-        }
-
-        viewModel.openCameraEvent.observe(viewLifecycleOwner) {
-            this@MainFragment.openCamera()
-        }
-
-        viewModel.openGalleryEvent.observe(viewLifecycleOwner) {
-            openGallery()
         }
 
         binding.recyclerView.layoutManager = layoutManager
@@ -144,10 +143,22 @@ class MainFragment : Fragment() {
         setOrientation(resources.configuration.orientation)
 
         ViewCompat.requestApplyInsets(binding.layoutContainer)
+
+        viewModel.eventChannel.onEach {
+            when (it) {
+                is OpenSettingEvent -> openSetting()
+                is OpenViewerEvent -> openViewer(it)
+                is OpenEditorEvent -> openEditor(it)
+                is OpenCameraEvent -> openCamera()
+                is OpenGalleryEvent -> openGallery()
+            }
+        }.launchIn(lifecycleScope)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+        lifecycleScope.coroutineContext.cancelChildren()
 
         binding.recyclerView.layoutManager = null
         binding.recyclerView.removeItemDecoration(itemDecoration)
@@ -178,17 +189,17 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun openViewer(data: Bouldering) {
+    private fun openViewer(event: OpenViewerEvent) {
         MainFragmentDirections.actionMainFragmentToViewerFragment().apply {
-            boulderingId = data.id
+            boulderingId = event.data.id
         }.also {
             navigate(it)
         }
     }
 
-    private fun openEditor(path: String) {
+    private fun openEditor(event: OpenEditorEvent) {
         MainFragmentDirections.actionMainFragmentToEditorFragment().apply {
-            imagePath = path
+            imagePath = event.path
         }.also {
             navigate(it)
         }

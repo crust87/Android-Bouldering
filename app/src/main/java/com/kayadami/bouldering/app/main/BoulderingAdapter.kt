@@ -106,12 +106,10 @@ open class BoulderingAdapter @Inject constructor(
     }
 
     fun setBoulderingItemEventListener(l: ((bouldering: Bouldering) -> Unit)?) {
-        _listener = if (l == null) {
-            null
-        } else {
+        _listener = l?.let {
             object: BoulderingItemEvent {
                 override fun onClick(bouldering: Bouldering) {
-                    l.invoke(bouldering)
+                    it.invoke(bouldering)
                 }
             }
         }

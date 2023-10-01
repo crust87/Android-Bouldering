@@ -52,10 +52,8 @@ class BoulderingRepository @Inject constructor(
     }
 
     private fun invalidate() = CoroutineScope(Dispatchers.Main).launch {
-        withContext(Dispatchers.IO) {
+        _listFlow.emit(withContext(Dispatchers.IO) {
             database.boulderingDao().getAll()
-        }.let {
-            _listFlow.emit(it)
-        }
+        })
     }
 }
