@@ -1,12 +1,8 @@
 package com.kayadami.bouldering.app.main
 
 import android.app.Activity
-import android.content.Intent
 import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -14,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.FileProvider
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
@@ -28,7 +23,6 @@ import com.kayadami.bouldering.app.MainFragmentComponent
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
-import com.kayadami.bouldering.data.type.Bouldering
 import com.kayadami.bouldering.databinding.MainFragmentBinding
 import com.kayadami.bouldering.image.FragmentImageLoader
 import com.kayadami.bouldering.image.ImageLoader
@@ -65,16 +59,14 @@ class MainFragment : Fragment() {
 
     private val viewModel: MainViewModel by viewModels()
 
-    var photoPath: String? = null
-
     private val requestOpenCamera =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val resultCode = it.resultCode
-            val path = photoPath
+            val path = viewModel.photoPath
 
             if (resultCode == Activity.RESULT_OK && path != null) {
                 viewModel.openEditor(path)
-                photoPath = null
+                viewModel.photoPath = null
             }
         }
 
@@ -147,11 +139,18 @@ class MainFragment : Fragment() {
 
         viewModel.eventChannel.onEach {
             when (it) {
-                is OpenSettingEvent -> openSetting()
-                is OpenViewerEvent -> openViewer(it.data)
-                is OpenEditorEvent -> openEditor(it.path)
-                is OpenCameraEvent -> openCamera()
-                is OpenGalleryEvent -> openGallery()
+                is OpenSettingEvent -> navigate(MainFragmentDirections.actionMainFragmentToSettingFragment())
+                is OpenViewerEvent -> navigate(
+                    MainFragmentDirections.actionMainFragmentToViewerFragment().apply {
+                        boulderingId = it.data.id
+                    })
+
+                is OpenEditorEvent -> navigate(
+                    MainFragmentDirections.actionMainFragmentToEditorFragment()
+                        .apply { imagePath = it.path })
+
+                is OpenCameraEvent -> requestOpenCamera.launch(it.intent)
+                is OpenGalleryEvent -> requestOpenGallery.launch(it.intent)
             }
         }.launchIn(lifecycleScope)
     }
@@ -182,54 +181,5 @@ class MainFragment : Fragment() {
         }
 
         adapter.notifyDataSetChanged()
-    }
-
-    private fun openSetting() {
-        MainFragmentDirections.actionMainFragmentToSettingFragment().also {
-            navigate(it)
-        }
-    }
-
-    private fun openViewer(data: Bouldering) {
-        MainFragmentDirections.actionMainFragmentToViewerFragment().apply {
-            boulderingId = data.id
-        }.also {
-            navigate(it)
-        }
-    }
-
-    private fun openEditor(path: String) {
-        MainFragmentDirections.actionMainFragmentToEditorFragment().apply {
-            imagePath = path
-        }.also {
-            navigate(it)
-        }
-    }
-
-    private fun openCamera() {
-        requestOpenCamera.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-            val photoFile =
-                FileUtil.createImageFile(requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES))
-                    ?: return
-            val photoURI = FileProvider.getUriForFile(
-                requireActivity(),
-                "com.kayadami.bouldering.fileprovider",
-                photoFile
-            )
-            putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-
-            photoPath = photoFile.absolutePath
-        })
-    }
-
-    private fun openGallery() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestOpenGallery.launch(Intent(MediaStore.ACTION_PICK_IMAGES))
-        } else {
-            requestOpenGallery.launch(Intent(Intent.ACTION_PICK).apply {
-                type = "image/*"
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            })
-        }
     }
 }

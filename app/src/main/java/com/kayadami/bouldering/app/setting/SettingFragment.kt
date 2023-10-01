@@ -23,7 +23,6 @@ class SettingFragment : Fragment() {
         fragmentBinding = SettingFragmentBinding.inflate(inflater, container, false).apply {
             viewModel = this@SettingFragment.viewModel
             lifecycleOwner = this@SettingFragment
-
         }
 
         return fragmentBinding.root
@@ -39,13 +38,9 @@ class SettingFragment : Fragment() {
         }
 
         fragmentBinding.buttonOpenSourceLicense.setOnClickListener {
-            openOpenSourceLicenseFragment()
-        }
-    }
-
-    private fun openOpenSourceLicenseFragment() {
-        navigate(
+            navigate(
                 SettingFragmentDirections.actionSettingFragmentToOpenSourceLicenseFragment()
-        )
+            )
+        }
     }
 }

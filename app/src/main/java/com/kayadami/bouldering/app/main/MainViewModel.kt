@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.kayadami.bouldering.app.domain.OpenCameraUseCase
+import com.kayadami.bouldering.app.domain.OpenGalleryUseCase
 import com.kayadami.bouldering.data.BoulderingDataSource
 import com.kayadami.bouldering.data.type.Bouldering
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,7 +14,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    val repository: BoulderingDataSource
+    val repository: BoulderingDataSource,
+    val openCameraUseCase: OpenCameraUseCase,
+    val openGalleryUseCae: OpenGalleryUseCase,
 ) : ViewModel() {
 
     val list: LiveData<List<Bouldering>> by lazy {
@@ -23,6 +27,12 @@ class MainViewModel @Inject constructor(
         replay = 0,
         extraBufferCapacity = 1,
     )
+
+    var photoPath: String?
+        get() = openCameraUseCase.photoPath
+        set(value) {
+            openCameraUseCase.photoPath = value
+        }
 
     fun openSetting() {
         eventChannel.tryEmit(OpenSettingEvent)
@@ -37,10 +47,10 @@ class MainViewModel @Inject constructor(
     }
 
     fun openCamera() {
-        eventChannel.tryEmit(OpenCameraEvent)
+        eventChannel.tryEmit(OpenCameraEvent(openCameraUseCase()))
     }
 
     fun openGallery() {
-        eventChannel.tryEmit(OpenGalleryEvent)
+        eventChannel.tryEmit(OpenGalleryEvent(openGalleryUseCae()))
     }
 }

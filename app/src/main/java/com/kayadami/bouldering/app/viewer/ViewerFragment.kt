@@ -6,14 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.kayadami.bouldering.R
+import com.kayadami.bouldering.app.domain.KeyboardHideUseCase
+import com.kayadami.bouldering.app.domain.KeyboardOpenUseCase
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.databinding.ViewerFragmentBinding
@@ -21,9 +21,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ViewerFragment : Fragment() {
+
+    @Inject
+    lateinit var keyboardOpenUseCase: KeyboardOpenUseCase
+
+    @Inject
+    lateinit var keyboardHideUseCase: KeyboardHideUseCase
 
     lateinit var binding: ViewerFragmentBinding
 
@@ -116,8 +123,8 @@ class ViewerFragment : Fragment() {
                 is OpenShareEvent -> startActivity(it.intent)
                 is FinishSaveEvent -> Toast.makeText(context, it.path, Toast.LENGTH_SHORT).show()
                 is NavigateUpEvent -> navigateUp()
-                is OpenKeyboardEvent -> openKeyboard(it.editText)
-                is HideKeyboardEvent -> hideKeyboard(it.editText)
+                is OpenKeyboardEvent -> keyboardOpenUseCase(it.editText)
+                is HideKeyboardEvent -> keyboardHideUseCase(it.editText)
                 is ToastEvent -> Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
             }
         }.launchIn(lifecycleScope)
@@ -127,30 +134,5 @@ class ViewerFragment : Fragment() {
         super.onDestroyView()
 
         lifecycleScope.coroutineContext.cancelChildren()
-    }
-
-    private fun openKeyboard(v: View) {
-        if (!v.isFocusableInTouchMode) {
-            v.isFocusableInTouchMode = true
-            if (v.requestFocus()) {
-                val imm = ContextCompat.getSystemService(
-                    requireContext(),
-                    InputMethodManager::class.java
-                )
-                imm?.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT)
-            }
-        }
-    }
-
-    private fun hideKeyboard(v: View) {
-        activity?.currentFocus?.let { view ->
-            val imm = ContextCompat.getSystemService(
-                requireContext(),
-                InputMethodManager::class.java
-            )
-            imm?.hideSoftInputFromWindow(view.windowToken, 0)
-        }
-
-        v.isFocusable = false
     }
 }

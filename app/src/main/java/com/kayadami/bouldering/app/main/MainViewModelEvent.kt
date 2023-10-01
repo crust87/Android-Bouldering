@@ -1,5 +1,6 @@
 package com.kayadami.bouldering.app.main
 
+import android.content.Intent
 import com.kayadami.bouldering.data.type.Bouldering
 
 sealed interface MainViewModelEvent
@@ -10,6 +11,6 @@ class OpenViewerEvent(val data: Bouldering): MainViewModelEvent
 
 class OpenEditorEvent(val path: String): MainViewModelEvent
 
-object OpenCameraEvent: MainViewModelEvent
+class OpenCameraEvent(val intent: Intent): MainViewModelEvent
 
-object OpenGalleryEvent: MainViewModelEvent
+class OpenGalleryEvent(val intent: Intent): MainViewModelEvent
