@@ -1,7 +1,6 @@
 package com.kayadami.bouldering.app.viewer.comment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +12,8 @@ import com.kayadami.bouldering.databinding.CommentBottomSheetBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -50,10 +51,17 @@ class CommentBottomSheet: BottomSheetDialogFragment() {
 
         viewModel.init(boulderingId)
 
+        viewModel.eventChannel.onEach {
+            when(it) {
+                is OnNewCommentEvent -> {
+                    binding.recyclerView.smoothScrollToPosition(0)
+                    adapter.refresh()
+                }
+            }
+        }.launchIn(lifecycleScope)
+
         lifecycleScope.launch {
-            Log.d("WTF", "Start")
             viewModel.getList().collectLatest {
-                Log.d("WTF", "collectLatest")
                 adapter.submitData(lifecycle, it)
             }
         }

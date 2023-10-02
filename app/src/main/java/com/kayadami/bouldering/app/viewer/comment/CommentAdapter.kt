@@ -41,7 +41,7 @@ class CommentAdapter: PagingDataAdapter<Comment, CommentAdapter.CommentViewHolde
                 oldItem.id == newItem.id
 
             override fun areContentsTheSame(oldItem: Comment, newItem: Comment): Boolean =
-                oldItem.id == newItem.id
+                oldItem.id == newItem.id && oldItem.text == newItem.text
         }
     }
 }

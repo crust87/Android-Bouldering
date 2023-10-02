@@ -24,7 +24,7 @@ interface CommentDao {
     @Query("SELECT * FROM comment WHERE boulderingId = :boulderingId")
     fun getAllByBoulderingId(boulderingId: Long): List<Comment>
 
-    @Query("SELECT * FROM comment WHERE boulderingId = :boulderingId ORDER BY id ASC LIMIT 10 OFFSET :page * $COMMENT_PAGE_LIMIT")
+    @Query("SELECT * FROM comment WHERE boulderingId = :boulderingId ORDER BY id DESC LIMIT 10 OFFSET :page * $COMMENT_PAGE_LIMIT")
     fun getAllByBoulderingId(boulderingId: Long, page: Int): List<Comment>
 
     @TestOnly
