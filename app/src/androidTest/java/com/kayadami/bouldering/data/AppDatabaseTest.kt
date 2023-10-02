@@ -3,7 +3,7 @@ package com.kayadami.bouldering.data
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -27,7 +27,8 @@ class AppDatabaseTest {
 
         val currentTime = System.currentTimeMillis()
 
-        testDataId = db.boulderingDao().insertAll(Bouldering(
+        testDataId = db.boulderingDao().insertAll(
+            Bouldering(
             0,
             "",
             "",
@@ -38,7 +39,8 @@ class AppDatabaseTest {
             currentTime,
             emptyList(),
             0
-        ))[0]
+        )
+        )[0]
     }
 
     @After
@@ -51,7 +53,8 @@ class AppDatabaseTest {
     fun givenTestData_whenInsert_thenInserted() = runBlocking(Dispatchers.IO) {
         val currentTime = System.currentTimeMillis()
 
-        db.boulderingDao().insertAll(Bouldering(
+        db.boulderingDao().insertAll(
+            Bouldering(
             0,
             "",
             "",
@@ -62,7 +65,8 @@ class AppDatabaseTest {
             currentTime,
             emptyList(),
           0
-        ))
+        )
+        )
 
         val testData = db.boulderingDao().getAll()
 

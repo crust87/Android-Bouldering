@@ -4,10 +4,10 @@ import android.content.res.Resources
 import android.view.View
 import androidx.lifecycle.*
 import com.kayadami.bouldering.R
-import com.kayadami.bouldering.data.BoulderingDataSource
+import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
 import com.kayadami.bouldering.editor.EditorView
 import com.kayadami.bouldering.editor.HolderBox
-import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow

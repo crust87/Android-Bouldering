@@ -7,7 +7,7 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import com.kayadami.bouldering.editor.ImageGenerator
-import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

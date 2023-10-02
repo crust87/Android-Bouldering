@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.data.type
+package com.kayadami.bouldering.data.bouldering.type
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

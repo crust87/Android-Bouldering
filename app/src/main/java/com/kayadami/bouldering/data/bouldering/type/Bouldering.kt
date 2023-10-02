@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.data.type
+package com.kayadami.bouldering.data.bouldering.type
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 import com.kayadami.bouldering.utils.DateUtils
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import java.util.*
 
 @JsonClass(generateAdapter = true)
 @Entity(tableName = "bouldering")

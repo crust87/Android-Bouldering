@@ -3,6 +3,7 @@ package com.kayadami.bouldering.app.setting.opensourcelicense
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.kayadami.bouldering.data.opensource.type.OpenSourceLicense
 import com.kayadami.bouldering.databinding.OpenSourceLicenseCellBinding
 import com.kayadami.bouldering.list.ViewHolder
 

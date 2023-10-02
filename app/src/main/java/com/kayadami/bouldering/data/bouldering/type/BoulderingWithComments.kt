@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.data.type
+package com.kayadami.bouldering.data.bouldering.type
 
 import androidx.room.Embedded
 import androidx.room.Relation

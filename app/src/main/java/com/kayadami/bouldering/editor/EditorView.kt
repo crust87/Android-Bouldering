@@ -6,8 +6,8 @@ import android.util.AttributeSet
 import android.view.*
 import androidx.exifinterface.media.ExifInterface
 import com.kayadami.bouldering.constants.Orientation
-import com.kayadami.bouldering.data.type.Bouldering
-import com.kayadami.bouldering.data.type.Holder
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.Holder
 import com.kayadami.bouldering.utils.FileUtil
 import kotlinx.coroutines.*
 import java.io.File

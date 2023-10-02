@@ -3,10 +3,10 @@ package com.kayadami.bouldering.data
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
-import com.kayadami.bouldering.data.type.Bouldering
-import com.kayadami.bouldering.data.type.Comment
+import com.kayadami.bouldering.data.bouldering.BoulderingDao
+import com.kayadami.bouldering.data.bouldering.HolderListConverters
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.Comment
 
 @Database(
     version = 2,

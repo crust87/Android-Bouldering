@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.data
+package com.kayadami.bouldering.data.bouldering
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -7,8 +7,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.kayadami.bouldering.data.type.Bouldering
-import com.kayadami.bouldering.data.type.BoulderingWithComments
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.BoulderingWithComments
 
 @Dao
 interface BoulderingDao {
