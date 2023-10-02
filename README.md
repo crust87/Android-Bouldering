@@ -22,11 +22,14 @@
 - Hilt
 - Navigation Component
 - Room
+- Pager
 - Kotlin Coroutine
 - Moshi
 - Glide
 
 ## Update
+### 2023-10-02
+- 덧글 작성 추가
 ### 2023-09-19
 - Room Test 추가
 - 일부 Unit Test 재작성
