@@ -23,7 +23,7 @@ interface BoulderingDao {
     fun delete(bouldering: Bouldering)
 
     @Query("DELETE FROM bouldering WHERE id = :id")
-    fun deleteByUserId(id: Long)
+    fun deleteById(id: Long)
 
     @Query("SELECT * FROM bouldering")
     fun getAll(): List<Bouldering>

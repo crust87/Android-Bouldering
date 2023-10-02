@@ -12,11 +12,11 @@ import org.junit.Before
 import org.junit.Test
 import java.io.IOException
 
-class AppDatabaseTest {
+class BoulderingDaoTest {
 
     lateinit var db: AppDatabase
 
-    var testDataId: Long = 0
+    var testBoulderingId: Long = 0
 
     @Before
     fun createDb() {
@@ -27,19 +27,19 @@ class AppDatabaseTest {
 
         val currentTime = System.currentTimeMillis()
 
-        testDataId = db.boulderingDao().insertAll(
+        testBoulderingId = db.boulderingDao().insertAll(
             Bouldering(
-            0,
-            "",
-            "",
-            "",
-            false,
-            null,
-            currentTime,
-            currentTime,
-            emptyList(),
-            0
-        )
+                0,
+                "",
+                "",
+                "",
+                false,
+                null,
+                currentTime,
+                currentTime,
+                emptyList(),
+                0
+            )
         )[0]
     }
 
@@ -55,17 +55,17 @@ class AppDatabaseTest {
 
         db.boulderingDao().insertAll(
             Bouldering(
-            0,
-            "",
-            "",
-            "",
-            false,
-            null,
-            currentTime,
-            currentTime,
-            emptyList(),
-          0
-        )
+                0,
+                "",
+                "",
+                "",
+                false,
+                null,
+                currentTime,
+                currentTime,
+                emptyList(),
+                0
+            )
         )
 
         val testData = db.boulderingDao().getAll()
@@ -75,19 +75,19 @@ class AppDatabaseTest {
 
     @Test
     fun givenTestData_whenUpdate_thenUpdated() = runBlocking(Dispatchers.IO) {
-        db.boulderingDao().get(testDataId)?.let {
+        db.boulderingDao().get(testBoulderingId)?.let {
             it.title = TEST_TITLE
             db.boulderingDao().update(it)
         }
 
-        val currentTitle = db.boulderingDao().get(testDataId)?.title
+        val currentTitle = db.boulderingDao().get(testBoulderingId)?.title
 
         Assert.assertEquals(TEST_TITLE, currentTitle)
     }
 
     @Test
     fun givenTestData_whenDelete_thenDeleted() = runBlocking(Dispatchers.IO) {
-        db.boulderingDao().get(testDataId)?.let {
+        db.boulderingDao().get(testBoulderingId)?.let {
             db.boulderingDao().delete(it)
         }
 
@@ -98,7 +98,7 @@ class AppDatabaseTest {
 
     @Test
     fun givenTestData_whenDeleteById_thenDeleted() = runBlocking(Dispatchers.IO) {
-        db.boulderingDao().deleteByUserId(testDataId)
+        db.boulderingDao().deleteById(testBoulderingId)
 
         val testData = db.boulderingDao().getAll()
 

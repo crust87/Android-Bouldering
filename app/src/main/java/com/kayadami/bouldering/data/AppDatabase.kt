@@ -6,6 +6,7 @@ import androidx.room.TypeConverters
 import com.kayadami.bouldering.data.bouldering.BoulderingDao
 import com.kayadami.bouldering.data.bouldering.HolderListConverters
 import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.kayadami.bouldering.data.comment.CommentDao
 import com.kayadami.bouldering.data.comment.type.Comment
 
 @Database(
@@ -18,4 +19,6 @@ import com.kayadami.bouldering.data.comment.type.Comment
 @TypeConverters(HolderListConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun boulderingDao(): BoulderingDao
+
+    abstract fun commentDao(): CommentDao
 }
