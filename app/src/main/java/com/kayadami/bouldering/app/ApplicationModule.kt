@@ -3,7 +3,6 @@ package com.kayadami.bouldering.app
 import android.content.Context
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
-import com.kayadami.bouldering.utils.PermissionChecker2
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,12 +19,6 @@ object ApplicationModule {
     fun provideWindowManager(@ApplicationContext context: Context): WindowManager {
         return ContextCompat.getSystemService(context, WindowManager::class.java)!!
     }
-
-    @Provides
-    @Singleton
-    fun providePermissionChecker(
-            @ApplicationContext context: Context
-    ) = PermissionChecker2(context)
 
     @Provides
     @Singleton
