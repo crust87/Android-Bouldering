@@ -10,6 +10,8 @@
         <item name="colorPrimary">#000000</item>
         <item name="colorPrimaryDark">#000000</item>
         <item name="colorAccent">#ff4072</item>
+
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
     </style>
 
     <style name="checkBoxStyle" parent="Base.Theme.AppCompat">
@@ -29,6 +31,16 @@
     <style name="toolbarDark" parent="AppTheme">
         <item name="android:background">#000000</item>
         <item name="android:textColorPrimary">#ffffff</item>
+    </style>
+
+    <style name="AppBottomSheetDialogTheme"
+        parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+    </style>
+
+    <style name="AppModalStyle"
+        parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_dialog</item>
     </style>
 
 </resources>

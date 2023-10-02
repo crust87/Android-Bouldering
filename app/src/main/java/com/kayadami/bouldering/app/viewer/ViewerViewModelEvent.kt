@@ -8,6 +8,8 @@ sealed interface ViewerViewModelEvent
 
 class OpenEditorEvent(val data: Bouldering): ViewerViewModelEvent
 
+object OpenCommentEvent: ViewerViewModelEvent
+
 class OpenShareEvent(val intent: Intent): ViewerViewModelEvent
 
 class FinishSaveEvent(val path: String?): ViewerViewModelEvent

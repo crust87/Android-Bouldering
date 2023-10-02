@@ -16,6 +16,7 @@ import com.kayadami.bouldering.app.domain.KeyboardHideUseCase
 import com.kayadami.bouldering.app.domain.KeyboardOpenUseCase
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
+import com.kayadami.bouldering.app.viewer.comment.CommentBottomSheet
 import com.kayadami.bouldering.databinding.ViewerFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.cancelChildren
@@ -63,14 +64,8 @@ class ViewerFragment : Fragment() {
 
             setOnMenuItemClickListener {
                 when (it.itemId) {
-                    R.id.actionModify -> {
-                        viewModel.openEditor()
-
-                        true
-                    }
-
-                    R.id.actionDelete -> {
-                        viewModel.remove(requireActivity())
+                    R.id.actionComment -> {
+                        viewModel.openComment()
 
                         true
                     }
@@ -83,6 +78,18 @@ class ViewerFragment : Fragment() {
 
                     R.id.actionSaveAsImage -> {
                         viewModel.saveImage()
+
+                        true
+                    }
+
+                    R.id.actionModify -> {
+                        viewModel.openEditor()
+
+                        true
+                    }
+
+                    R.id.actionDelete -> {
+                        viewModel.remove(requireActivity())
 
                         true
                     }
@@ -120,6 +127,7 @@ class ViewerFragment : Fragment() {
                 is OpenEditorEvent -> navigate(
                     ViewerFragmentDirections.actionViewerFragmentToEditorFragment(it.data.id)
                 )
+                is OpenCommentEvent -> openComment()
                 is OpenShareEvent -> startActivity(it.intent)
                 is FinishSaveEvent -> Toast.makeText(context, it.path, Toast.LENGTH_SHORT).show()
                 is NavigateUpEvent -> navigateUp()
@@ -128,6 +136,10 @@ class ViewerFragment : Fragment() {
                 is ToastEvent -> Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
             }
         }.launchIn(lifecycleScope)
+    }
+
+    fun openComment() {
+        CommentBottomSheet().show(childFragmentManager, "CommentBottomSheet")
     }
 
     override fun onDestroyView() {

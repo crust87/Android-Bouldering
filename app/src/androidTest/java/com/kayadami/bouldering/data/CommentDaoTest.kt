@@ -3,6 +3,7 @@ package com.kayadami.bouldering.data
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.kayadami.bouldering.constants.COMMENT_PAGE_LIMIT
 import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import com.kayadami.bouldering.data.comment.type.Comment
 import kotlinx.coroutines.Dispatchers
@@ -96,6 +97,26 @@ class CommentDaoTest {
         val testData = db.commentDao().getAllByBoulderingId(testBoulderingId)
 
         Assert.assertEquals(0, testData.size)
+    }
+
+    @Test
+    fun givenTestData_whenPaging_thenResultLimited() = runBlocking(Dispatchers.IO) {
+        val currentTime = System.currentTimeMillis()
+
+        repeat(20) {
+            db.commentDao().insertAll(
+                Comment(
+                    0,
+                    TEST_TEXT,
+                    testBoulderingId,
+                    currentTime
+                )
+            )
+        }
+
+        val testData = db.commentDao().getAllByBoulderingId(testBoulderingId, 0)
+
+        Assert.assertEquals(COMMENT_PAGE_LIMIT, testData.size)
     }
 
     companion object {

@@ -98,6 +98,10 @@ class ViewerViewModel @Inject constructor(
         }
     }
 
+    fun openComment() {
+        eventChannel.tryEmit(OpenCommentEvent)
+    }
+
     fun openShare() = viewModelScope.launch(Dispatchers.Main) {
         isProgress.value = true
 
