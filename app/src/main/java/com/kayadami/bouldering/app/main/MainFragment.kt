@@ -23,10 +23,10 @@ import com.kayadami.bouldering.app.MainFragmentComponent
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
+import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
 import com.kayadami.bouldering.databinding.MainFragmentBinding
 import com.kayadami.bouldering.image.FragmentImageLoader
 import com.kayadami.bouldering.image.ImageLoader
-import com.kayadami.bouldering.list.GridSpacingItemDecoration
 import com.kayadami.bouldering.utils.FileUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.cancelChildren
@@ -47,10 +47,6 @@ class MainFragment : Fragment() {
     @Inject
     @MainFragmentComponent
     lateinit var layoutManager: StaggeredGridLayoutManager
-
-    @Inject
-    @MainFragmentComponent
-    lateinit var itemDecoration: GridSpacingItemDecoration
 
     @Inject
     lateinit var adapter: BoulderingAdapter
@@ -96,9 +92,11 @@ class MainFragment : Fragment() {
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 when (menuItem.itemId) {
-                    R.id.actionSetting -> viewModel.openSetting()
                     R.id.actionCamera -> viewModel.openCamera()
                     R.id.actionGallery -> viewModel.openGallery()
+                    R.id.actionSetting -> viewModel.openSetting()
+                    R.id.actionSortASC -> viewModel.setSort(BoulderingDataSource.ListSort.ASC)
+                    R.id.actionSortDESC -> viewModel.setSort(BoulderingDataSource.ListSort.DESC)
                 }
 
                 return true
@@ -107,6 +105,8 @@ class MainFragment : Fragment() {
             override fun onPrepareMenu(menu: Menu) {
                 menu.getItem(0)?.isVisible = !appBarManager.appBarExpanded
                 menu.getItem(1)?.isVisible = !appBarManager.appBarExpanded
+                menu.getItem(3)?.isVisible = viewModel.listSort.value != BoulderingDataSource.ListSort.ASC
+                menu.getItem(4)?.isVisible = viewModel.listSort.value != BoulderingDataSource.ListSort.DESC
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
@@ -125,7 +125,6 @@ class MainFragment : Fragment() {
         }
 
         binding.recyclerView.layoutManager = layoutManager
-        binding.recyclerView.addItemDecoration(itemDecoration)
         binding.recyclerView.adapter = adapter
 
         binding.appBar.addOnOffsetChangedListener(appBarManager)
@@ -151,6 +150,7 @@ class MainFragment : Fragment() {
 
                 is OpenCameraEvent -> requestOpenCamera.launch(it.intent)
                 is OpenGalleryEvent -> requestOpenGallery.launch(it.intent)
+                is ListSortChangeEvent -> activity?.invalidateOptionsMenu()
             }
         }.launchIn(lifecycleScope)
     }
@@ -161,7 +161,6 @@ class MainFragment : Fragment() {
         lifecycleScope.coroutineContext.cancelChildren()
 
         binding.recyclerView.layoutManager = null
-        binding.recyclerView.removeItemDecoration(itemDecoration)
         binding.appBar.removeOnOffsetChangedListener(appBarManager)
     }
 
@@ -174,12 +173,8 @@ class MainFragment : Fragment() {
     private fun setOrientation(orientation: Int) {
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             layoutManager.spanCount = 4
-            itemDecoration.spanCount = 4
         } else {
             layoutManager.spanCount = 2
-            itemDecoration.spanCount = 2
         }
-
-        adapter.notifyItemRangeChanged(0, adapter.itemCount)
     }
 }

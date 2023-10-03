@@ -1,8 +1,11 @@
 package com.kayadami.bouldering.app.main
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.map
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.app.domain.OpenCameraUseCase
 import com.kayadami.bouldering.app.domain.OpenGalleryUseCase
@@ -19,8 +22,10 @@ class MainViewModel @Inject constructor(
     val openGalleryUseCae: OpenGalleryUseCase,
 ) : ViewModel() {
 
-    val list: LiveData<List<Bouldering>> by lazy {
-        repository.list().asLiveData(viewModelScope.coroutineContext)
+    val listSort = MutableLiveData(BoulderingDataSource.ListSort.DESC)
+
+    val list = listSort.switchMap {
+        repository.list(it).asLiveData(viewModelScope.coroutineContext)
     }
 
     val eventChannel = MutableSharedFlow<MainViewModelEvent>(
@@ -33,6 +38,12 @@ class MainViewModel @Inject constructor(
         set(value) {
             openCameraUseCase.photoPath = value
         }
+
+    fun setSort(sort: BoulderingDataSource.ListSort) {
+        listSort.value = sort
+
+        eventChannel.tryEmit(ListSortChangeEvent)
+    }
 
     fun openSetting() {
         eventChannel.tryEmit(OpenSettingEvent)

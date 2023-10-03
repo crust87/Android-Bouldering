@@ -126,7 +126,11 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:itemCount="7"
+            tools:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+            tools:listitem="@layout/bouldering_cell"
+            tools:spanCount="2" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -25,8 +25,11 @@ interface BoulderingDao {
     @Query("DELETE FROM bouldering WHERE id = :id")
     suspend fun deleteById(id: Long)
 
-    @Query("SELECT * FROM bouldering")
-    suspend fun getAll(): List<Bouldering>
+    @Query("SELECT * FROM bouldering ORDER BY id ASC")
+    suspend fun getAllASC(): List<Bouldering>
+
+    @Query("SELECT * FROM bouldering ORDER BY id DESC")
+    suspend fun getAllDESC(): List<Bouldering>
 
     @Query("SELECT * FROM bouldering WHERE id = :id")
     suspend fun get(id: Long): Bouldering?

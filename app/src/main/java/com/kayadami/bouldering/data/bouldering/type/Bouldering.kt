@@ -46,7 +46,7 @@ class Bouldering(
         get() = orientation
 
     fun getDate(): String {
-        return DateUtils.convertDate(updatedAt)
+        return DateUtils.convertDate(createdAt)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -63,8 +63,8 @@ class Bouldering(
 
     override fun compareTo(other: Bouldering): Int {
         return when {
-            (other.updatedAt - updatedAt) > 0 -> 1
-            (other.updatedAt - updatedAt) < 0 -> -1
+            (other.createdAt - createdAt) > 0 -> 1
+            (other.createdAt - createdAt) < 0 -> -1
             else -> 0
         }
     }

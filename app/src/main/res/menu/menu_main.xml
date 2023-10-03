@@ -18,4 +18,13 @@
         android:id="@+id/actionSetting"
         android:title="@string/setting"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/actionSortASC"
+        android:title="@string/asc"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/actionSortDESC"
+        android:title="@string/desc"
+        app:showAsAction="never" />
 </menu>

@@ -6,6 +6,7 @@ import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import com.kayadami.bouldering.data.comment.CommentDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -18,10 +19,16 @@ class BoulderingRepository @Inject constructor(
     val commentDao: CommentDao,
 ) : BoulderingDataSource {
 
+    private var _sort = BoulderingDataSource.ListSort.DESC
+
     private var _listFlow = MutableStateFlow(emptyList<Bouldering>())
 
-    override fun list() = _listFlow.asStateFlow().also {
-        invalidate()
+    override fun list(sort: BoulderingDataSource.ListSort): Flow<List<Bouldering>> {
+        _sort = sort
+
+        return _listFlow.asStateFlow().also {
+            invalidate()
+        }
     }
 
     override suspend fun get(id: Long): Bouldering? = boulderingDao.get(id)
@@ -47,6 +54,9 @@ class BoulderingRepository @Inject constructor(
     }
 
     private fun invalidate() = CoroutineScope(Dispatchers.Main).launch {
-        _listFlow.emit(boulderingDao.getAll())
+        _listFlow.emit(when (_sort) {
+            BoulderingDataSource.ListSort.ASC -> boulderingDao.getAllASC()
+            BoulderingDataSource.ListSort.DESC -> boulderingDao.getAllDESC()
+        })
     }
 }

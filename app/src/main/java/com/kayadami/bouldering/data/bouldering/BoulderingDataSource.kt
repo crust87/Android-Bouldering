@@ -5,7 +5,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface BoulderingDataSource {
 
-    fun list(): Flow<List<Bouldering>>
+    enum class ListSort {
+        ASC,
+        DESC
+    }
+
+    fun list(sort: ListSort): Flow<List<Bouldering>>
 
     suspend fun get(id: Long): Bouldering?
 

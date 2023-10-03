@@ -14,3 +14,5 @@ class OpenEditorEvent(val path: String): MainViewModelEvent
 class OpenCameraEvent(val intent: Intent): MainViewModelEvent
 
 class OpenGalleryEvent(val intent: Intent): MainViewModelEvent
+
+object ListSortChangeEvent: MainViewModelEvent

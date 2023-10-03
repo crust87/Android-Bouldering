@@ -14,9 +14,12 @@
     <string name="export_problem">EXPORT</string>
     <string name="import_problem">IMPORT</string>
     <string name="open_source_license">OPEN SOURCE LICENSE</string>
-    <string name="setting">SETTING</string>
     <string name="camera">CAMERA</string>
     <string name="gallery">GALLERY</string>
+    <string name="setting">SETTING</string>
+    <string name="asc">OLDEST</string>
+    <string name="desc">NEWEST</string>
+
     <string name="backup">BACKUP(beta)</string>
 
     <string name="time_just_now">just now</string>

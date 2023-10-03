@@ -14,9 +14,11 @@
     <string name="export_problem">내보내기</string>
     <string name="import_problem">가져오기</string>
     <string name="open_source_license">오픈소스 라이선스</string>
-    <string name="setting">세팅</string>
     <string name="camera">카메라</string>
     <string name="gallery">앨범</string>
+    <string name="setting">세팅</string>
+    <string name="asc">오래된 순</string>
+    <string name="desc">최신 순</string>
     <string name="backup">백업(베타)</string>
 
     <string name="time_just_now">방금</string>
