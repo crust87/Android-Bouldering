@@ -1,7 +1,7 @@
 package com.kayadami.bouldering.data
 
 import android.content.Context
-import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import com.kayadami.bouldering.utils.FileUtil
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

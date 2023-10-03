@@ -1,5 +1,6 @@
 package com.kayadami.bouldering.data
 
+import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

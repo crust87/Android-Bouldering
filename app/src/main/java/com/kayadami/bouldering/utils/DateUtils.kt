@@ -10,10 +10,10 @@ import java.util.Locale
 
 object DateUtils {
 
-    private val MONTH_IN_MILLI = (60 * 60 * 24 * 28).toLong()
-    private val DAY_IN_MILLI = (60 * 60 * 24).toLong()
-    private val HOUR_IN_MILLI = (60 * 60).toLong()
-    private val MINUTE_IN_MILLI = 60.toLong()
+    private const val MONTH_IN_SECOND = (60 * 60 * 24 * 28).toLong()
+    private const val DAY_IN_SECOND = (60 * 60 * 24).toLong()
+    private const val HOUR_IN_SECOND = (60 * 60).toLong()
+    private const val MINUTE_IN_SECOND = 60.toLong()
 
     private lateinit var formatInDate: SimpleDateFormat
     private lateinit var formatInDateTime: SimpleDateFormat
@@ -32,23 +32,19 @@ object DateUtils {
         formatInDateTime = SimpleDateFormat(context.getString(R.string.time_date_time), Locale.ENGLISH)
     }
 
-    fun convertDate(timestamp: Long): String {
+    fun convertDate(timestamp: Long, currentInMilli: Long = System.currentTimeMillis()): String {
         val date = Date(timestamp)
-        val current = Date()
 
-        val dateInMilli = date.time
-        val currentInMilli = current.time
+        val deltaSecond = (currentInMilli - timestamp) / 1000
 
-        val deltaMilli = (currentInMilli - dateInMilli) / 1000
-
-        return if (deltaMilli > MONTH_IN_MILLI) {
+        return if (deltaSecond > MONTH_IN_SECOND) {
             formatInDate.format(date)
-        } else if (deltaMilli > DAY_IN_MILLI) {
-            String.format(textDays, deltaMilli / DAY_IN_MILLI)
-        } else if (deltaMilli > HOUR_IN_MILLI) {
-            String.format(textHrs, deltaMilli / HOUR_IN_MILLI)
-        } else if (deltaMilli > MINUTE_IN_MILLI) {
-            String.format(textMin, deltaMilli / MINUTE_IN_MILLI)
+        } else if (deltaSecond > DAY_IN_SECOND) {
+            String.format(textDays, deltaSecond / DAY_IN_SECOND)
+        } else if (deltaSecond > HOUR_IN_SECOND) {
+            String.format(textHrs, deltaSecond / HOUR_IN_SECOND)
+        } else if (deltaSecond > MINUTE_IN_SECOND) {
+            String.format(textMin, deltaSecond / MINUTE_IN_SECOND)
         } else {
             textJustNow
         }

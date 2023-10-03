@@ -1,6 +1,8 @@
 package com.kayadami.bouldering.data
 
-import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
@@ -11,19 +13,25 @@ class BoulderingMockRepository @Inject constructor(
     mockDataInitializer: MockDataInitializer,
 ) : BoulderingDataSource {
 
+    private var _sort = BoulderingDataSource.ListSort.DESC
+
     private val boulderingList = ArrayList<Bouldering>()
 
-    private var _listFlow = MutableStateFlow(boulderingList)
+    private var _listFlow = MutableStateFlow(emptyList<Bouldering>())
 
     init {
         val initialData = mockDataInitializer.getMockList()
 
         boulderingList.addAll(initialData)
-
-        _listFlow.tryEmit(boulderingList)
     }
 
-    override fun list() = _listFlow.asStateFlow()
+    override fun list(sort: BoulderingDataSource.ListSort): Flow<List<Bouldering>> {
+        _sort = sort
+
+        return _listFlow.asStateFlow().also {
+            invalidate()
+        }
+    }
 
     override suspend fun get(id: Long): Bouldering? {
         return boulderingList.find { it.id == id }
@@ -48,7 +56,15 @@ class BoulderingMockRepository @Inject constructor(
         invalidate()
     }
 
-    private suspend fun invalidate() {
-        _listFlow.emit(boulderingList)
+    private fun invalidate() {
+        when (_sort) {
+            BoulderingDataSource.ListSort.DESC -> boulderingList.sort()
+            BoulderingDataSource.ListSort.ASC -> boulderingList.apply {
+                sort()
+                reverse()
+            }
+        }
+
+        _listFlow.tryEmit(ArrayList(boulderingList))
     }
 }

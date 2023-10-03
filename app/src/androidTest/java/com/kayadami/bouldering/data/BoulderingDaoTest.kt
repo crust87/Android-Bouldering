@@ -68,7 +68,7 @@ class BoulderingDaoTest {
             )
         )
 
-        val testData = db.boulderingDao().getAll()
+        val testData = db.boulderingDao().getAllDESC()
 
         Assert.assertEquals(2, testData.size)
     }
@@ -91,7 +91,7 @@ class BoulderingDaoTest {
             db.boulderingDao().delete(it)
         }
 
-        val testData = db.boulderingDao().getAll()
+        val testData = db.boulderingDao().getAllDESC()
 
         Assert.assertEquals(0, testData.size)
     }
@@ -100,7 +100,7 @@ class BoulderingDaoTest {
     fun givenTestData_whenDeleteById_thenDeleted() = runBlocking(Dispatchers.IO) {
         db.boulderingDao().deleteById(TEST_BOULDERING_ID)
 
-        val testData = db.boulderingDao().getAll()
+        val testData = db.boulderingDao().getAllDESC()
 
         Assert.assertEquals(0, testData.size)
     }
