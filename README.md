@@ -26,11 +26,14 @@
 - Moshi
 - Glide
 - Canvas
+- JUnit(androidTest)
+- Kotest(unitTest)
 
 ## Update
 ### 2023-10-03
 - 메모 작성 기능 추가
 - 메인 리스트 정렬 기능 추가
+- Unit Test Kotest 마이그레이션
 ### 2023-09-19
 - Room Test 추가
 - 일부 Unit Test 재작성
