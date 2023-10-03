@@ -18,18 +18,18 @@
 
 ## 사용 기술
 - Kotlin-MVVM
-- Canvas
+- Kotlin Coroutine
 - Hilt
 - Navigation Component
 - Room
-- Pager
-- Kotlin Coroutine
+- Paging
 - Moshi
 - Glide
+- Canvas
 
 ## Update
-### 2023-10-02
-- 덧글 작성 추가
+### 2023-10-03
+- 메모 작성 기능 추가
 ### 2023-09-19
 - Room Test 추가
 - 일부 Unit Test 재작성
