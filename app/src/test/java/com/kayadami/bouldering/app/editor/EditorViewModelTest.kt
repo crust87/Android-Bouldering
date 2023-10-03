@@ -2,99 +2,97 @@ package com.kayadami.bouldering.app.editor
 
 import android.content.res.Resources
 import android.view.View
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.kayadami.bouldering.InstantExecutorListener
 import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
 import com.kayadami.bouldering.editor.HolderBox
 import com.kayadami.bouldering.editor.Options
 import com.kayadami.bouldering.getOrAwaitValue
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
-import org.mockito.Mockito.mock
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.shouldBe
+import io.mockk.mockk
 
-@RunWith(JUnit4::class)
-class EditorViewModelTest {
+class EditorViewModelTest : BehaviorSpec({
+    listener(InstantExecutorListener())
 
-    @get:Rule
-    var instantExecutorRule = InstantTaskExecutorRule()
+    val repository = mockk<BoulderingDataSource>()
+    val resources = mockk<Resources>()
 
-    lateinit var viewModel: EditorViewModel
+    val viewModel = EditorViewModel(repository, resources)
 
-    @Before
-    fun setUp() {
-        val repository = mock(BoulderingDataSource::class.java)
-        val resources = mock(Resources::class.java)
-
-        viewModel = EditorViewModel(repository, resources)
-    }
-
-    @Test
-    fun givenNoHolderSelected_thenProblemToolIsVisible() {
+    given("홀더가 선택되어 있지 않으면") {
         viewModel.selectedHolder.value = null
 
-        val problemToolVisibility = viewModel.problemToolVisibility.getOrAwaitValue()
-        val holderToolVisibility = viewModel.holderToolVisibility.getOrAwaitValue()
-
-        Assert.assertEquals(View.VISIBLE, problemToolVisibility)
-        Assert.assertEquals(View.GONE, holderToolVisibility)
-    }
-
-    @Test
-    fun givenHolderSelected_thenHolderToolIsVisible() {
-        viewModel.selectedHolder.value = HolderBox(Options())
-
-        val problemToolVisibility = viewModel.problemToolVisibility.getOrAwaitValue()
-        val holderToolVisibility = viewModel.holderToolVisibility.getOrAwaitValue()
-
-        Assert.assertEquals(View.GONE, problemToolVisibility)
-        Assert.assertEquals(View.VISIBLE, holderToolVisibility)
-    }
-
-    @Test
-    fun givenNormalHolder() {
-        viewModel.selectedHolder.value = HolderBox(Options())
-
-        val isNumberHolder = viewModel.isNumberHolder.getOrAwaitValue()
-        val isSpecialHolder = viewModel.isSpecialHolder.getOrAwaitValue()
-        val isNumberEnabled = viewModel.isNumberEnabled.getOrAwaitValue()
-
-        Assert.assertEquals(false, isNumberHolder)
-        Assert.assertEquals(false, isSpecialHolder)
-        Assert.assertEquals(true, isNumberEnabled)
-    }
-
-    @Test
-    fun givenSpecialHolder() {
-        viewModel.selectedHolder.value = HolderBox(Options()).apply {
-            isSpecial = true
+        then("Problem Tool UI가 보이고") {
+            viewModel.problemToolVisibility.getOrAwaitValue() shouldBe View.VISIBLE
         }
 
-        val value = viewModel.isSpecialHolder.getOrAwaitValue()
-
-        val isNumberHolder = viewModel.isNumberHolder.getOrAwaitValue()
-        val isSpecialHolder = viewModel.isSpecialHolder.getOrAwaitValue()
-        val isNumberEnabled = viewModel.isNumberEnabled.getOrAwaitValue()
-
-        Assert.assertEquals(false, isNumberHolder)
-        Assert.assertEquals(true, isSpecialHolder)
-        Assert.assertEquals(false, isNumberEnabled)
+        then("Holder Tool UI는 안보인다") {
+            viewModel.holderToolVisibility.getOrAwaitValue() shouldBe View.GONE
+        }
     }
 
-    @Test
-    fun givenOrderHolder() {
-        viewModel.selectedHolder.value = HolderBox(Options()).apply {
-            isInOrder = true
+    given("홀더가 선택되어 있으면") {
+        viewModel.selectedHolder.value = HolderBox(Options())
+
+        then("Problem Tool UI가 안보이고") {
+            viewModel.problemToolVisibility.getOrAwaitValue() shouldBe View.GONE
         }
 
-        val isNumberHolder = viewModel.isNumberHolder.getOrAwaitValue()
-        val isSpecialHolder = viewModel.isSpecialHolder.getOrAwaitValue()
-        val isNumberEnabled = viewModel.isNumberEnabled.getOrAwaitValue()
+        then("Holder Tool UI는 보인다") {
+            viewModel.holderToolVisibility.getOrAwaitValue() shouldBe View.VISIBLE
+        }
 
-        Assert.assertEquals(true, isNumberHolder)
-        Assert.assertEquals(false, isSpecialHolder)
-        Assert.assertEquals(true, isNumberEnabled)
+        and("선택된 홀더가 일반 홀더이면") {
+            viewModel.selectedHolder.value = HolderBox(Options())
+
+            then("순서 속성이 아니며") {
+                viewModel.isNumberHolder.getOrAwaitValue() shouldBe false
+            }
+
+            then("특수 속성도 아니며") {
+                viewModel.isSpecialHolder.getOrAwaitValue() shouldBe false
+            }
+
+            then("숫자 속성으로 활성화/비활성화 할 수 있다") {
+                viewModel.isNumberEnabled.getOrAwaitValue() shouldBe true
+            }
+        }
+
+        and("선택된 홀더가 특수 속성 홀더이면") {
+            viewModel.selectedHolder.value = HolderBox(Options()).apply {
+                isSpecial = true
+            }
+
+            then("순서 속성은 아니며") {
+                viewModel.isNumberHolder.getOrAwaitValue() shouldBe false
+            }
+
+            then("특수 속성 이면서") {
+                viewModel.isSpecialHolder.getOrAwaitValue() shouldBe true
+            }
+
+            then("숫자 속성으로 활성화/비활성화 할 수 없다") {
+                viewModel.isNumberEnabled.getOrAwaitValue() shouldBe false
+            }
+        }
+
+        and("선택된 홀더가 순서 속성 홀더이면") {
+            viewModel.selectedHolder.value = HolderBox(Options()).apply {
+                isInOrder = true
+            }
+
+            then("순서 속성이 이면서") {
+                viewModel.isNumberHolder.getOrAwaitValue() shouldBe true
+            }
+
+            then("특수 속성은 아니며") {
+                viewModel.isSpecialHolder.getOrAwaitValue() shouldBe false
+            }
+
+            then("숫자 속성으로 활성화/비활성화 할 수 있다") {
+                viewModel.isNumberEnabled.getOrAwaitValue() shouldBe true
+            }
+        }
     }
-}
+})
+
