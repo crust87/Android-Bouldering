@@ -14,25 +14,25 @@ import com.kayadami.bouldering.data.bouldering.type.BoulderingWithComments
 interface BoulderingDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg bouldering: Bouldering): List<Long>
+    suspend fun insertAll(vararg bouldering: Bouldering): List<Long>
 
     @Update
-    fun update(vararg bouldering: Bouldering)
+    suspend fun update(vararg bouldering: Bouldering)
 
     @Delete
-    fun delete(bouldering: Bouldering)
+    suspend fun delete(bouldering: Bouldering)
 
     @Query("DELETE FROM bouldering WHERE id = :id")
-    fun deleteById(id: Long)
+    suspend fun deleteById(id: Long)
 
     @Query("SELECT * FROM bouldering")
-    fun getAll(): List<Bouldering>
+    suspend fun getAll(): List<Bouldering>
 
     @Query("SELECT * FROM bouldering WHERE id = :id")
-    fun get(id: Long): Bouldering?
+    suspend fun get(id: Long): Bouldering?
 
     @Transaction
     @Query("SELECT * FROM bouldering WHERE id = :id")
-    fun getWithComments(id: Long): List<BoulderingWithComments>
+    suspend fun getWithComments(id: Long): List<BoulderingWithComments>
 
 }

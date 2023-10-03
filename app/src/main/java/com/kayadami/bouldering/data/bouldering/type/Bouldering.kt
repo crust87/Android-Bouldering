@@ -51,7 +51,7 @@ class Bouldering(
 
     override fun equals(other: Any?): Boolean {
         if (other != null && other is Bouldering) {
-            return id == other.id
+            return id == other.id && updatedAt == other.updatedAt
         }
 
         return super.equals(other)

@@ -3,6 +3,8 @@ package com.kayadami.bouldering.app.main
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.kayadami.bouldering.constants.Orientation
@@ -16,18 +18,16 @@ import dagger.hilt.android.scopes.FragmentScoped
 import javax.inject.Inject
 
 @FragmentScoped
-open class BoulderingAdapter @Inject constructor(
+class BoulderingAdapter @Inject constructor(
         @FragmentImageLoader val imageLoader: ImageLoader
 ) : RecyclerView.Adapter<ViewHolder>() {
 
+    private val asyncListDiffer = AsyncListDiffer(this, DIFF_CALLBACK)
+
     private var _listener: BoulderingItemEvent? = null
 
-    val list = ArrayList<Bouldering>()
-
     fun setList(newList: List<Bouldering>) {
-        list.clear()
-        list.addAll(newList)
-        notifyDataSetChanged()
+        asyncListDiffer.submitList(newList)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -58,15 +58,9 @@ open class BoulderingAdapter @Inject constructor(
         }
     }
 
-    override fun getItemViewType(position: Int) = when (list.isNotEmpty()) {
-        true -> list[position].viewType
-        false -> Orientation.NONE
-    }
+    override fun getItemViewType(position: Int) = asyncListDiffer.currentList[position].viewType
 
-    override fun getItemCount() = when (list.isNotEmpty()) {
-        true -> list.size
-        false -> 1
-    }
+    override fun getItemCount() = asyncListDiffer.currentList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(position)
@@ -85,7 +79,7 @@ open class BoulderingAdapter @Inject constructor(
         }
 
         override fun bind(position: Int) {
-            binding.bouldering = list[position]
+            binding.bouldering = asyncListDiffer.currentList[position]
         }
 
         override fun recycle() {
@@ -117,5 +111,17 @@ open class BoulderingAdapter @Inject constructor(
 
     interface BoulderingItemEvent {
         fun onClick(bouldering: Bouldering)
+    }
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Bouldering>() {
+            override fun areItemsTheSame(oldItem: Bouldering, newItem: Bouldering): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(oldItem: Bouldering, newItem: Bouldering): Boolean {
+                return oldItem.id == newItem.id && oldItem.updatedAt == newItem.updatedAt
+            }
+        }
     }
 }

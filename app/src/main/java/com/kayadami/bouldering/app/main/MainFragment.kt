@@ -180,6 +180,6 @@ class MainFragment : Fragment() {
             itemDecoration.spanCount = 2
         }
 
-        adapter.notifyDataSetChanged()
+        adapter.notifyItemRangeChanged(0, adapter.itemCount)
     }
 }

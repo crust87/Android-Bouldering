@@ -18,11 +18,8 @@ class CommentDaoTest {
 
     lateinit var db: AppDatabase
 
-    var testBoulderingId: Long = 0
-    var testCommentId: Long = 0
-
     @Before
-    fun createDb() {
+    fun createDb() = runBlocking(Dispatchers.IO) {
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(
             context, AppDatabase::class.java
@@ -30,9 +27,9 @@ class CommentDaoTest {
 
         val currentTime = System.currentTimeMillis()
 
-        testBoulderingId = db.boulderingDao().insertAll(
+        db.boulderingDao().insertAll(
             Bouldering(
-                0,
+                TEST_BOULDERING_ID,
                 "",
                 "",
                 "",
@@ -45,14 +42,16 @@ class CommentDaoTest {
             )
         )[0]
 
-        testCommentId = db.commentDao().insertAll(
+        db.commentDao().insertAll(
             Comment(
-                0,
+                TEST_COMMENT_ID,
                 TEST_TEXT,
-                testBoulderingId,
+                TEST_BOULDERING_ID,
                 currentTime
             )
         )[0]
+
+        Unit
     }
 
     @After
@@ -69,32 +68,41 @@ class CommentDaoTest {
             Comment(
                 0,
                 TEST_TEXT,
-                testBoulderingId,
+                TEST_BOULDERING_ID,
                 currentTime
             )
         )
 
-        val testData = db.commentDao().getAllByBoulderingId(testBoulderingId)
+        val testData = db.commentDao().getAllByBoulderingId(TEST_BOULDERING_ID)
 
         Assert.assertEquals(2, testData.size)
     }
 
     @Test
     fun givenTestData_whenDelete_thenDeleted() = runBlocking(Dispatchers.IO) {
-        db.commentDao().get(testBoulderingId)?.let {
+        db.commentDao().get(TEST_COMMENT_ID)?.let {
             db.commentDao().delete(it)
         }
 
-        val testData = db.commentDao().getAllByBoulderingId(testBoulderingId)
+        val testData = db.commentDao().getAllByBoulderingId(TEST_BOULDERING_ID)
 
         Assert.assertEquals(0, testData.size)
     }
 
     @Test
     fun givenTestData_whenDeleteById_thenDeleted() = runBlocking(Dispatchers.IO) {
-        db.commentDao().deleteById(testBoulderingId)
+        db.commentDao().deleteById(TEST_COMMENT_ID)
 
-        val testData = db.commentDao().getAllByBoulderingId(testBoulderingId)
+        val testData = db.commentDao().getAllByBoulderingId(TEST_BOULDERING_ID)
+
+        Assert.assertEquals(0, testData.size)
+    }
+
+    @Test
+    fun givenTestData_whenDeleteByBoulderingId_thenDeleted() = runBlocking(Dispatchers.IO) {
+        db.commentDao().deleteByBoulderingId(TEST_BOULDERING_ID)
+
+        val testData = db.commentDao().getAllByBoulderingId(TEST_BOULDERING_ID)
 
         Assert.assertEquals(0, testData.size)
     }
@@ -108,18 +116,20 @@ class CommentDaoTest {
                 Comment(
                     0,
                     TEST_TEXT,
-                    testBoulderingId,
+                    TEST_BOULDERING_ID,
                     currentTime
                 )
             )
         }
 
-        val testData = db.commentDao().getAllByBoulderingId(testBoulderingId, 0)
+        val testData = db.commentDao().getAllByBoulderingId(TEST_BOULDERING_ID, 0)
 
         Assert.assertEquals(COMMENT_PAGE_LIMIT, testData.size)
     }
 
     companion object {
+        const val TEST_BOULDERING_ID = 2000L
+        const val TEST_COMMENT_ID = 1000L
         const val TEST_TEXT = "TEST_TEXT"
     }
 }

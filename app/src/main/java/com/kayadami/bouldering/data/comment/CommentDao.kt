@@ -21,6 +21,9 @@ interface CommentDao {
     @Query("DELETE FROM comment WHERE id = :id")
     suspend fun deleteById(id: Long)
 
+    @Query("DELETE FROM comment WHERE boulderingId = :boulderingId")
+    suspend fun deleteByBoulderingId(boulderingId: Long)
+
     @Query("SELECT * FROM comment WHERE boulderingId = :boulderingId")
     suspend fun getAllByBoulderingId(boulderingId: Long): List<Comment>
 

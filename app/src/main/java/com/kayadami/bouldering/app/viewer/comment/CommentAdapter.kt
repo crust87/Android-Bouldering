@@ -9,7 +9,7 @@ import com.kayadami.bouldering.data.comment.type.Comment
 import com.kayadami.bouldering.databinding.CommentBottomSheetCellBinding
 import com.kayadami.bouldering.utils.DateUtils
 
-class CommentAdapter: PagingDataAdapter<Comment, CommentAdapter.CommentViewHolder>(ARTICLE_DIFF_CALLBACK) {
+class CommentAdapter: PagingDataAdapter<Comment, CommentAdapter.CommentViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
         return CommentViewHolder(
@@ -41,7 +41,7 @@ class CommentAdapter: PagingDataAdapter<Comment, CommentAdapter.CommentViewHolde
     }
 
     companion object {
-        private val ARTICLE_DIFF_CALLBACK = object : DiffUtil.ItemCallback<Comment>() {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Comment>() {
             override fun areItemsTheSame(oldItem: Comment, newItem: Comment): Boolean =
                 oldItem.id == newItem.id
 

@@ -16,10 +16,8 @@ class BoulderingDaoTest {
 
     lateinit var db: AppDatabase
 
-    var testBoulderingId: Long = 0
-
     @Before
-    fun createDb() {
+    fun createDb() = runBlocking(Dispatchers.IO) {
         val context = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(
             context, AppDatabase::class.java
@@ -27,9 +25,9 @@ class BoulderingDaoTest {
 
         val currentTime = System.currentTimeMillis()
 
-        testBoulderingId = db.boulderingDao().insertAll(
+        db.boulderingDao().insertAll(
             Bouldering(
-                0,
+                TEST_BOULDERING_ID,
                 "",
                 "",
                 "",
@@ -41,6 +39,8 @@ class BoulderingDaoTest {
                 0
             )
         )[0]
+
+        Unit
     }
 
     @After
@@ -75,19 +75,19 @@ class BoulderingDaoTest {
 
     @Test
     fun givenTestData_whenUpdate_thenUpdated() = runBlocking(Dispatchers.IO) {
-        db.boulderingDao().get(testBoulderingId)?.let {
+        db.boulderingDao().get(TEST_BOULDERING_ID)?.let {
             it.title = TEST_TITLE
             db.boulderingDao().update(it)
         }
 
-        val currentTitle = db.boulderingDao().get(testBoulderingId)?.title
+        val currentTitle = db.boulderingDao().get(TEST_BOULDERING_ID)?.title
 
         Assert.assertEquals(TEST_TITLE, currentTitle)
     }
 
     @Test
     fun givenTestData_whenDelete_thenDeleted() = runBlocking(Dispatchers.IO) {
-        db.boulderingDao().get(testBoulderingId)?.let {
+        db.boulderingDao().get(TEST_BOULDERING_ID)?.let {
             db.boulderingDao().delete(it)
         }
 
@@ -98,7 +98,7 @@ class BoulderingDaoTest {
 
     @Test
     fun givenTestData_whenDeleteById_thenDeleted() = runBlocking(Dispatchers.IO) {
-        db.boulderingDao().deleteById(testBoulderingId)
+        db.boulderingDao().deleteById(TEST_BOULDERING_ID)
 
         val testData = db.boulderingDao().getAll()
 
@@ -106,6 +106,7 @@ class BoulderingDaoTest {
     }
 
     companion object {
+        const val TEST_BOULDERING_ID = 2000L
         const val TEST_TITLE = "TEST_TITLE"
     }
 }
