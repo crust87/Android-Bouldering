@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.kayadami.bouldering.databinding.CommentBottomSheetBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -20,13 +22,13 @@ import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
-class CommentBottomSheet: BottomSheetDialogFragment() {
+class CommentBottomSheet : BottomSheetDialogFragment() {
 
     lateinit var binding: CommentBottomSheetBinding
 
     val viewModel: CommentViewModel by viewModels()
 
-    lateinit var adapter: CommentAdapter
+    val adapter: CommentAdapter by lazy { CommentAdapter() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,15 +42,9 @@ class CommentBottomSheet: BottomSheetDialogFragment() {
             lifecycleOwner = this@CommentBottomSheet
         }
 
-        adapter = CommentAdapter()
-
         binding.recyclerView.adapter = adapter
 
-        val simpleItemTouchCallback: ItemTouchHelper.SimpleCallback = object :
-            ItemTouchHelper.SimpleCallback(
-                0,
-                ItemTouchHelper.LEFT
-            ) {
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -64,10 +60,9 @@ class CommentBottomSheet: BottomSheetDialogFragment() {
                     }
                 }
             }
+        }).apply {
+            attachToRecyclerView(binding.recyclerView)
         }
-
-        val itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
-        itemTouchHelper.attachToRecyclerView(binding.recyclerView)
 
         return binding.root
     }
@@ -77,23 +72,24 @@ class CommentBottomSheet: BottomSheetDialogFragment() {
 
         val boulderingId = arguments?.getLong(BOULDERING_ID) ?: 0
 
-        viewModel.init(boulderingId)
-
         viewModel.eventChannel.onEach {
-            when(it) {
+            when (it) {
                 is OnNewCommentEvent -> {
-                    adapter.refresh()
+                    enableAutoScroll()
 
-                // TODO Scroll to top
+                    adapter.refresh()
                 }
+
                 is OnDeleteCommentEvent -> {
+                    disableAutoScroll()
+
                     adapter.refresh()
                 }
             }
         }.launchIn(lifecycleScope)
 
         lifecycleScope.launch {
-            viewModel.getList().collectLatest {
+            viewModel.init(boulderingId).collectLatest {
                 adapter.submitData(lifecycle, it)
             }
         }
@@ -103,6 +99,34 @@ class CommentBottomSheet: BottomSheetDialogFragment() {
         super.onDestroyView()
 
         lifecycleScope.coroutineContext.cancelChildren()
+    }
+
+    fun enableAutoScroll() = lifecycleScope.launch(Dispatchers.Main) {
+        try {
+            adapter.registerAdapterDataObserver(autoScroller)
+        } catch (e: Exception) {
+            // Ignore IllegalStateException
+        }
+
+        delay(1000)
+
+        disableAutoScroll()
+    }
+
+    fun disableAutoScroll() {
+        try {
+            adapter.unregisterAdapterDataObserver(autoScroller)
+        } catch (e: Exception) {
+            // Ignore IllegalStateException
+        }
+    }
+
+    private val autoScroller = object : RecyclerView.AdapterDataObserver() {
+        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+            if (positionStart == 0) {
+                binding.recyclerView.smoothScrollToPosition(0)
+            }
+        }
     }
 
     companion object {

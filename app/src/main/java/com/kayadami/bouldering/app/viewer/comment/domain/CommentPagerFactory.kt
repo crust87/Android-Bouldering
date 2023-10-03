@@ -33,7 +33,7 @@ class CommentPagerFactory @Inject constructor(private val commentDao: CommentDao
             val key = params.key ?: 0
 
             if (key < 0) {
-                return LoadResult.Error(RuntimeException("no more data"))
+                return LoadResult.Error(RuntimeException("no page under 0"))
             }
 
             val data = withContext(Dispatchers.IO) {

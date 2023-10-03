@@ -4,12 +4,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.kayadami.bouldering.app.viewer.comment.domain.CommentAdditionUseCase
 import com.kayadami.bouldering.app.viewer.comment.domain.CommentDeletionUseCase
 import com.kayadami.bouldering.app.viewer.comment.domain.CommentPagerFactory
+import com.kayadami.bouldering.data.comment.type.Comment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,11 +38,11 @@ class CommentViewModel @Inject constructor(
         extraBufferCapacity = 1
     )
 
-    fun init(boulderingId: Long) {
+    fun init(boulderingId: Long): Flow<PagingData<Comment>> {
         _boulderingId = boulderingId
-    }
 
-    fun getList() = commentPagerFactory.create(_boulderingId).flow.cachedIn(viewModelScope)
+        return commentPagerFactory.create(_boulderingId).flow.cachedIn(viewModelScope)
+    }
 
     fun addComment() = viewModelScope.launch(Dispatchers.Main) {
         val text = comment.value?.toString()
