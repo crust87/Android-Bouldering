@@ -2,11 +2,13 @@ package com.kayadami.bouldering.app.viewer
 
 import android.content.Intent
 import android.widget.EditText
-import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
 
 sealed interface ViewerViewModelEvent
 
 class OpenEditorEvent(val data: Bouldering): ViewerViewModelEvent
+
+object OpenCommentEvent: ViewerViewModelEvent
 
 class OpenShareEvent(val intent: Intent): ViewerViewModelEvent
 

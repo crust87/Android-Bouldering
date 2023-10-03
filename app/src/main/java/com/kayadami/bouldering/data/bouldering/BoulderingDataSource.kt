@@ -1,6 +1,6 @@
-package com.kayadami.bouldering.data
+package com.kayadami.bouldering.data.bouldering
 
-import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import kotlinx.coroutines.flow.Flow
 
 interface BoulderingDataSource {

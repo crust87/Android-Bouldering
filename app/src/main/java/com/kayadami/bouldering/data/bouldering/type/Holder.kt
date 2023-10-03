@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.data.type
+package com.kayadami.bouldering.data.bouldering.type
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

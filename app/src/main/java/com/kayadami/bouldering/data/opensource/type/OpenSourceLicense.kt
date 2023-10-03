@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.app.setting.opensourcelicense
+package com.kayadami.bouldering.data.opensource.type
 
 data class OpenSourceLicense(
         val name: String,

@@ -7,7 +7,7 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.signature.ObjectKey
 import com.kayadami.bouldering.app.GlideApp
-import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import java.io.File
 
 abstract class ImageLoader() {

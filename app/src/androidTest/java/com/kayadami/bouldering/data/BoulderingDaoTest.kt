@@ -3,7 +3,7 @@ package com.kayadami.bouldering.data
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -12,11 +12,11 @@ import org.junit.Before
 import org.junit.Test
 import java.io.IOException
 
-class AppDatabaseTest {
+class BoulderingDaoTest {
 
     lateinit var db: AppDatabase
 
-    var testDataId: Long = 0
+    var testBoulderingId: Long = 0
 
     @Before
     fun createDb() {
@@ -27,18 +27,20 @@ class AppDatabaseTest {
 
         val currentTime = System.currentTimeMillis()
 
-        testDataId = db.boulderingDao().insertAll(Bouldering(
-            0,
-            "",
-            "",
-            "",
-            false,
-            null,
-            currentTime,
-            currentTime,
-            emptyList(),
-            0
-        ))[0]
+        testBoulderingId = db.boulderingDao().insertAll(
+            Bouldering(
+                0,
+                "",
+                "",
+                "",
+                false,
+                null,
+                currentTime,
+                currentTime,
+                emptyList(),
+                0
+            )
+        )[0]
     }
 
     @After
@@ -51,18 +53,20 @@ class AppDatabaseTest {
     fun givenTestData_whenInsert_thenInserted() = runBlocking(Dispatchers.IO) {
         val currentTime = System.currentTimeMillis()
 
-        db.boulderingDao().insertAll(Bouldering(
-            0,
-            "",
-            "",
-            "",
-            false,
-            null,
-            currentTime,
-            currentTime,
-            emptyList(),
-          0
-        ))
+        db.boulderingDao().insertAll(
+            Bouldering(
+                0,
+                "",
+                "",
+                "",
+                false,
+                null,
+                currentTime,
+                currentTime,
+                emptyList(),
+                0
+            )
+        )
 
         val testData = db.boulderingDao().getAll()
 
@@ -71,19 +75,19 @@ class AppDatabaseTest {
 
     @Test
     fun givenTestData_whenUpdate_thenUpdated() = runBlocking(Dispatchers.IO) {
-        db.boulderingDao().get(testDataId)?.let {
+        db.boulderingDao().get(testBoulderingId)?.let {
             it.title = TEST_TITLE
             db.boulderingDao().update(it)
         }
 
-        val currentTitle = db.boulderingDao().get(testDataId)?.title
+        val currentTitle = db.boulderingDao().get(testBoulderingId)?.title
 
         Assert.assertEquals(TEST_TITLE, currentTitle)
     }
 
     @Test
     fun givenTestData_whenDelete_thenDeleted() = runBlocking(Dispatchers.IO) {
-        db.boulderingDao().get(testDataId)?.let {
+        db.boulderingDao().get(testBoulderingId)?.let {
             db.boulderingDao().delete(it)
         }
 
@@ -94,7 +98,7 @@ class AppDatabaseTest {
 
     @Test
     fun givenTestData_whenDeleteById_thenDeleted() = runBlocking(Dispatchers.IO) {
-        db.boulderingDao().deleteByUserId(testDataId)
+        db.boulderingDao().deleteById(testBoulderingId)
 
         val testData = db.boulderingDao().getAll()
 

@@ -1,7 +1,7 @@
 package com.kayadami.bouldering.app.main
 
 import android.content.Intent
-import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
 
 sealed interface MainViewModelEvent
 

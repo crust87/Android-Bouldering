@@ -7,6 +7,7 @@
     <string name="solved">해결</string>
     <string name="delete">삭제</string>
     <string name="edit">수정</string>
+    <string name="comment">메모</string>
     <string name="share">공유</string>
     <string name="save">갤러리에 저장</string>
     <string name="done">완료</string>

@@ -21,4 +21,10 @@ object DataModule {
             AppDatabase::class.java, "database-bouldering"
         ).addMigrations(*Migration.asArray()).build()
     }
+
+    @Provides
+    fun provideBoulderingDao(database: AppDatabase) = database.boulderingDao()
+
+    @Provides
+    fun provideCommentDao(database: AppDatabase) = database.commentDao()
 }

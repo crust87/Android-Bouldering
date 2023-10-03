@@ -3,7 +3,7 @@ package com.kayadami.bouldering.editor
 import android.graphics.*
 import androidx.exifinterface.media.ExifInterface
 import android.view.WindowManager
-import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import java.io.FileInputStream
 import java.io.InputStream
 import java.lang.NullPointerException

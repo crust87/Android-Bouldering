@@ -3,7 +3,7 @@ package com.kayadami.bouldering.app.editor
 import android.content.res.Resources
 import android.view.View
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.kayadami.bouldering.data.BoulderingDataSource
+import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
 import com.kayadami.bouldering.editor.HolderBox
 import com.kayadami.bouldering.editor.Options
 import com.kayadami.bouldering.getOrAwaitValue

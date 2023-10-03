@@ -1,6 +1,7 @@
 package com.kayadami.bouldering.data
 
-import com.kayadami.bouldering.data.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
