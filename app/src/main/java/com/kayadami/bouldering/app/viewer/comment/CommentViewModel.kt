@@ -6,6 +6,7 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.kayadami.bouldering.app.viewer.comment.domain.CommentAdditionUseCase
+import com.kayadami.bouldering.app.viewer.comment.domain.CommentDeletionUseCase
 import com.kayadami.bouldering.app.viewer.comment.domain.CommentPagerFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class CommentViewModel @Inject constructor(
     private val commentPagerFactory: CommentPagerFactory,
     private val commentAdditionUseCase: CommentAdditionUseCase,
+    private val commentDeletionUseCase: CommentDeletionUseCase,
 ) : ViewModel() {
 
     val comment = MutableLiveData<String>()
@@ -46,5 +48,11 @@ class CommentViewModel @Inject constructor(
 
             eventChannel.tryEmit(OnNewCommentEvent)
         }
+    }
+
+    fun deleteComment(commentId: Long) = viewModelScope.launch(Dispatchers.Main) {
+        commentDeletionUseCase(commentId)
+
+        eventChannel.tryEmit(OnDeleteCommentEvent)
     }
 }

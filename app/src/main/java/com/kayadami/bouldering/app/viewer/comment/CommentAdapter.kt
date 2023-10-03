@@ -29,7 +29,12 @@ class CommentAdapter: PagingDataAdapter<Comment, CommentAdapter.CommentViewHolde
     }
 
     class CommentViewHolder(val binding: CommentBottomSheetCellBinding): ViewHolder(binding.root) {
+
+        var data: Comment? = null
+
         fun bind(item: Comment) {
+            data = item
+
             binding.textComment.text = item.text
             binding.textCreatedAt.text = DateUtils.convertDate(item.createdAt)
         }
