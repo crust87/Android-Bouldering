@@ -43,6 +43,7 @@ class CommentViewModel @Inject constructor(
 
         if (commentAdditionUseCase(text, _boulderingId)) {
             comment.value = ""
+
             eventChannel.tryEmit(OnNewCommentEvent)
         }
     }

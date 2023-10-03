@@ -78,7 +78,7 @@
                     android:paddingLeft="18dp"
                     android:paddingRight="18dp"
                     android:text="@string/editor_clear"
-                    android:textColor="#ff4072" />
+                    android:textColor="@color/colorAccent" />
 
                 <TextView
                     android:id="@+id/buttonColor"
@@ -109,7 +109,7 @@
                     android:paddingLeft="18dp"
                     android:paddingRight="18dp"
                     android:text="@string/delete"
-                    android:textColor="#ff4072" />
+                    android:textColor="@color/colorAccent" />
 
                 <CheckBox
                     android:id="@+id/checkNumberedHolder"

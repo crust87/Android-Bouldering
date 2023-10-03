@@ -54,7 +54,6 @@ class CommentBottomSheet: BottomSheetDialogFragment() {
         viewModel.eventChannel.onEach {
             when(it) {
                 is OnNewCommentEvent -> {
-                    binding.recyclerView.smoothScrollToPosition(0)
                     adapter.refresh()
                 }
             }

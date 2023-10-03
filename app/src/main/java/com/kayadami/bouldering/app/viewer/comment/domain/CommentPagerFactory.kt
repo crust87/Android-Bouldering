@@ -43,7 +43,7 @@ class CommentPagerFactory @Inject constructor(private val commentDao: CommentDao
             return if (data.isNotEmpty()) {
                 LoadResult.Page(
                     data = data,
-                    prevKey = null,
+                    prevKey = key.minus(1),
                     nextKey = key.plus(1)
                 )
             } else {
@@ -52,7 +52,9 @@ class CommentPagerFactory @Inject constructor(private val commentDao: CommentDao
         }
 
         override fun getRefreshKey(state: PagingState<Int, Comment>): Int {
-            return 0
+            return state.anchorPosition?.let {
+                state.closestPageToPosition(it)?.prevKey?.plus(1) ?: state.closestPageToPosition(it)?.nextKey?.minus(1)
+            } ?: 0
         }
     }
 }

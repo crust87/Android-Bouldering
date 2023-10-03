@@ -13,21 +13,21 @@ import org.jetbrains.annotations.TestOnly
 interface CommentDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg comment: Comment): List<Long>
+    suspend fun insertAll(vararg comment: Comment): List<Long>
 
     @Delete
-    fun delete(comment: Comment)
+    suspend fun delete(comment: Comment)
 
     @Query("DELETE FROM comment WHERE id = :id")
-    fun deleteById(id: Long)
+    suspend fun deleteById(id: Long)
 
     @Query("SELECT * FROM comment WHERE boulderingId = :boulderingId")
-    fun getAllByBoulderingId(boulderingId: Long): List<Comment>
+    suspend fun getAllByBoulderingId(boulderingId: Long): List<Comment>
 
     @Query("SELECT * FROM comment WHERE boulderingId = :boulderingId ORDER BY id DESC LIMIT 10 OFFSET :page * $COMMENT_PAGE_LIMIT")
-    fun getAllByBoulderingId(boulderingId: Long, page: Int): List<Comment>
+    suspend fun getAllByBoulderingId(boulderingId: Long, page: Int): List<Comment>
 
     @TestOnly
     @Query("SELECT * FROM comment WHERE id = :id")
-    fun get(id: Long): Comment?
+    suspend fun get(id: Long): Comment?
 }

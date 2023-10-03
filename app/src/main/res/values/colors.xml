@@ -6,4 +6,8 @@
 
     <color name="default_box_color">#ffffff</color>
     <color name="fontColor">#ffffff</color>
+
+    <color name="bottomSheetBackgroundColor">#333333</color>
+    <color name="bottomSheetHandleColor">#222222</color>
+    <color name="bottomSheetInputColor">#222222</color>
 </resources>

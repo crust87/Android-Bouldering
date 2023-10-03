@@ -139,7 +139,9 @@ class ViewerFragment : Fragment() {
     }
 
     fun openComment() {
-        CommentBottomSheet().show(childFragmentManager, "CommentBottomSheet")
+        CommentBottomSheet.create(
+            args.boulderingId
+        ).show(childFragmentManager, "CommentBottomSheet")
     }
 
     override fun onDestroyView() {
