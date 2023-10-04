@@ -32,7 +32,7 @@ import com.kayadami.bouldering.data.bouldering.ListSort
 import com.kayadami.bouldering.databinding.MainFragmentBinding
 import com.kayadami.bouldering.image.FragmentImageLoader
 import com.kayadami.bouldering.image.ImageLoader
-import com.kayadami.bouldering.utils.FileUtil
+import com.kayadami.util.FileUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn

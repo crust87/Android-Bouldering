@@ -5,14 +5,14 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.kayadami.bouldering.data.bouldering.BoulderingDao
 import com.kayadami.bouldering.data.bouldering.HolderListConverters
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.BoulderingEntity
 import com.kayadami.bouldering.data.comment.CommentDao
 import com.kayadami.bouldering.data.comment.type.Comment
 
 @Database(
     version = 3,
     entities = [
-        Bouldering::class,
+        BoulderingEntity::class,
         Comment::class
     ],
 )

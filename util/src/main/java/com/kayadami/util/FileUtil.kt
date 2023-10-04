@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.utils
+package com.kayadami.util
 
 import android.content.Context
 import android.database.Cursor
@@ -10,7 +10,6 @@ import android.provider.MediaStore
 import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.FileReader
 import java.io.IOException

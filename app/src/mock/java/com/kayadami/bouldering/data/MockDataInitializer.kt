@@ -1,8 +1,8 @@
 package com.kayadami.bouldering.data
 
 import android.content.Context
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
-import com.kayadami.bouldering.utils.FileUtil
+import com.kayadami.bouldering.data.bouldering.type.BoulderingEntity
+import com.kayadami.util.FileUtil
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -21,10 +21,10 @@ class MockDataInitializer @Inject constructor(@ApplicationContext val context: C
         .add(KotlinJsonAdapterFactory())
         .build()
 
-    val adapter = moshi.adapter(Bouldering::class.java)
+    val adapter = moshi.adapter(BoulderingEntity::class.java)
 
-    fun getMockList(): ArrayList<Bouldering> {
-        val boulderingList = ArrayList<Bouldering>()
+    fun getMockList(): ArrayList<BoulderingEntity> {
+        val boulderingList = ArrayList<BoulderingEntity>()
 
         context.assets.list("mock")?.forEach {
             try {

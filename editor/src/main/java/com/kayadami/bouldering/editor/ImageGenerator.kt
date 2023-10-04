@@ -3,15 +3,11 @@ package com.kayadami.bouldering.editor
 import android.graphics.*
 import androidx.exifinterface.media.ExifInterface
 import android.view.WindowManager
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import java.io.FileInputStream
 import java.io.InputStream
 import java.lang.NullPointerException
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ImageGenerator @Inject constructor (val windowManager: WindowManager) {
+class ImageGenerator constructor (val windowManager: WindowManager) {
 
     private fun createImage(imagePath: String) : Bitmap {
         try {

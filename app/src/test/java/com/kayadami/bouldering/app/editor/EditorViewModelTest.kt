@@ -36,7 +36,7 @@ class EditorViewModelTest : BehaviorSpec({
     given("홀더가 선택되어 있으면") {
         val viewModel = EditorViewModel(repository, resources, UnconfinedTestDispatcher(), UnconfinedTestDispatcher())
 
-        viewModel.setHolder(HolderBox(Options()))
+        viewModel.setHolder(com.kayadami.bouldering.editor.HolderBox(com.kayadami.bouldering.editor.Options()))
 
         then("Problem Tool UI가 안보이고, Holder Tool UI는 보인다") {
             viewModel.uiState.getOrAwaitValue()?.problemToolVisibility shouldBe View.GONE
@@ -44,7 +44,7 @@ class EditorViewModelTest : BehaviorSpec({
         }
 
         and("선택된 홀더가 일반 홀더이면") {
-            viewModel.setHolder(HolderBox(Options()))
+            viewModel.setHolder(com.kayadami.bouldering.editor.HolderBox(com.kayadami.bouldering.editor.Options()))
 
             then("순서 속성이 아니며, 특수 속성도 아니며, 숫자 속성으로 활성화/비활성화 할 수 있다") {
                 viewModel.uiState.getOrAwaitValue()?.isNumberHolder shouldBe false
@@ -54,7 +54,8 @@ class EditorViewModelTest : BehaviorSpec({
         }
 
         and("선택된 홀더가 특수 속성 홀더이면") {
-            viewModel.setHolder(HolderBox(Options()).apply {
+            viewModel.setHolder(
+                com.kayadami.bouldering.editor.HolderBox(com.kayadami.bouldering.editor.Options()).apply {
                 isSpecial = true
             })
 
@@ -66,7 +67,8 @@ class EditorViewModelTest : BehaviorSpec({
         }
 
         and("선택된 홀더가 순서 속성 홀더이면") {
-            viewModel.setHolder(HolderBox(Options()).apply {
+            viewModel.setHolder(
+                com.kayadami.bouldering.editor.HolderBox(com.kayadami.bouldering.editor.Options()).apply {
                 isInOrder = true
             })
 

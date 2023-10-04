@@ -1,7 +1,7 @@
 package com.kayadami.bouldering.data
 
 import com.kayadami.bouldering.data.bouldering.ListSort
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.BoulderingEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,9 +15,9 @@ class BoulderingRepository @Inject constructor(
 
     private var _sort = ListSort.DESC
 
-    private val boulderingList = ArrayList<Bouldering>()
+    private val boulderingList = ArrayList<BoulderingEntity>()
 
-    private var _listFlow = MutableStateFlow(emptyList<Bouldering>())
+    private var _listFlow = MutableStateFlow(emptyList<BoulderingEntity>())
 
     init {
         val initialData = mockDataInitializer.getMockList()
@@ -25,7 +25,7 @@ class BoulderingRepository @Inject constructor(
         boulderingList.addAll(initialData)
     }
 
-    fun list(sort: ListSort): Flow<List<Bouldering>> {
+    fun list(sort: ListSort): Flow<List<BoulderingEntity>> {
         _sort = sort
 
         return _listFlow.asStateFlow().also {
@@ -33,17 +33,17 @@ class BoulderingRepository @Inject constructor(
         }
     }
 
-    suspend fun get(id: Long): Bouldering? {
+    suspend fun get(id: Long): BoulderingEntity? {
         return boulderingList.find { it.id == id }
     }
 
-    suspend fun add(bouldering: Bouldering) {
+    suspend fun add(bouldering: BoulderingEntity) {
         boulderingList.add(0, bouldering)
 
         invalidate()
     }
 
-    suspend fun update(bouldering: Bouldering) {
+    suspend fun update(bouldering: BoulderingEntity) {
         val index = boulderingList.indexOf(bouldering)
         boulderingList[index] = bouldering
 

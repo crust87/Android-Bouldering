@@ -2,8 +2,6 @@ package com.kayadami.bouldering.editor
 
 import android.content.Context
 
-import com.kayadami.bouldering.R
-
 object EditorConfigurations {
 
     // Constants

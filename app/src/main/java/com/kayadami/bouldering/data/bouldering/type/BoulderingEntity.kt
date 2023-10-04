@@ -3,13 +3,14 @@ package com.kayadami.bouldering.data.bouldering.type
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.kayadami.bouldering.editor.Bouldering
 import com.kayadami.bouldering.utils.DateUtils
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 @Entity(tableName = "bouldering")
-class Bouldering(
+class BoulderingEntity(
     @Json(name = "id")
     @PrimaryKey(autoGenerate = true)
     val id: Long,
@@ -40,7 +41,7 @@ class Bouldering(
     @Json(name = "orientation")
     @ColumnInfo(name = "orientation")
     var orientation: Int
-) : Comparable<Bouldering> {
+) : Comparable<BoulderingEntity> {
 
     val viewType: Int
         get() = orientation
@@ -50,7 +51,7 @@ class Bouldering(
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other != null && other is Bouldering) {
+        if (other != null && other is BoulderingEntity) {
             return id == other.id && updatedAt == other.updatedAt
         }
 
@@ -61,7 +62,7 @@ class Bouldering(
         return id.hashCode()
     }
 
-    override fun compareTo(other: Bouldering): Int {
+    override fun compareTo(other: BoulderingEntity): Int {
         return when {
             (other.createdAt - createdAt) > 0 -> 1
             (other.createdAt - createdAt) < 0 -> -1
@@ -69,3 +70,13 @@ class Bouldering(
         }
     }
 }
+
+fun BoulderingEntity.asEditorBouldering() = Bouldering(
+    path = path,
+    thumb = thumb,
+    color = color,
+    holderList = holderList.map { it.asEditorHolder() },
+    createdAt = createdAt,
+    updatedAt = updatedAt,
+    orientation = orientation,
+)

@@ -2,21 +2,16 @@ package com.kayadami.bouldering.app.editor
 
 import android.content.res.Resources
 import android.view.View
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.IODispatcher
 import com.kayadami.bouldering.app.MainDispatcher
 import com.kayadami.bouldering.app.editor.type.EditorUIState
 import com.kayadami.bouldering.data.BoulderingRepository
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
-import com.kayadami.bouldering.editor.EditorView
-import com.kayadami.bouldering.editor.HolderBox
-import com.kayadami.bouldering.utils.DateUtils
+import com.kayadami.bouldering.data.bouldering.type.BoulderingEntity
+import com.kayadami.bouldering.data.bouldering.type.asHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -60,7 +55,7 @@ class EditorViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             id = 0,
-                            data = Bouldering(0, path, path, null, false,null, -1, -1, ArrayList(), 0),
+                            data = BoulderingEntity(0, path, path, null, false,null, -1, -1, ArrayList(), 0),
                             title = resources.getString(R.string.editor_create),
                         )
                     }
@@ -72,7 +67,7 @@ class EditorViewModel @Inject constructor(
         }
     }
 
-    fun done(editorView: EditorView) = viewModelScope.launch(mainDispatcher) {
+    fun done(editorView: com.kayadami.bouldering.editor.EditorView) = viewModelScope.launch(mainDispatcher) {
         _uiState.update {
             it.copy(problemToolVisibility = View.VISIBLE)
         }
@@ -81,19 +76,44 @@ class EditorViewModel @Inject constructor(
             if (_uiState.value.id > 0) {
                 withContext(ioDispatcher) {
                     editorView.modify()
-                }.let {
-                    boulderingRepository.update(it)
+                }.let { new ->
+                    _uiState.value.data?.let { old ->
+                        boulderingRepository.update(BoulderingEntity(
+                            id = old.id,
+                            path = new.path,
+                            thumb = new.thumb,
+                            title = old.title,
+                            isSolved = old.isSolved,
+                            color = new.color,
+                            createdAt = new.createdAt,
+                            updatedAt = new.updatedAt,
+                            holderList = new.holderList.map { it.asHolder() },
+                            orientation = new.orientation,
+                        ))
+                    }
                 }
             } else {
                 withContext(ioDispatcher) {
                     editorView.create()
-                }.let {
-                    boulderingRepository.add(it)
+                }.let {new ->
+                    boulderingRepository.add(BoulderingEntity(
+                        id = 0,
+                        path = new.path,
+                        thumb = new.thumb,
+                        title = "",
+                        isSolved = false,
+                        color = new.color,
+                        createdAt = new.createdAt,
+                        updatedAt = new.updatedAt,
+                        holderList = new.holderList.map { it.asHolder() },
+                        orientation = new.orientation,
+                    ))
                 }
             }
 
             _eventChannel.tryEmit(NavigateUpEvent)
         } catch (e: Exception) {
+            e.printStackTrace()
             _eventChannel.tryEmit(ToastEvent(e.message))
         }
 
@@ -117,7 +137,7 @@ class EditorViewModel @Inject constructor(
         _eventChannel.tryEmit(OpenColorPickerEvent)
     }
 
-    fun setHolder(holder: HolderBox?) {
+    fun setHolder(holder: com.kayadami.bouldering.editor.HolderBox?) {
         _uiState.update {
             it.copy(
                 selected = holder,
@@ -125,7 +145,7 @@ class EditorViewModel @Inject constructor(
                 holderToolVisibility = if (holder != null) View.VISIBLE else View.GONE,
                 isNumberHolder = holder?.isInOrder ?: false,
                 isSpecialHolder = holder?.isSpecial ?: false,
-                isNumberEnabled = holder?.isNotSpecial ?: true,
+                isNumberEnabled = (holder?.isSpecial != true),
             )
         }
     }

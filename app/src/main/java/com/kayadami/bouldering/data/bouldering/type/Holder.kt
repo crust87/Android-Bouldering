@@ -23,3 +23,21 @@ open class Holder(
     val isNotSpecial: Boolean
         get() = !isSpecial
 }
+
+fun Holder.asEditorHolder() = com.kayadami.bouldering.editor.Holder(
+    x = x,
+    y = y,
+    radius = radius,
+    isSpecial = isSpecial,
+    isInOrder = isInOrder,
+    index = index,
+)
+
+fun com.kayadami.bouldering.editor.Holder.asHolder() = Holder(
+    x = x,
+    y = y,
+    radius = radius,
+    isSpecial = isSpecial,
+    isInOrder = isInOrder,
+    index = index,
+)

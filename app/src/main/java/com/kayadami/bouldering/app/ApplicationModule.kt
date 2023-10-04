@@ -3,6 +3,7 @@ package com.kayadami.bouldering.app
 import android.content.Context
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
+import com.kayadami.bouldering.editor.ImageGenerator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,6 +21,12 @@ object ApplicationModule {
     @Singleton
     fun provideWindowManager(@ApplicationContext context: Context): WindowManager {
         return ContextCompat.getSystemService(context, WindowManager::class.java)!!
+    }
+
+    @Provides
+    @Singleton
+    fun provideImageGenerator(windowManager: WindowManager): ImageGenerator {
+        return ImageGenerator(windowManager)
     }
 
     @Provides

@@ -1,7 +1,6 @@
 package com.kayadami.bouldering.editor
 
 import android.graphics.*
-import com.kayadami.bouldering.data.bouldering.type.Holder
 
 class HolderBox constructor(private var options: Options) : Holder(), Comparable<HolderBox> {
 

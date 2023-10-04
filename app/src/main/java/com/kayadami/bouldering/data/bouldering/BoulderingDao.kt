@@ -7,32 +7,32 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.BoulderingEntity
 import com.kayadami.bouldering.data.bouldering.type.BoulderingWithComments
 
 @Dao
 interface BoulderingDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(vararg bouldering: Bouldering): List<Long>
+    suspend fun insertAll(vararg bouldering: BoulderingEntity): List<Long>
 
     @Update
-    suspend fun update(vararg bouldering: Bouldering)
+    suspend fun update(vararg bouldering: BoulderingEntity)
 
     @Delete
-    suspend fun delete(bouldering: Bouldering)
+    suspend fun delete(bouldering: BoulderingEntity)
 
     @Query("DELETE FROM bouldering WHERE id = :id")
     suspend fun deleteById(id: Long)
 
     @Query("SELECT * FROM bouldering ORDER BY id ASC")
-    suspend fun getAllASC(): List<Bouldering>
+    suspend fun getAllASC(): List<BoulderingEntity>
 
     @Query("SELECT * FROM bouldering ORDER BY id DESC")
-    suspend fun getAllDESC(): List<Bouldering>
+    suspend fun getAllDESC(): List<BoulderingEntity>
 
     @Query("SELECT * FROM bouldering WHERE id = :id")
-    suspend fun get(id: Long): Bouldering?
+    suspend fun get(id: Long): BoulderingEntity?
 
     @Transaction
     @Query("SELECT * FROM bouldering WHERE id = :id")

@@ -3,7 +3,7 @@ package com.kayadami.bouldering.data
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.BoulderingEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -26,7 +26,7 @@ class BoulderingDaoTest {
         val currentTime = System.currentTimeMillis()
 
         db.boulderingDao().insertAll(
-            Bouldering(
+            BoulderingEntity(
                 TEST_BOULDERING_ID,
                 "",
                 "",
@@ -54,7 +54,7 @@ class BoulderingDaoTest {
         val currentTime = System.currentTimeMillis()
 
         db.boulderingDao().insertAll(
-            Bouldering(
+            BoulderingEntity(
                 0,
                 "",
                 "",

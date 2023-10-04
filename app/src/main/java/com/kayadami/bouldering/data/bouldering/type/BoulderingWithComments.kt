@@ -5,7 +5,7 @@ import androidx.room.Relation
 import com.kayadami.bouldering.data.comment.type.Comment
 
 class BoulderingWithComments(
-    @Embedded val bouldering: Bouldering,
+    @Embedded val bouldering: BoulderingEntity,
     @Relation(
         parentColumn = "id",
         entityColumn = "boulderingId"

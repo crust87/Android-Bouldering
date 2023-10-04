@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.kayadami.bouldering.constants.COMMENT_PAGE_LIMIT
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.kayadami.bouldering.data.bouldering.type.BoulderingEntity
 import com.kayadami.bouldering.data.comment.type.Comment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -28,7 +28,7 @@ class CommentDaoTest {
         val currentTime = System.currentTimeMillis()
 
         db.boulderingDao().insertAll(
-            Bouldering(
+            BoulderingEntity(
                 TEST_BOULDERING_ID,
                 "",
                 "",

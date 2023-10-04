@@ -19,6 +19,7 @@ import com.kayadami.bouldering.app.main.domain.OpenKeyboardUseCase
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.viewer.comment.CommentBottomSheet
+import com.kayadami.bouldering.data.bouldering.type.asEditorBouldering
 import com.kayadami.bouldering.databinding.ViewerFragmentBinding
 import com.kayadami.bouldering.editor.EditorView
 import dagger.hilt.android.AndroidEntryPoint
@@ -127,7 +128,7 @@ class ViewerFragment : Fragment() {
 
         viewModel.uiState.map { it.data }.distinctUntilChanged().observe(viewLifecycleOwner) {
             it?.let {
-                binding.editorView.setProblem(it)
+                binding.editorView.setProblem(it.asEditorBouldering())
             }
         }
 

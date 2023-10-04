@@ -5,10 +5,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.*
 import androidx.exifinterface.media.ExifInterface
-import com.kayadami.bouldering.constants.Orientation
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
-import com.kayadami.bouldering.data.bouldering.type.Holder
-import com.kayadami.bouldering.utils.FileUtil
+import com.kayadami.util.FileUtil
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileInputStream
@@ -496,17 +493,12 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
     }
 
     fun create(): Bouldering = runBlocking(Dispatchers.Main) {
-        if (bouldering.createdAt > 0) {
-            bouldering = modify()
-            bouldering
-        } else {
-            deselectHolder()
-            invalidate()
+        deselectHolder()
+        invalidate()
 
-            bouldering = withContext(Dispatchers.IO) { createBouldering() }
+        bouldering = withContext(Dispatchers.IO) { createBouldering() }
 
-            bouldering
-        }
+        bouldering
     }
 
     private fun modifyBouldering(bouldering: Bouldering): Bouldering {
@@ -555,7 +547,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
             }
 
             FileUtil.copy(File(bouldering.path), path)
-            val bouldering = Bouldering(0, path.absolutePath, thumb.absolutePath, null, false, color, currentTime, currentTime, holderList, getOrientation(options.bound.width(), options.bound.height()))
+            val bouldering = Bouldering(path.absolutePath, thumb.absolutePath, color, currentTime, currentTime, holderList, getOrientation(options.bound.width(), options.bound.height()))
             val thumbnail = imageGenerator.createThumbnail(bouldering)
             FileUtil.store(thumbnail, thumb)
 
