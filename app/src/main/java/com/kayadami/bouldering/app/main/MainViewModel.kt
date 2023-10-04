@@ -7,7 +7,8 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.app.main.type.BoulderingItemUiState
 import com.kayadami.bouldering.app.main.type.EmptyItemUiState
-import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
+import com.kayadami.bouldering.data.BoulderingRepository
+import com.kayadami.bouldering.data.bouldering.ListSort
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -16,13 +17,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    val repository: BoulderingDataSource,
+    val boulderingRepository: BoulderingRepository,
 ) : ViewModel() {
 
-    val listSort = MutableLiveData(BoulderingDataSource.ListSort.DESC)
+    val listSort = MutableLiveData(ListSort.DESC)
 
     val boulderingListUiItems = listSort.switchMap {
-        repository.list(it).map { list ->
+        boulderingRepository.list(it).map { list ->
             if (list.isNotEmpty()) {
                 list.map { bouldering ->
                     BoulderingItemUiState(bouldering, onClick = {
@@ -41,7 +42,7 @@ class MainViewModel @Inject constructor(
     )
     val eventChannel: SharedFlow<MainViewModelEvent> = _eventChannel
 
-    fun setSort(sort: BoulderingDataSource.ListSort) {
+    fun setSort(sort: ListSort) {
         listSort.value = sort
 
         _eventChannel.tryEmit(ListSortChangeEvent)

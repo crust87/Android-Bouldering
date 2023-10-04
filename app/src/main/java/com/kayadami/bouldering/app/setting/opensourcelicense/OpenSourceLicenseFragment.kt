@@ -10,19 +10,16 @@ import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
-import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
-import com.kayadami.bouldering.data.opensource.OpenSourceDataSource
-import com.kayadami.bouldering.data.opensource.type.OpenSourceLicense
+import com.kayadami.bouldering.data.opensource.OpenSourceRepository
 import com.kayadami.bouldering.databinding.OpenSourceLicenseFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.ArrayList
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class OpenSourceLicenseFragment : Fragment() {
 
     @Inject
-    lateinit var repository: OpenSourceDataSource
+    lateinit var repository: OpenSourceRepository
 
     lateinit var fragmentBinding: OpenSourceLicenseFragmentBinding
 

@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.MainDispatcher
 import com.kayadami.bouldering.app.domain.SaveImageUseCase
-import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
+import com.kayadami.bouldering.data.BoulderingRepository
 import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import com.kayadami.bouldering.utils.DateUtils
 import com.kayadami.bouldering.utils.toShareIntent
@@ -27,7 +27,7 @@ import kotlin.coroutines.resume
 
 @HiltViewModel
 class ViewerViewModel @Inject constructor(
-    val repository: BoulderingDataSource,
+    val boulderingRepository: BoulderingRepository,
     val saveImageUseCase: SaveImageUseCase,
     @MainDispatcher val mainDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
@@ -52,7 +52,7 @@ class ViewerViewModel @Inject constructor(
     val eventChannel: SharedFlow<ViewerViewModelEvent> = _eventChannel
 
     fun init(id: Long) = viewModelScope.launch(mainDispatcher) {
-        repository.get(id)?.also { data ->
+        boulderingRepository.get(id)?.also { data ->
             _uiState.update {
                 it.copy(
                     id = id,
@@ -85,7 +85,7 @@ class ViewerViewModel @Inject constructor(
         }
 
         if (result) {
-            repository.remove(_uiState.value.id)
+            boulderingRepository.remove(_uiState.value.id)
 
             _eventChannel.tryEmit(NavigateUpEvent)
         }
@@ -93,7 +93,7 @@ class ViewerViewModel @Inject constructor(
 
     fun toggleSolved() = viewModelScope.launch(mainDispatcher) {
         val isSolved = !_uiState.value.isSolved
-        repository.update(_uiState.value.id, isSolved = isSolved)
+        boulderingRepository.update(_uiState.value.id, isSolved = isSolved)
         _uiState.update {
             it.copy(isSolved = isSolved)
         }
@@ -169,7 +169,7 @@ class ViewerViewModel @Inject constructor(
 
         val title = view.text.toString()
 
-        repository.update(_uiState.value.id, title = title)
+        boulderingRepository.update(_uiState.value.id, title = title)
         _uiState.update {
             it.copy(title = title.displayTitle())
         }

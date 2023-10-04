@@ -3,7 +3,6 @@ package com.kayadami.bouldering.app.main
 import com.kayadami.bouldering.InstantExecutorListener
 import com.kayadami.bouldering.MainDispatcherListener
 import com.kayadami.bouldering.app.main.type.EmptyItemUiState
-import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
 import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import com.kayadami.bouldering.getOrAwaitValue
 import io.kotest.core.spec.style.BehaviorSpec

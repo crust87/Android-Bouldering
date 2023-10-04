@@ -28,7 +28,7 @@ import com.kayadami.bouldering.app.MainFragmentComponent
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
-import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
+import com.kayadami.bouldering.data.bouldering.ListSort
 import com.kayadami.bouldering.databinding.MainFragmentBinding
 import com.kayadami.bouldering.image.FragmentImageLoader
 import com.kayadami.bouldering.image.ImageLoader
@@ -110,8 +110,8 @@ class MainFragment : Fragment() {
                     R.id.actionCamera -> openCamera()
                     R.id.actionGallery -> openGallery()
                     R.id.actionSetting -> navigate(MainFragmentDirections.actionMainFragmentToSettingFragment())
-                    R.id.actionSortASC -> viewModel.setSort(BoulderingDataSource.ListSort.ASC)
-                    R.id.actionSortDESC -> viewModel.setSort(BoulderingDataSource.ListSort.DESC)
+                    R.id.actionSortASC -> viewModel.setSort(ListSort.ASC)
+                    R.id.actionSortDESC -> viewModel.setSort(ListSort.DESC)
                 }
 
                 return true
@@ -121,9 +121,9 @@ class MainFragment : Fragment() {
                 menu.getItem(0)?.isVisible = !appBarManager.appBarExpanded
                 menu.getItem(1)?.isVisible = !appBarManager.appBarExpanded
                 menu.getItem(3)?.isVisible =
-                    viewModel.listSort.value != BoulderingDataSource.ListSort.ASC
+                    viewModel.listSort.value != ListSort.ASC
                 menu.getItem(4)?.isVisible =
-                    viewModel.listSort.value != BoulderingDataSource.ListSort.DESC
+                    viewModel.listSort.value != ListSort.DESC
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 

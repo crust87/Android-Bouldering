@@ -6,7 +6,7 @@ import androidx.lifecycle.*
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.IODispatcher
 import com.kayadami.bouldering.app.MainDispatcher
-import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
+import com.kayadami.bouldering.data.BoulderingRepository
 import com.kayadami.bouldering.editor.EditorView
 import com.kayadami.bouldering.editor.HolderBox
 import com.kayadami.bouldering.data.bouldering.type.Bouldering
@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditorViewModel @Inject constructor(
-    val repository: BoulderingDataSource,
+    val boulderingRepository: BoulderingRepository,
     val resources: Resources,
     @MainDispatcher val mainDispatcher: CoroutineDispatcher,
     @IODispatcher val ioDispatcher: CoroutineDispatcher,
@@ -77,7 +77,7 @@ class EditorViewModel @Inject constructor(
     fun init(path: String, id: Long) = viewModelScope.launch(mainDispatcher) {
         try {
             bouldering.value = when {
-                id > 0 -> repository.get(id)
+                id > 0 -> boulderingRepository.get(id)
                 path.isNotEmpty() -> Bouldering(0, path, path, null, false,null, -1, -1, ArrayList(), 0)
                 else -> null
             } ?: throw Exception("NO BOULDERING HAS BEEN FOUND")
@@ -94,13 +94,13 @@ class EditorViewModel @Inject constructor(
                 withContext(ioDispatcher) {
                     editorView.modify()
                 }.let {
-                    repository.update(it)
+                    boulderingRepository.update(it)
                 }
             } else {
                 withContext(ioDispatcher) {
                     editorView.create()
                 }.let {
-                    repository.add(it)
+                    boulderingRepository.add(it)
                 }
             }
 
