@@ -1,13 +1,15 @@
 package com.kayadami.bouldering.app.viewer.comment.domain
 
-import com.kayadami.bouldering.data.comment.CommentDao
+import com.kayadami.bouldering.data.comment.CommentDataSource
 import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
 @ViewModelScoped
-class CommentDeletionUseCase @Inject constructor(val commentDao: CommentDao) {
+class CommentDeletionUseCase @Inject constructor(
+    private val commentDataSource: CommentDataSource
+) {
 
     suspend operator fun invoke(commentId: Long) {
-        commentDao.deleteById(commentId)
+        commentDataSource.delete(commentId)
     }
 }

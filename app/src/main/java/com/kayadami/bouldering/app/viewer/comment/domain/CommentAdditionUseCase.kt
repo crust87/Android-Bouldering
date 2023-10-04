@@ -1,21 +1,18 @@
 package com.kayadami.bouldering.app.viewer.comment.domain
 
-import com.kayadami.bouldering.data.comment.CommentDao
-import com.kayadami.bouldering.data.comment.type.Comment
+import com.kayadami.bouldering.data.comment.CommentDataSource
 import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
 @ViewModelScoped
-class CommentAdditionUseCase @Inject constructor(val commentDao: CommentDao) {
+class CommentAdditionUseCase @Inject constructor(
+    private val commentDataSource: CommentDataSource
+) {
 
     suspend operator fun invoke(text: String, boulderingId: Long) {
-        commentDao.insertAll(
-            Comment(
-                0,
-                text.trim(),
-                boulderingId,
-                System.currentTimeMillis()
-            )
+        commentDataSource.addComment(
+            text.trim(),
+            boulderingId
         )
     }
 }
