@@ -8,12 +8,10 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.kayadami.bouldering.app.main.type.BoulderingListItem
-import com.kayadami.bouldering.app.main.type.MainListItem
+import com.kayadami.bouldering.app.main.type.MainItemUiState
 import com.kayadami.bouldering.constants.Orientation
 import com.kayadami.bouldering.databinding.BoulderingCellBinding
 import com.kayadami.bouldering.databinding.EmptyCellBinding
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import com.kayadami.bouldering.image.FragmentImageLoader
 import com.kayadami.bouldering.image.ImageLoader
 import com.kayadami.bouldering.list.ViewHolder
@@ -27,9 +25,7 @@ class MainListAdapter @Inject constructor(
 
     private val asyncListDiffer = AsyncListDiffer(this, DIFF_CALLBACK)
 
-    private var _listener: BoulderingItemEvent? = null
-
-    fun setList(newList: List<MainListItem>) {
+    fun setList(newList: List<MainItemUiState>) {
         asyncListDiffer.submitList(newList)
     }
 
@@ -72,28 +68,25 @@ class MainListAdapter @Inject constructor(
             val binding: BoulderingCellBinding
     ) : ViewHolder(binding.root) {
 
-        var data: Bouldering? = null
+        var data: MainItemUiState? = null
 
         init {
             binding.layoutContainer.setOnClickListener {
                 data?.let {
-                    _listener?.onClick(it)
+                    it.onClick()
                 }
             }
         }
 
         override fun bind(position: Int) {
-            val itemData = asyncListDiffer.currentList[position].let {
-                (it as BoulderingListItem).bouldering
-            }.also {
-                data = it
-            }
+            val item = asyncListDiffer.currentList[position]
+            data = item
 
-            imageLoader.load(binding.imageThumbnail, itemData)
+            imageLoader.load(binding.imageThumbnail, item.thumb, item.updatedAt)
 
-            binding.textDate.text = itemData.getDate()
+            binding.textDate.text = item.displayDate
 
-            binding.textSolved.visibility = when (itemData.isSolved) {
+            binding.textSolved.visibility = when (item.isSolved) {
                 true -> View.VISIBLE
                 else -> View.GONE
             }
@@ -116,27 +109,13 @@ class MainListAdapter @Inject constructor(
         }
     }
 
-    fun setBoulderingItemEventListener(l: ((bouldering: Bouldering) -> Unit)?) {
-        _listener = l?.let {
-            object: BoulderingItemEvent {
-                override fun onClick(bouldering: Bouldering) {
-                    it.invoke(bouldering)
-                }
-            }
-        }
-    }
-
-    interface BoulderingItemEvent {
-        fun onClick(bouldering: Bouldering)
-    }
-
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<MainListItem>() {
-            override fun areItemsTheSame(oldItem: MainListItem, newItem: MainListItem): Boolean {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<MainItemUiState>() {
+            override fun areItemsTheSame(oldItem: MainItemUiState, newItem: MainItemUiState): Boolean {
                 return oldItem.id == newItem.id
             }
 
-            override fun areContentsTheSame(oldItem: MainListItem, newItem: MainListItem): Boolean {
+            override fun areContentsTheSame(oldItem: MainItemUiState, newItem: MainItemUiState): Boolean {
                 return oldItem.id == newItem.id && oldItem.updatedAt == newItem.updatedAt
             }
         }

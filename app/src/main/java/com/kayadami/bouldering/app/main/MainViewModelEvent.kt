@@ -7,7 +7,7 @@ sealed interface MainViewModelEvent
 
 object OpenSettingEvent: MainViewModelEvent
 
-class OpenViewerEvent(val data: Bouldering): MainViewModelEvent
+class OpenViewerEvent(val id: Long): MainViewModelEvent
 
 class OpenEditorEvent(val path: String): MainViewModelEvent
 

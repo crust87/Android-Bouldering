@@ -116,11 +116,7 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter.setBoulderingItemEventListener {
-            viewModel.openViewer(it)
-        }
-
-        viewModel.list.observe(viewLifecycleOwner) {
+        viewModel.boulderingListUiItems.observe(viewLifecycleOwner) {
             adapter.setList(it)
         }
 
@@ -141,7 +137,7 @@ class MainFragment : Fragment() {
                 is OpenSettingEvent -> navigate(MainFragmentDirections.actionMainFragmentToSettingFragment())
                 is OpenViewerEvent -> navigate(
                     MainFragmentDirections.actionMainFragmentToViewerFragment().apply {
-                        boulderingId = it.data.id
+                        boulderingId = it.id
                     })
 
                 is OpenEditorEvent -> navigate(

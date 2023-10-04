@@ -7,10 +7,9 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.app.domain.OpenCameraUseCase
 import com.kayadami.bouldering.app.domain.OpenGalleryUseCase
-import com.kayadami.bouldering.app.main.type.BoulderingListItem
-import com.kayadami.bouldering.app.main.type.EmptyListItem
+import com.kayadami.bouldering.app.main.type.BoulderingItemUiState
+import com.kayadami.bouldering.app.main.type.EmptyItemUiState
 import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -26,14 +25,16 @@ class MainViewModel @Inject constructor(
 
     val listSort = MutableLiveData(BoulderingDataSource.ListSort.DESC)
 
-    val list = listSort.switchMap {
-        repository.list(it).map {  list ->
+    val boulderingListUiItems = listSort.switchMap {
+        repository.list(it).map { list ->
             if (list.isNotEmpty()) {
-                list.map {  bouldering ->
-                    BoulderingListItem(bouldering)
+                list.map { bouldering ->
+                    BoulderingItemUiState(bouldering, onClick = {
+                        openViewer(bouldering.id)
+                    })
                 }
             } else {
-                listOf(EmptyListItem)
+                listOf(EmptyItemUiState)
             }
         }.asLiveData(viewModelScope.coroutineContext)
     }
@@ -60,8 +61,8 @@ class MainViewModel @Inject constructor(
         _eventChannel.tryEmit(OpenSettingEvent)
     }
 
-    fun openViewer(data: Bouldering) {
-        _eventChannel.tryEmit(OpenViewerEvent(data))
+    fun openViewer(id: Long) {
+        _eventChannel.tryEmit(OpenViewerEvent(id))
     }
 
     fun openEditor(path: String) {

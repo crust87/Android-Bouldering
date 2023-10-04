@@ -4,7 +4,7 @@ import com.kayadami.bouldering.InstantExecutorListener
 import com.kayadami.bouldering.MainDispatcherListener
 import com.kayadami.bouldering.app.domain.OpenCameraUseCase
 import com.kayadami.bouldering.app.domain.OpenGalleryUseCase
-import com.kayadami.bouldering.app.main.type.EmptyListItem
+import com.kayadami.bouldering.app.main.type.EmptyItemUiState
 import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
 import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import com.kayadami.bouldering.getOrAwaitValue
@@ -47,7 +47,7 @@ class MainViewModelTest : BehaviorSpec({
         val viewModel = MainViewModel(boulderingDataSource, openCameraUseCase, openGalleryUseCase)
 
         then("MainListItem으로 Wrapping된 리스트가 생성된다") {
-            viewModel.list.getOrAwaitValue()?.size shouldBe 10
+            viewModel.boulderingListUiItems.getOrAwaitValue()?.size shouldBe 10
         }
     }
 
@@ -59,10 +59,10 @@ class MainViewModelTest : BehaviorSpec({
         val viewModel = MainViewModel(boulderingDataSource, openCameraUseCase, openGalleryUseCase)
 
         then("EmptyListItem 1개를 가진 리스트가 생성된다") {
-            val resultList = viewModel.list.getOrAwaitValue()
+            val resultList = viewModel.boulderingListUiItems.getOrAwaitValue()
 
             resultList?.size shouldBe 1
-            resultList?.getOrNull(0) should beInstanceOf<EmptyListItem>()
+            resultList?.getOrNull(0) should beInstanceOf<EmptyItemUiState>()
         }
     }
 })
