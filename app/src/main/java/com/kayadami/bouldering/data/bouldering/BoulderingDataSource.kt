@@ -18,5 +18,9 @@ interface BoulderingDataSource {
 
     suspend fun update(bouldering: Bouldering)
 
+    suspend fun update(id: Long, title: String? = null, isSolved: Boolean? = null)
+
     suspend fun remove(bouldering: Bouldering)
+
+    suspend fun remove(id: Long)
 }

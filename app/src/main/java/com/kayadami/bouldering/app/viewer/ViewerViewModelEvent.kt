@@ -6,7 +6,7 @@ import com.kayadami.bouldering.data.bouldering.type.Bouldering
 
 sealed interface ViewerViewModelEvent
 
-class OpenEditorEvent(val data: Bouldering): ViewerViewModelEvent
+class OpenEditorEvent(val id: Long): ViewerViewModelEvent
 
 object OpenCommentEvent: ViewerViewModelEvent
 

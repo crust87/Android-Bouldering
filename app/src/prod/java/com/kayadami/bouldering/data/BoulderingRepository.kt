@@ -48,9 +48,22 @@ class BoulderingRepository @Inject constructor(
         invalidate()
     }
 
+    override suspend fun update(id: Long, title: String?, isSolved: Boolean?) {
+        get(id)?.let {
+            it.title = title ?: it.title
+            it.isSolved = isSolved ?: it.isSolved
+
+            update(it)
+        }
+    }
+
     override suspend fun remove(bouldering: Bouldering) {
-        boulderingDao.delete(bouldering)
-        commentDao.deleteByBoulderingId(bouldering.id)
+        remove(bouldering.id)
+    }
+
+    override suspend fun remove(id: Long) {
+        boulderingDao.deleteById(id)
+        commentDao.deleteByBoulderingId(id)
 
         invalidate()
     }

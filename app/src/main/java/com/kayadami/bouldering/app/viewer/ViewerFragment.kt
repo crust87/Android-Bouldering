@@ -9,7 +9,9 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.map
 import androidx.navigation.fragment.navArgs
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.domain.KeyboardHideUseCase
@@ -18,6 +20,7 @@ import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.viewer.comment.CommentBottomSheet
 import com.kayadami.bouldering.databinding.ViewerFragmentBinding
+import com.kayadami.bouldering.editor.EditorView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
@@ -122,10 +125,26 @@ class ViewerFragment : Fragment() {
 
         viewModel.init(args.boulderingId)
 
+        viewModel.uiState.map { it.data }.distinctUntilChanged().observe(viewLifecycleOwner) {
+            it?.let {
+                binding.editorView.setProblem(it)
+            }
+        }
+
+        binding.editorView.setOnProblemListener(object: EditorView.OnProblemListener{
+            override fun onLoadingStart() {
+                viewModel.setLoading(true)
+            }
+
+            override fun onLoadingFinish() {
+                viewModel.setLoading(false)
+            }
+        })
+
         viewModel.eventChannel.onEach {
             when (it) {
                 is OpenEditorEvent -> navigate(
-                    ViewerFragmentDirections.actionViewerFragmentToEditorFragment(it.data.id)
+                    ViewerFragmentDirections.actionViewerFragmentToEditorFragment(it.id)
                 )
                 is OpenCommentEvent -> openComment()
                 is OpenShareEvent -> startActivity(it.intent)
