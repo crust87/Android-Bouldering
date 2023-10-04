@@ -35,6 +35,8 @@ class CommentViewModel @Inject constructor(
 
     private var _boulderingId: Long = 0
 
+    private var _pagerFlagWrapper = CommentPagerFactory.PagerFlagWrapper(false)
+
     private val _eventChannel = MutableSharedFlow<CommentViewModelEvent>(
         replay = 0,
         extraBufferCapacity = 1
@@ -44,16 +46,20 @@ class CommentViewModel @Inject constructor(
     fun init(boulderingId: Long): Flow<PagingData<Comment>> {
         _boulderingId = boulderingId
 
-        return commentPagerFactory.create(_boulderingId).flow.cachedIn(viewModelScope)
+        return commentPagerFactory.create(_boulderingId, _pagerFlagWrapper).flow.cachedIn(viewModelScope)
     }
 
     fun addComment() = viewModelScope.launch(mainDispatcher) {
-        val text = comment.value?.toString()
+        comment.value?.toString()?.let {
+            if (it.isNotBlank()) {
+                commentAdditionUseCase(it, _boulderingId)
 
-        if (commentAdditionUseCase(text, _boulderingId)) {
-            comment.value = ""
+                comment.value = ""
 
-            _eventChannel.tryEmit(OnNewCommentEvent)
+                _pagerFlagWrapper.needReset = true
+
+                _eventChannel.tryEmit(OnNewCommentEvent)
+            }
         }
     }
 

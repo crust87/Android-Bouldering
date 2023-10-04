@@ -12,9 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.kayadami.bouldering.databinding.CommentBottomSheetBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -75,14 +73,12 @@ class CommentBottomSheet : BottomSheetDialogFragment() {
         viewModel.eventChannel.onEach {
             when (it) {
                 is OnNewCommentEvent -> {
-                    enableAutoScroll()
+                    adapter.registerAdapterDataObserver(autoScroller)
 
                     adapter.refresh()
                 }
 
                 is OnDeleteCommentEvent -> {
-                    disableAutoScroll()
-
                     adapter.refresh()
                 }
             }
@@ -101,30 +97,12 @@ class CommentBottomSheet : BottomSheetDialogFragment() {
         lifecycleScope.coroutineContext.cancelChildren()
     }
 
-    fun enableAutoScroll() = lifecycleScope.launch(Dispatchers.Main) {
-        try {
-            adapter.registerAdapterDataObserver(autoScroller)
-        } catch (e: Exception) {
-            // Ignore IllegalStateException
-        }
-
-        delay(1000)
-
-        disableAutoScroll()
-    }
-
-    fun disableAutoScroll() {
-        try {
-            adapter.unregisterAdapterDataObserver(autoScroller)
-        } catch (e: Exception) {
-            // Ignore IllegalStateException
-        }
-    }
-
     private val autoScroller = object : RecyclerView.AdapterDataObserver() {
         override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
             if (positionStart == 0) {
                 binding.recyclerView.smoothScrollToPosition(0)
+
+                adapter.unregisterAdapterDataObserver(this)
             }
         }
     }

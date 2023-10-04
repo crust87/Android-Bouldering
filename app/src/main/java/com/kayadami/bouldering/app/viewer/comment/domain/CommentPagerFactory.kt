@@ -15,18 +15,19 @@ class CommentPagerFactory @Inject constructor(
     private val commentDao: CommentDao
 ) {
 
-    fun create(boulderingId: Long): Pager<Int, Comment> {
+    fun create(boulderingId: Long, pagerFlagWrapper: PagerFlagWrapper): Pager<Int, Comment> {
         return Pager(
             config = PagingConfig(
                 pageSize = COMMENT_PAGE_LIMIT,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { CommentPagingSource(boulderingId) }
+            pagingSourceFactory = { CommentPagingSource(boulderingId, pagerFlagWrapper) }
         )
     }
 
     private inner class CommentPagingSource(
         val boulderingId: Long,
+        val pagerFlagWrapper: PagerFlagWrapper
     ) : PagingSource<Int, Comment>() {
 
         override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Comment> {
@@ -50,10 +51,18 @@ class CommentPagerFactory @Inject constructor(
         }
 
         override fun getRefreshKey(state: PagingState<Int, Comment>): Int {
-            return state.anchorPosition?.let {
-                state.closestPageToPosition(it)?.prevKey?.plus(1)
-                    ?: state.closestPageToPosition(it)?.nextKey?.minus(1)
-            } ?: 0
+            return if (pagerFlagWrapper.needReset) {
+                pagerFlagWrapper.needReset = false
+
+                0
+            } else {
+                state.anchorPosition?.let {
+                    state.closestPageToPosition(it)?.prevKey?.plus(1)
+                        ?: state.closestPageToPosition(it)?.nextKey?.minus(1)
+                } ?: 0
+            }
         }
     }
+
+    class PagerFlagWrapper(var needReset: Boolean)
 }
