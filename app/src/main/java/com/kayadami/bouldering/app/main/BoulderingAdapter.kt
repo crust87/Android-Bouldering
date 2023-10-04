@@ -1,6 +1,7 @@
 package com.kayadami.bouldering.app.main
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -41,7 +42,6 @@ class BoulderingAdapter @Inject constructor(
         return when (ratio != null) {
             true -> BoulderingCellBinding.inflate(LayoutInflater.from(parent.context), parent, false).let {
                 (it.imageThumbnail.layoutParams as? ConstraintLayout.LayoutParams)?.dimensionRatio = ratio
-                it.imageLoader = this@BoulderingAdapter.imageLoader
 
                 BoulderingViewHolder(it)
             }
@@ -70,20 +70,33 @@ class BoulderingAdapter @Inject constructor(
             val binding: BoulderingCellBinding
     ) : ViewHolder(binding.root) {
 
+        var data: Bouldering? = null
+
         init {
-            binding.setListener {
-                binding.bouldering?.let {
+            binding.layoutContainer.setOnClickListener {
+                data?.let {
                     _listener?.onClick(it)
                 }
             }
         }
 
         override fun bind(position: Int) {
-            binding.bouldering = asyncListDiffer.currentList[position]
+            val itemData = asyncListDiffer.currentList[position].also {
+                data = it
+            }
+
+            imageLoader.load(binding.imageThumbnail, itemData)
+
+            binding.textDate.text = itemData.getDate()
+
+            binding.textSolved.visibility = when (itemData.isSolved) {
+                true -> View.VISIBLE
+                else -> View.GONE
+            }
         }
 
         override fun recycle() {
-            binding.bouldering = null
+            data = null
         }
     }
 
