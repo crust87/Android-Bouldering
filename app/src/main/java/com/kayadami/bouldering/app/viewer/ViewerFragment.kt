@@ -14,8 +14,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.map
 import androidx.navigation.fragment.navArgs
 import com.kayadami.bouldering.R
-import com.kayadami.bouldering.app.domain.KeyboardHideUseCase
-import com.kayadami.bouldering.app.domain.KeyboardOpenUseCase
+import com.kayadami.bouldering.app.domain.HideKeyboardUseCase
+import com.kayadami.bouldering.app.domain.OpenKeyboardUseCase
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.viewer.comment.CommentBottomSheet
@@ -31,10 +31,10 @@ import javax.inject.Inject
 class ViewerFragment : Fragment() {
 
     @Inject
-    lateinit var keyboardOpenUseCase: KeyboardOpenUseCase
+    lateinit var openKeyboardUseCase: OpenKeyboardUseCase
 
     @Inject
-    lateinit var keyboardHideUseCase: KeyboardHideUseCase
+    lateinit var hideKeyboardUseCase: HideKeyboardUseCase
 
     lateinit var binding: ViewerFragmentBinding
 
@@ -150,8 +150,8 @@ class ViewerFragment : Fragment() {
                 is OpenShareEvent -> startActivity(it.intent)
                 is FinishSaveEvent -> Toast.makeText(context, it.path, Toast.LENGTH_SHORT).show()
                 is NavigateUpEvent -> navigateUp()
-                is OpenKeyboardEvent -> keyboardOpenUseCase(it.editText)
-                is HideKeyboardEvent -> keyboardHideUseCase(it.editText)
+                is OpenKeyboardEvent -> openKeyboardUseCase(it.editText)
+                is HideKeyboardEvent -> hideKeyboardUseCase(it.editText)
                 is ToastEvent -> Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
             }
         }.launchIn(lifecycleScope)

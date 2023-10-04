@@ -9,7 +9,7 @@ import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
 
 @ActivityScoped
-class KeyboardOpenUseCase @Inject constructor(@ActivityContext val context: Context) {
+class OpenKeyboardUseCase @Inject constructor(@ActivityContext val context: Context) {
 
     operator fun invoke(view: View) {
         if (!view.isFocusableInTouchMode) {

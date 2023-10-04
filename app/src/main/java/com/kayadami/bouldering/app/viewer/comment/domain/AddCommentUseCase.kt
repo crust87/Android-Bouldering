@@ -5,11 +5,14 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
 @ViewModelScoped
-class CommentDeletionUseCase @Inject constructor(
+class AddCommentUseCase @Inject constructor(
     private val commentDataSource: CommentDataSource
 ) {
 
-    suspend operator fun invoke(commentId: Long) {
-        commentDataSource.delete(commentId)
+    suspend operator fun invoke(text: String, boulderingId: Long) {
+        commentDataSource.addComment(
+            text.trim(),
+            boulderingId
+        )
     }
 }

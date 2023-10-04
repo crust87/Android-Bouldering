@@ -10,7 +10,7 @@ import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
 
 @ActivityScoped
-class KeyboardHideUseCase @Inject constructor(@ActivityContext val context: Context) {
+class HideKeyboardUseCase @Inject constructor(@ActivityContext val context: Context) {
 
     operator fun invoke(view: View) {
         (context as Activity).currentFocus?.let { view ->
