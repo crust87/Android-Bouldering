@@ -2,8 +2,6 @@ package com.kayadami.bouldering.app.main
 
 import com.kayadami.bouldering.InstantExecutorListener
 import com.kayadami.bouldering.MainDispatcherListener
-import com.kayadami.bouldering.app.domain.OpenCameraUseCase
-import com.kayadami.bouldering.app.domain.OpenGalleryUseCase
 import com.kayadami.bouldering.app.main.type.EmptyItemUiState
 import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
 import com.kayadami.bouldering.data.bouldering.type.Bouldering

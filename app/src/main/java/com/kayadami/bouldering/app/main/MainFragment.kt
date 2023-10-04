@@ -1,8 +1,12 @@
 package com.kayadami.bouldering.app.main
 
 import android.app.Activity
+import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -10,6 +14,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
@@ -55,14 +60,21 @@ class MainFragment : Fragment() {
 
     private val viewModel: MainViewModel by viewModels()
 
+    // Working Variable
+    var photoPath: String? = null
+
     private val requestOpenCamera =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val resultCode = it.resultCode
-            val path = viewModel.photoPath
+            val path = photoPath
 
             if (resultCode == Activity.RESULT_OK && path != null) {
-                viewModel.openEditor(path)
-                viewModel.photoPath = null
+                navigate(
+                    MainFragmentDirections.actionMainFragmentToEditorFragment()
+                        .apply { imagePath = path }
+                )
+
+                photoPath = null
             }
         }
 
@@ -70,7 +82,10 @@ class MainFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             result?.data?.data?.let {
                 val path = FileUtil.getRealPathFromURI(requireContext(), it)
-                viewModel.openEditor(path)
+                navigate(
+                    MainFragmentDirections.actionMainFragmentToEditorFragment()
+                        .apply { imagePath = path }
+                )
             }
         }
 
@@ -92,9 +107,9 @@ class MainFragment : Fragment() {
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 when (menuItem.itemId) {
-                    R.id.actionCamera -> viewModel.openCamera()
-                    R.id.actionGallery -> viewModel.openGallery()
-                    R.id.actionSetting -> viewModel.openSetting()
+                    R.id.actionCamera -> openCamera()
+                    R.id.actionGallery -> openGallery()
+                    R.id.actionSetting -> navigate(MainFragmentDirections.actionMainFragmentToSettingFragment())
                     R.id.actionSortASC -> viewModel.setSort(BoulderingDataSource.ListSort.ASC)
                     R.id.actionSortDESC -> viewModel.setSort(BoulderingDataSource.ListSort.DESC)
                 }
@@ -105,8 +120,10 @@ class MainFragment : Fragment() {
             override fun onPrepareMenu(menu: Menu) {
                 menu.getItem(0)?.isVisible = !appBarManager.appBarExpanded
                 menu.getItem(1)?.isVisible = !appBarManager.appBarExpanded
-                menu.getItem(3)?.isVisible = viewModel.listSort.value != BoulderingDataSource.ListSort.ASC
-                menu.getItem(4)?.isVisible = viewModel.listSort.value != BoulderingDataSource.ListSort.DESC
+                menu.getItem(3)?.isVisible =
+                    viewModel.listSort.value != BoulderingDataSource.ListSort.ASC
+                menu.getItem(4)?.isVisible =
+                    viewModel.listSort.value != BoulderingDataSource.ListSort.DESC
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
@@ -132,20 +149,21 @@ class MainFragment : Fragment() {
 
         ViewCompat.requestApplyInsets(binding.layoutContainer)
 
+        binding.buttonCamera.setOnClickListener {
+            openCamera()
+        }
+
+        binding.buttonGallery.setOnClickListener {
+            openGallery()
+        }
+
         viewModel.eventChannel.onEach {
             when (it) {
-                is OpenSettingEvent -> navigate(MainFragmentDirections.actionMainFragmentToSettingFragment())
                 is OpenViewerEvent -> navigate(
                     MainFragmentDirections.actionMainFragmentToViewerFragment().apply {
                         boulderingId = it.id
                     })
 
-                is OpenEditorEvent -> navigate(
-                    MainFragmentDirections.actionMainFragmentToEditorFragment()
-                        .apply { imagePath = it.path })
-
-                is OpenCameraEvent -> requestOpenCamera.launch(it.intent)
-                is OpenGalleryEvent -> requestOpenGallery.launch(it.intent)
                 is ListSortChangeEvent -> activity?.invalidateOptionsMenu()
             }
         }.launchIn(lifecycleScope)
@@ -172,5 +190,32 @@ class MainFragment : Fragment() {
         } else {
             layoutManager.spanCount = 2
         }
+    }
+
+    fun openCamera() {
+        requestOpenCamera.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+            val photoFile =
+                FileUtil.createImageFile(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES))
+                    ?: throw RuntimeException("Feature Not Supported")
+            val photoURI = FileProvider.getUriForFile(
+                requireContext(),
+                "com.kayadami.bouldering.fileprovider",
+                photoFile
+            )
+            putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+
+            photoPath = photoFile.absolutePath
+        })
+    }
+
+    fun openGallery() {
+        requestOpenGallery.launch(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Intent(MediaStore.ACTION_PICK_IMAGES)
+        } else {
+            Intent(Intent.ACTION_PICK).apply {
+                type = "image/*"
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            }
+        })
     }
 }
