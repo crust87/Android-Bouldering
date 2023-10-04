@@ -4,12 +4,14 @@ import android.content.res.Resources
 import android.view.View
 import androidx.lifecycle.*
 import com.kayadami.bouldering.R
+import com.kayadami.bouldering.app.IODispatcher
+import com.kayadami.bouldering.app.MainDispatcher
 import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
 import com.kayadami.bouldering.editor.EditorView
 import com.kayadami.bouldering.editor.HolderBox
 import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
@@ -20,7 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class EditorViewModel @Inject constructor(
     val repository: BoulderingDataSource,
-    val resources: Resources
+    val resources: Resources,
+    @MainDispatcher val mainDispatcher: CoroutineDispatcher,
+    @IODispatcher val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     val bouldering = MutableLiveData<Bouldering>()
@@ -70,7 +74,7 @@ class EditorViewModel @Inject constructor(
     )
     val eventChannel: SharedFlow<EditorViewModelEvent> = _eventChannel
 
-    fun init(path: String, id: Long) = viewModelScope.launch(Dispatchers.Main) {
+    fun init(path: String, id: Long) = viewModelScope.launch(mainDispatcher) {
         try {
             bouldering.value = when {
                 id > 0 -> repository.get(id)
@@ -82,18 +86,18 @@ class EditorViewModel @Inject constructor(
         }
     }
 
-    fun done(editorView: EditorView) = viewModelScope.launch(Dispatchers.Main) {
+    fun done(editorView: EditorView) = viewModelScope.launch(mainDispatcher) {
         isProgress.value = true
 
         try {
             if ((bouldering.value?.id ?: 0) > 0) {
-                withContext(Dispatchers.IO) {
+                withContext(ioDispatcher) {
                     editorView.modify()
                 }.let {
                     repository.update(it)
                 }
             } else {
-                withContext(Dispatchers.IO) {
+                withContext(ioDispatcher) {
                     editorView.create()
                 }.let {
                     repository.add(it)

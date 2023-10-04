@@ -11,7 +11,7 @@ import dagger.hilt.android.components.FragmentComponent
 @InstallIn(FragmentComponent::class)
 class MainFragmentModule {
 
-    @MainFragmentComponent
     @Provides
+    @MainFragmentComponent
     fun provideStaggeredGridLayoutManager() = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 }

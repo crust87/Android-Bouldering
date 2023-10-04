@@ -1,11 +1,12 @@
 package com.kayadami.bouldering.data
 
+import com.kayadami.bouldering.app.MainDispatcher
 import com.kayadami.bouldering.data.bouldering.BoulderingDao
 import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
 import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import com.kayadami.bouldering.data.comment.CommentDao
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +18,7 @@ import javax.inject.Singleton
 class BoulderingRepository @Inject constructor(
     val boulderingDao: BoulderingDao,
     val commentDao: CommentDao,
+    @MainDispatcher val mainDispatcher: CoroutineDispatcher,
 ) : BoulderingDataSource {
 
     private var _sort = BoulderingDataSource.ListSort.DESC
@@ -53,7 +55,7 @@ class BoulderingRepository @Inject constructor(
         invalidate()
     }
 
-    private fun invalidate() = CoroutineScope(Dispatchers.Main).launch {
+    private fun invalidate() = CoroutineScope(mainDispatcher).launch {
         _listFlow.emit(when (_sort) {
             BoulderingDataSource.ListSort.ASC -> boulderingDao.getAllASC()
             BoulderingDataSource.ListSort.DESC -> boulderingDao.getAllDESC()

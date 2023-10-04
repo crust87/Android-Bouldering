@@ -8,12 +8,12 @@ import com.kayadami.bouldering.constants.COMMENT_PAGE_LIMIT
 import com.kayadami.bouldering.data.comment.CommentDao
 import com.kayadami.bouldering.data.comment.type.Comment
 import dagger.hilt.android.scopes.ViewModelScoped
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @ViewModelScoped
-class CommentPagerFactory @Inject constructor(private val commentDao: CommentDao) {
+class CommentPagerFactory @Inject constructor(
+    private val commentDao: CommentDao
+) {
 
     fun create(boulderingId: Long): Pager<Int, Comment> {
         return Pager(
@@ -36,9 +36,7 @@ class CommentPagerFactory @Inject constructor(private val commentDao: CommentDao
                 return LoadResult.Error(RuntimeException("no page under 0"))
             }
 
-            val data = withContext(Dispatchers.IO) {
-                commentDao.getAllByBoulderingId(boulderingId, key)
-            }
+            val data = commentDao.getAllByBoulderingId(boulderingId, key)
 
             return if (data.isNotEmpty()) {
                 LoadResult.Page(
@@ -53,7 +51,8 @@ class CommentPagerFactory @Inject constructor(private val commentDao: CommentDao
 
         override fun getRefreshKey(state: PagingState<Int, Comment>): Int {
             return state.anchorPosition?.let {
-                state.closestPageToPosition(it)?.prevKey?.plus(1) ?: state.closestPageToPosition(it)?.nextKey?.minus(1)
+                state.closestPageToPosition(it)?.prevKey?.plus(1)
+                    ?: state.closestPageToPosition(it)?.nextKey?.minus(1)
             } ?: 0
         }
     }

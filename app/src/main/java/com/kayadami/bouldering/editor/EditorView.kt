@@ -132,24 +132,24 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
         isLoading = true
         onProblemListener?.onLoadingStart()
 
-        val imageStream = FileInputStream(bouldering.path)
-        val exif = ExifInterface(bouldering.path)
-        val rotation = when (Integer.parseInt(exif.getAttribute(ExifInterface.TAG_ORIENTATION)
-                ?: "0")) {
-            3 -> 180
-            6 -> 90
-            8 -> 270
-            else -> 0
-        }
-        val bitmapOptions = BitmapFactory.Options().apply {
-            inPreferredConfig = Bitmap.Config.RGB_565
-        }
-
-        val matrix = Matrix().apply {
-            postRotate(rotation.toFloat())
-        }
-
         imageBitmap = withContext(Dispatchers.IO) {
+            val imageStream = FileInputStream(bouldering.path)
+            val exif = ExifInterface(bouldering.path)
+            val rotation = when (Integer.parseInt(exif.getAttribute(ExifInterface.TAG_ORIENTATION)
+                ?: "0")) {
+                3 -> 180
+                6 -> 90
+                8 -> 270
+                else -> 0
+            }
+            val bitmapOptions = BitmapFactory.Options().apply {
+                inPreferredConfig = Bitmap.Config.RGB_565
+            }
+
+            val matrix = Matrix().apply {
+                postRotate(rotation.toFloat())
+            }
+
             val image = BitmapFactory.decodeStream(imageStream, null, bitmapOptions)
 
             image ?: throw RuntimeException()
@@ -490,7 +490,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
         deselectHolder()
         invalidate()
 
-        bouldering = withContext(Dispatchers.Default) { modifyBouldering(bouldering) }
+        bouldering = withContext(Dispatchers.IO) { modifyBouldering(bouldering) }
 
         bouldering
     }
@@ -503,7 +503,7 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
             deselectHolder()
             invalidate()
 
-            bouldering = withContext(Dispatchers.Default) { createBouldering() }
+            bouldering = withContext(Dispatchers.IO) { createBouldering() }
 
             bouldering
         }

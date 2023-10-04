@@ -10,13 +10,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.R
+import com.kayadami.bouldering.app.MainDispatcher
 import com.kayadami.bouldering.app.domain.SaveImageUseCase
 import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
 import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import com.kayadami.bouldering.utils.DateUtils
 import com.kayadami.bouldering.utils.toShareIntent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
@@ -28,6 +29,7 @@ import kotlin.coroutines.resume
 class ViewerViewModel @Inject constructor(
     val repository: BoulderingDataSource,
     val saveImageUseCase: SaveImageUseCase,
+    @MainDispatcher val mainDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     val bouldering = MutableLiveData<Bouldering>()
@@ -57,7 +59,7 @@ class ViewerViewModel @Inject constructor(
     )
     val eventChannel: SharedFlow<ViewerViewModelEvent> = _eventChannel
 
-    fun init(id: Long) = viewModelScope.launch(Dispatchers.Main) {
+    fun init(id: Long) = viewModelScope.launch(mainDispatcher) {
         bouldering.value = repository.get(id)
     }
 
@@ -67,7 +69,7 @@ class ViewerViewModel @Inject constructor(
         }
     }
 
-    fun remove(activity: Activity) = viewModelScope.launch(Dispatchers.Main) {
+    fun remove(activity: Activity) = viewModelScope.launch(mainDispatcher) {
         val result = suspendCancellableCoroutine { cont ->
             AlertDialog.Builder(activity)
                 .setMessage(R.string.alert_delete)
@@ -91,7 +93,7 @@ class ViewerViewModel @Inject constructor(
         }
     }
 
-    fun toggleSolved() = viewModelScope.launch(Dispatchers.Main) {
+    fun toggleSolved() = viewModelScope.launch(mainDispatcher) {
         bouldering.value?.let {
             it.isSolved = !it.isSolved
             bouldering.value = it
@@ -104,7 +106,7 @@ class ViewerViewModel @Inject constructor(
         _eventChannel.tryEmit(OpenCommentEvent)
     }
 
-    fun openShare() = viewModelScope.launch(Dispatchers.Main) {
+    fun openShare() = viewModelScope.launch(mainDispatcher) {
         isProgress.value = true
 
         try {
@@ -122,7 +124,7 @@ class ViewerViewModel @Inject constructor(
         isProgress.value = false
     }
 
-    fun saveImage() = viewModelScope.launch(Dispatchers.Main) {
+    fun saveImage() = viewModelScope.launch(mainDispatcher) {
         isProgress.value = true
 
         try {
@@ -153,7 +155,7 @@ class ViewerViewModel @Inject constructor(
         _eventChannel.tryEmit(OpenKeyboardEvent(view))
     }
 
-    fun finishEditTitle(view: EditText) = viewModelScope.launch(Dispatchers.Main) {
+    fun finishEditTitle(view: EditText) = viewModelScope.launch(mainDispatcher) {
         _eventChannel.tryEmit(HideKeyboardEvent(view))
         bouldering.value?.let {
             it.title = view.text.toString()
