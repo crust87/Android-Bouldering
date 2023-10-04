@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.app.domain
+package com.kayadami.bouldering.app.main.domain
 
 import android.content.ContentResolver
 import android.content.ContentValues

@@ -14,8 +14,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.map
 import androidx.navigation.fragment.navArgs
 import com.kayadami.bouldering.R
-import com.kayadami.bouldering.app.domain.HideKeyboardUseCase
-import com.kayadami.bouldering.app.domain.OpenKeyboardUseCase
+import com.kayadami.bouldering.app.main.domain.HideKeyboardUseCase
+import com.kayadami.bouldering.app.main.domain.OpenKeyboardUseCase
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.viewer.comment.CommentBottomSheet

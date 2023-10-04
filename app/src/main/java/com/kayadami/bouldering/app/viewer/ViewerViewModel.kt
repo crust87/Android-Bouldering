@@ -9,9 +9,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.MainDispatcher
-import com.kayadami.bouldering.app.domain.SaveImageUseCase
+import com.kayadami.bouldering.app.main.domain.SaveImageUseCase
+import com.kayadami.bouldering.app.viewer.type.ViewerUIState
 import com.kayadami.bouldering.data.BoulderingRepository
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import com.kayadami.bouldering.utils.DateUtils
 import com.kayadami.bouldering.utils.toShareIntent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,17 +32,7 @@ class ViewerViewModel @Inject constructor(
     @MainDispatcher val mainDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
-    data class ViewerUiState(
-        val id: Long = 0,
-        val data: Bouldering? = null,
-        val title: String = "",
-        val lastModify: String = "",
-        val isSolved: Boolean = false,
-        val progressVisibility: Int = View.GONE,
-        val infoVisibility: Int = View.VISIBLE,
-    )
-
-    private val _uiState = MutableStateFlow(ViewerUiState())
+    private val _uiState = MutableStateFlow(ViewerUIState())
     val uiState = _uiState.asLiveData(viewModelScope.coroutineContext)
 
     private val _eventChannel = MutableSharedFlow<ViewerViewModelEvent>(
