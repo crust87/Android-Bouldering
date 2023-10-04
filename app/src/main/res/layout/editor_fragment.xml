@@ -27,29 +27,26 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:theme="@style/toolbarDark"
-            app:title="@{viewModel.title}" />
+            app:title="@{viewModel.uiState.title}" />
 
         <com.kayadami.bouldering.editor.EditorView
             android:id="@+id/editorView"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:anchor_size="20dp"
-            app:bouldering="@{viewModel.bouldering}"
             app:box_color="#ffffff"
             app:box_type="circle"
-            app:isLoading="@={viewModel.isProgress}"
             app:layout_constraintBottom_toTopOf="@+id/layoutTools"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
-            app:line_width="2dp"
-            app:selectedHolder="@={viewModel.selectedHolder}" />
+            app:line_width="2dp" />
 
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="@{viewModel.isProgress ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.uiState.progressVisibility}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -67,7 +64,7 @@
                 android:id="@+id/layoutProblemTool"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="@{viewModel.problemToolVisibility ?? View.VISIBLE}">
+                android:visibility="@{viewModel.uiState.problemToolVisibility}">
 
                 <TextView
                     android:id="@+id/buttonClear"
@@ -84,7 +81,7 @@
                     android:id="@+id/buttonColor"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
                     android:gravity="center"
                     android:onClick="@{() -> viewModel.openColorPicker()}"
                     android:paddingLeft="18dp"
@@ -98,7 +95,7 @@
                 android:id="@+id/layoutHolderTool"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="@{viewModel.holderToolVisibility ?? View.GONE}">
+                android:visibility="@{viewModel.uiState.holderToolVisibility}">
 
                 <TextView
                     android:id="@+id/buttonDelete"
@@ -116,8 +113,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_toLeftOf="@+id/checkSpecialHolder"
-                    android:checked="@{viewModel.isNumberHolder}"
-                    android:enabled="@{viewModel.isNumberEnabled}"
+                    android:checked="@{viewModel.uiState.isNumberHolder}"
+                    android:enabled="@{viewModel.uiState.isNumberEnabled}"
                     android:onClick="@{() -> editorView.toggleOrder()}"
                     android:paddingRight="8dp"
                     android:text="@string/editor_number"
@@ -128,7 +125,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
-                    android:checked="@{viewModel.isSpecialHolder}"
+                    android:checked="@{viewModel.uiState.isSpecialHolder}"
                     android:onClick="@{() -> editorView.toggleSpecial()}"
                     android:paddingRight="18dp"
                     android:text="@string/editor_start_top"

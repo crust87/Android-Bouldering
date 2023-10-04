@@ -4,22 +4,22 @@ import android.app.Activity
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.MainDispatcher
-import com.kayadami.bouldering.app.domain.SaveImageUseCase
-import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.kayadami.bouldering.app.main.domain.SaveImageUseCase
+import com.kayadami.bouldering.app.viewer.type.ViewerUIState
+import com.kayadami.bouldering.data.BoulderingRepository
 import com.kayadami.bouldering.utils.DateUtils
 import com.kayadami.bouldering.utils.toShareIntent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
@@ -27,31 +27,13 @@ import kotlin.coroutines.resume
 
 @HiltViewModel
 class ViewerViewModel @Inject constructor(
-    val repository: BoulderingDataSource,
+    val boulderingRepository: BoulderingRepository,
     val saveImageUseCase: SaveImageUseCase,
     @MainDispatcher val mainDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
-    val bouldering = MutableLiveData<Bouldering>()
-
-    val title: LiveData<String> = bouldering.map {
-        when (it.title.isNullOrEmpty()) {
-            true -> "NO TITLE"
-            else -> it.title ?: ""
-        }
-    }
-
-    val lastModify: LiveData<String> = bouldering.map {
-        DateUtils.convertDateTime(it.updatedAt)
-    }
-
-    val isSolved: LiveData<Boolean> = bouldering.map {
-        it.isSolved
-    }
-
-    val isProgress = MutableLiveData(false)
-
-    val infoVisibility = MutableLiveData(View.VISIBLE)
+    private val _uiState = MutableStateFlow(ViewerUIState())
+    val uiState = _uiState.asLiveData(viewModelScope.coroutineContext)
 
     private val _eventChannel = MutableSharedFlow<ViewerViewModelEvent>(
         replay = 0,
@@ -60,13 +42,21 @@ class ViewerViewModel @Inject constructor(
     val eventChannel: SharedFlow<ViewerViewModelEvent> = _eventChannel
 
     fun init(id: Long) = viewModelScope.launch(mainDispatcher) {
-        bouldering.value = repository.get(id)
+        boulderingRepository.get(id)?.also { data ->
+            _uiState.update {
+                it.copy(
+                    id = id,
+                    data = data,
+                    title = data.title.displayTitle(),
+                    lastModify = DateUtils.convertDateTime(data.updatedAt),
+                    isSolved = data.isSolved
+                )
+            }
+        }
     }
 
     fun openEditor() {
-        bouldering.value?.let {
-            _eventChannel.tryEmit(OpenEditorEvent(it))
-        }
+        _eventChannel.tryEmit(OpenEditorEvent(_uiState.value.id))
     }
 
     fun remove(activity: Activity) = viewModelScope.launch(mainDispatcher) {
@@ -85,20 +75,17 @@ class ViewerViewModel @Inject constructor(
         }
 
         if (result) {
-            bouldering.value?.let {
-                repository.remove(it)
-            }
+            boulderingRepository.remove(_uiState.value.id)
 
             _eventChannel.tryEmit(NavigateUpEvent)
         }
     }
 
     fun toggleSolved() = viewModelScope.launch(mainDispatcher) {
-        bouldering.value?.let {
-            it.isSolved = !it.isSolved
-            bouldering.value = it
-
-            repository.update(it)
+        val isSolved = !_uiState.value.isSolved
+        boulderingRepository.update(_uiState.value.id, isSolved = isSolved)
+        _uiState.update {
+            it.copy(isSolved = isSolved)
         }
     }
 
@@ -107,10 +94,12 @@ class ViewerViewModel @Inject constructor(
     }
 
     fun openShare() = viewModelScope.launch(mainDispatcher) {
-        isProgress.value = true
+        _uiState.update {
+            it.copy(progressVisibility = View.VISIBLE)
+        }
 
         try {
-            val uri = saveImageUseCase(bouldering.value!!, "share_")
+            val uri = saveImageUseCase(_uiState.value.data!!, "share_")
 
             val intent = uri.toShareIntent()
 
@@ -121,14 +110,18 @@ class ViewerViewModel @Inject constructor(
             _eventChannel.tryEmit(ToastEvent(e.message))
         }
 
-        isProgress.value = false
+        _uiState.update {
+            it.copy(progressVisibility = View.GONE)
+        }
     }
 
     fun saveImage() = viewModelScope.launch(mainDispatcher) {
-        isProgress.value = true
+        _uiState.update {
+            it.copy(progressVisibility = View.VISIBLE)
+        }
 
         try {
-            val uri = saveImageUseCase(bouldering.value!!)
+            val uri = saveImageUseCase(_uiState.value.data!!)
 
             _eventChannel.tryEmit(FinishSaveEvent(uri.path))
         } catch (e: Exception) {
@@ -137,16 +130,22 @@ class ViewerViewModel @Inject constructor(
             _eventChannel.tryEmit(ToastEvent(e.message))
         }
 
-        isProgress.value = false
+        _uiState.update {
+            it.copy(progressVisibility = View.GONE)
+        }
     }
 
     fun toggleInfoVisible(view: EditText) {
         if (view.isFocusableInTouchMode) {
             finishEditTitle(view)
         } else {
-            infoVisibility.value = when (infoVisibility.value) {
-                View.VISIBLE -> View.GONE
-                else -> View.VISIBLE
+            _uiState.update {
+                it.copy(
+                    infoVisibility = when (it.infoVisibility) {
+                        View.VISIBLE -> View.GONE
+                        else -> View.VISIBLE
+                    }
+                )
             }
         }
     }
@@ -157,11 +156,30 @@ class ViewerViewModel @Inject constructor(
 
     fun finishEditTitle(view: EditText) = viewModelScope.launch(mainDispatcher) {
         _eventChannel.tryEmit(HideKeyboardEvent(view))
-        bouldering.value?.let {
-            it.title = view.text.toString()
-            bouldering.value = it
 
-            repository.update(it)
+        val title = view.text.toString()
+
+        boulderingRepository.update(_uiState.value.id, title = title)
+        _uiState.update {
+            it.copy(title = title.displayTitle())
+        }
+    }
+
+    fun setLoading(toProgress: Boolean) {
+        _uiState.update {
+            it.copy(
+                progressVisibility = when (toProgress) {
+                    true -> View.VISIBLE
+                    false -> View.GONE
+                }
+            )
+        }
+    }
+
+    private fun String?.displayTitle(): String {
+        return when (isNullOrBlank()) {
+            true -> "NO TITLE"
+            else -> this
         }
     }
 }

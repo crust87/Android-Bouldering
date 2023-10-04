@@ -5,12 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
-import com.kayadami.bouldering.app.domain.OpenCameraUseCase
-import com.kayadami.bouldering.app.domain.OpenGalleryUseCase
-import com.kayadami.bouldering.app.main.type.BoulderingListItem
-import com.kayadami.bouldering.app.main.type.EmptyListItem
-import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.kayadami.bouldering.app.main.type.BoulderingItemUiState
+import com.kayadami.bouldering.app.main.type.EmptyItemUiState
+import com.kayadami.bouldering.data.BoulderingRepository
+import com.kayadami.bouldering.data.bouldering.ListSort
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -19,21 +17,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    val repository: BoulderingDataSource,
-    val openCameraUseCase: OpenCameraUseCase,
-    val openGalleryUseCae: OpenGalleryUseCase,
+    val boulderingRepository: BoulderingRepository,
 ) : ViewModel() {
 
-    val listSort = MutableLiveData(BoulderingDataSource.ListSort.DESC)
+    val listSort = MutableLiveData(ListSort.DESC)
 
-    val list = listSort.switchMap {
-        repository.list(it).map {  list ->
+    val boulderingListUiItems = listSort.switchMap {
+        boulderingRepository.list(it).map { list ->
             if (list.isNotEmpty()) {
-                list.map {  bouldering ->
-                    BoulderingListItem(bouldering)
+                list.map { bouldering ->
+                    BoulderingItemUiState(bouldering, onClick = {
+                        _eventChannel.tryEmit(OpenViewerEvent(bouldering.id))
+                    })
                 }
             } else {
-                listOf(EmptyListItem)
+                listOf(EmptyItemUiState)
             }
         }.asLiveData(viewModelScope.coroutineContext)
     }
@@ -44,35 +42,9 @@ class MainViewModel @Inject constructor(
     )
     val eventChannel: SharedFlow<MainViewModelEvent> = _eventChannel
 
-    var photoPath: String?
-        get() = openCameraUseCase.photoPath
-        set(value) {
-            openCameraUseCase.photoPath = value
-        }
-
-    fun setSort(sort: BoulderingDataSource.ListSort) {
+    fun setSort(sort: ListSort) {
         listSort.value = sort
 
         _eventChannel.tryEmit(ListSortChangeEvent)
-    }
-
-    fun openSetting() {
-        _eventChannel.tryEmit(OpenSettingEvent)
-    }
-
-    fun openViewer(data: Bouldering) {
-        _eventChannel.tryEmit(OpenViewerEvent(data))
-    }
-
-    fun openEditor(path: String) {
-        _eventChannel.tryEmit(OpenEditorEvent(path))
-    }
-
-    fun openCamera() {
-        _eventChannel.tryEmit(OpenCameraEvent(openCameraUseCase()))
-    }
-
-    fun openGallery() {
-        _eventChannel.tryEmit(OpenGalleryEvent(openGalleryUseCae()))
     }
 }

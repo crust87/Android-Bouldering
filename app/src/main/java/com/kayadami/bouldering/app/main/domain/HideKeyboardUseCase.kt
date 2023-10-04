@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.app.domain
+package com.kayadami.bouldering.app.main.domain
 
 import android.app.Activity
 import android.content.Context
@@ -10,7 +10,7 @@ import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
 
 @ActivityScoped
-class KeyboardHideUseCase @Inject constructor(@ActivityContext val context: Context) {
+class HideKeyboardUseCase @Inject constructor(@ActivityContext val context: Context) {
 
     operator fun invoke(view: View) {
         (context as Activity).currentFocus?.let { view ->

@@ -2,7 +2,7 @@ package com.kayadami.bouldering.data
 
 import com.kayadami.bouldering.app.MainDispatcher
 import com.kayadami.bouldering.data.bouldering.BoulderingDao
-import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
+import com.kayadami.bouldering.data.bouldering.ListSort
 import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import com.kayadami.bouldering.data.comment.CommentDao
 import kotlinx.coroutines.CoroutineDispatcher
@@ -16,16 +16,16 @@ import javax.inject.Singleton
 
 @Singleton
 class BoulderingRepository @Inject constructor(
-    val boulderingDao: BoulderingDao,
-    val commentDao: CommentDao,
-    @MainDispatcher val mainDispatcher: CoroutineDispatcher,
-) : BoulderingDataSource {
+    private val boulderingDao: BoulderingDao,
+    private val commentDao: CommentDao,
+    private @MainDispatcher val mainDispatcher: CoroutineDispatcher,
+) {
 
-    private var _sort = BoulderingDataSource.ListSort.DESC
+    private var _sort = ListSort.DESC
 
     private var _listFlow = MutableStateFlow(emptyList<Bouldering>())
 
-    override fun list(sort: BoulderingDataSource.ListSort): Flow<List<Bouldering>> {
+    fun list(sort: ListSort): Flow<List<Bouldering>> {
         _sort = sort
 
         return _listFlow.asStateFlow().also {
@@ -33,32 +33,41 @@ class BoulderingRepository @Inject constructor(
         }
     }
 
-    override suspend fun get(id: Long): Bouldering? = boulderingDao.get(id)
+    suspend fun get(id: Long): Bouldering? = boulderingDao.get(id)
 
-    override suspend fun add(bouldering: Bouldering) {
+    suspend fun add(bouldering: Bouldering) {
         boulderingDao.insertAll(bouldering)
 
         invalidate()
     }
 
-    override suspend fun update(bouldering: Bouldering) {
+    suspend fun update(bouldering: Bouldering) {
         bouldering.updatedAt = System.currentTimeMillis()
         boulderingDao.update(bouldering)
 
         invalidate()
     }
 
-    override suspend fun remove(bouldering: Bouldering) {
-        boulderingDao.delete(bouldering)
-        commentDao.deleteByBoulderingId(bouldering.id)
+    suspend fun update(id: Long, title: String? = null, isSolved: Boolean? = null) {
+        get(id)?.let {
+            it.title = title ?: it.title
+            it.isSolved = isSolved ?: it.isSolved
+
+            update(it)
+        }
+    }
+
+    suspend fun remove(id: Long) {
+        boulderingDao.deleteById(id)
+        commentDao.deleteByBoulderingId(id)
 
         invalidate()
     }
 
     private fun invalidate() = CoroutineScope(mainDispatcher).launch {
         _listFlow.emit(when (_sort) {
-            BoulderingDataSource.ListSort.ASC -> boulderingDao.getAllASC()
-            BoulderingDataSource.ListSort.DESC -> boulderingDao.getAllDESC()
+            ListSort.ASC -> boulderingDao.getAllASC()
+            ListSort.DESC -> boulderingDao.getAllDESC()
         })
     }
 }

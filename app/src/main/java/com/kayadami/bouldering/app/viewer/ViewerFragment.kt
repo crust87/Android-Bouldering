@@ -9,15 +9,18 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.map
 import androidx.navigation.fragment.navArgs
 import com.kayadami.bouldering.R
-import com.kayadami.bouldering.app.domain.KeyboardHideUseCase
-import com.kayadami.bouldering.app.domain.KeyboardOpenUseCase
+import com.kayadami.bouldering.app.main.domain.HideKeyboardUseCase
+import com.kayadami.bouldering.app.main.domain.OpenKeyboardUseCase
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.viewer.comment.CommentBottomSheet
 import com.kayadami.bouldering.databinding.ViewerFragmentBinding
+import com.kayadami.bouldering.editor.EditorView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
@@ -28,10 +31,10 @@ import javax.inject.Inject
 class ViewerFragment : Fragment() {
 
     @Inject
-    lateinit var keyboardOpenUseCase: KeyboardOpenUseCase
+    lateinit var openKeyboardUseCase: OpenKeyboardUseCase
 
     @Inject
-    lateinit var keyboardHideUseCase: KeyboardHideUseCase
+    lateinit var hideKeyboardUseCase: HideKeyboardUseCase
 
     lateinit var binding: ViewerFragmentBinding
 
@@ -122,17 +125,33 @@ class ViewerFragment : Fragment() {
 
         viewModel.init(args.boulderingId)
 
+        viewModel.uiState.map { it.data }.distinctUntilChanged().observe(viewLifecycleOwner) {
+            it?.let {
+                binding.editorView.setProblem(it)
+            }
+        }
+
+        binding.editorView.setOnProblemListener(object: EditorView.OnProblemListener{
+            override fun onLoadingStart() {
+                viewModel.setLoading(true)
+            }
+
+            override fun onLoadingFinish() {
+                viewModel.setLoading(false)
+            }
+        })
+
         viewModel.eventChannel.onEach {
             when (it) {
                 is OpenEditorEvent -> navigate(
-                    ViewerFragmentDirections.actionViewerFragmentToEditorFragment(it.data.id)
+                    ViewerFragmentDirections.actionViewerFragmentToEditorFragment(it.id)
                 )
                 is OpenCommentEvent -> openComment()
                 is OpenShareEvent -> startActivity(it.intent)
                 is FinishSaveEvent -> Toast.makeText(context, it.path, Toast.LENGTH_SHORT).show()
                 is NavigateUpEvent -> navigateUp()
-                is OpenKeyboardEvent -> keyboardOpenUseCase(it.editText)
-                is HideKeyboardEvent -> keyboardHideUseCase(it.editText)
+                is OpenKeyboardEvent -> openKeyboardUseCase(it.editText)
+                is HideKeyboardEvent -> hideKeyboardUseCase(it.editText)
                 is ToastEvent -> Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
             }
         }.launchIn(lifecycleScope)

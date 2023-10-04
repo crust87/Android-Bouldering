@@ -2,71 +2,41 @@ package com.kayadami.bouldering.app.editor
 
 import android.content.res.Resources
 import android.view.View
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.IODispatcher
 import com.kayadami.bouldering.app.MainDispatcher
-import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
+import com.kayadami.bouldering.app.editor.type.EditorUIState
+import com.kayadami.bouldering.data.BoulderingRepository
+import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import com.kayadami.bouldering.editor.EditorView
 import com.kayadami.bouldering.editor.HolderBox
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.kayadami.bouldering.utils.DateUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class EditorViewModel @Inject constructor(
-    val repository: BoulderingDataSource,
+    val boulderingRepository: BoulderingRepository,
     val resources: Resources,
     @MainDispatcher val mainDispatcher: CoroutineDispatcher,
     @IODispatcher val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
-    val bouldering = MutableLiveData<Bouldering>()
-
-    val title: LiveData<String> = bouldering.map {
-        when (it.id > 0) {
-            true -> resources.getString(R.string.editor_edit)
-            false -> resources.getString(R.string.editor_create)
-        }
-    }
-
-    val selectedHolder = MutableLiveData<HolderBox?>()
-
-    val problemToolVisibility: LiveData<Int> = selectedHolder.map {
-        if (it == null) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
-    }
-
-    val holderToolVisibility: LiveData<Int> = selectedHolder.map {
-        if (it != null) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
-    }
-
-    val isNumberHolder: LiveData<Boolean> = selectedHolder.map {
-        it?.isInOrder ?: false
-    }
-
-    val isSpecialHolder: LiveData<Boolean> = selectedHolder.map {
-        it?.isSpecial ?: false
-    }
-
-    val isNumberEnabled: LiveData<Boolean> = selectedHolder.map {
-        it?.isNotSpecial ?: true
-    }
-
-    val isProgress = MutableLiveData(false)
+    private val _uiState = MutableStateFlow(EditorUIState())
+    val uiState = _uiState.asLiveData(viewModelScope.coroutineContext)
 
     private val _eventChannel = MutableSharedFlow<EditorViewModelEvent>(
         replay = 0,
@@ -76,9 +46,25 @@ class EditorViewModel @Inject constructor(
 
     fun init(path: String, id: Long) = viewModelScope.launch(mainDispatcher) {
         try {
-            bouldering.value = when {
-                id > 0 -> repository.get(id)
-                path.isNotEmpty() -> Bouldering(0, path, path, null, false,null, -1, -1, ArrayList(), 0)
+            when {
+                id > 0 -> boulderingRepository.get(id)?.also { data ->
+                    _uiState.update {
+                        it.copy(
+                            id = id,
+                            data = data,
+                            title = resources.getString(R.string.editor_edit),
+                        )
+                    }
+                }
+                path.isNotEmpty() -> {
+                    _uiState.update {
+                        it.copy(
+                            id = 0,
+                            data = Bouldering(0, path, path, null, false,null, -1, -1, ArrayList(), 0),
+                            title = resources.getString(R.string.editor_create),
+                        )
+                    }
+                }
                 else -> null
             } ?: throw Exception("NO BOULDERING HAS BEEN FOUND")
         } catch (e: Exception) {
@@ -87,20 +73,22 @@ class EditorViewModel @Inject constructor(
     }
 
     fun done(editorView: EditorView) = viewModelScope.launch(mainDispatcher) {
-        isProgress.value = true
+        _uiState.update {
+            it.copy(problemToolVisibility = View.VISIBLE)
+        }
 
         try {
-            if ((bouldering.value?.id ?: 0) > 0) {
+            if (_uiState.value.id > 0) {
                 withContext(ioDispatcher) {
                     editorView.modify()
                 }.let {
-                    repository.update(it)
+                    boulderingRepository.update(it)
                 }
             } else {
                 withContext(ioDispatcher) {
                     editorView.create()
                 }.let {
-                    repository.add(it)
+                    boulderingRepository.add(it)
                 }
             }
 
@@ -109,10 +97,36 @@ class EditorViewModel @Inject constructor(
             _eventChannel.tryEmit(ToastEvent(e.message))
         }
 
-        isProgress.value = false
+        _uiState.update {
+            it.copy(problemToolVisibility = View.GONE)
+        }
+    }
+
+    fun setLoading(toProgress: Boolean) {
+        _uiState.update {
+            it.copy(
+                progressVisibility = when (toProgress) {
+                    true -> View.VISIBLE
+                    false -> View.GONE
+                }
+            )
+        }
     }
 
     fun openColorPicker() {
         _eventChannel.tryEmit(OpenColorPickerEvent)
+    }
+
+    fun setHolder(holder: HolderBox?) {
+        _uiState.update {
+            it.copy(
+                selected = holder,
+                problemToolVisibility = if (holder == null) View.VISIBLE else View.GONE,
+                holderToolVisibility = if (holder != null) View.VISIBLE else View.GONE,
+                isNumberHolder = holder?.isInOrder ?: false,
+                isSpecialHolder = holder?.isSpecial ?: false,
+                isNumberEnabled = holder?.isNotSpecial ?: true,
+            )
+        }
     }
 }

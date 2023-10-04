@@ -7,12 +7,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.map
 import androidx.navigation.fragment.navArgs
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.databinding.EditorFragmentBinding
+import com.kayadami.bouldering.editor.EditorView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
@@ -62,6 +65,26 @@ class EditorFragment : Fragment() {
         }
 
         viewModel.init(aras.imagePath, aras.boulderingId)
+
+        viewModel.uiState.map { it.data }.distinctUntilChanged().observe(viewLifecycleOwner) {
+            it?.let {
+                binding.editorView.setProblem(it)
+            }
+        }
+
+        binding.editorView.setOnProblemListener(object: EditorView.OnProblemListener{
+            override fun onLoadingStart() {
+                viewModel.setLoading(true)
+            }
+
+            override fun onLoadingFinish() {
+                viewModel.setLoading(false)
+            }
+        })
+
+        binding.editorView.setOnSelectedChangeListener {
+            viewModel.setHolder(it)
+        }
 
         viewModel.eventChannel.onEach {
             when(it) {

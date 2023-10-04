@@ -5,14 +5,14 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.kayadami.bouldering.constants.COMMENT_PAGE_LIMIT
-import com.kayadami.bouldering.data.comment.CommentDataSource
+import com.kayadami.bouldering.data.comment.CommentRepository
 import com.kayadami.bouldering.data.comment.type.Comment
 import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
 @ViewModelScoped
 class CommentPagerFactory @Inject constructor(
-    private val commentDataSource: CommentDataSource
+    private val commentRepository: CommentRepository
 ) {
 
     fun create(boulderingId: Long, pagerFlagWrapper: PagerFlagWrapper): Pager<Int, Comment> {
@@ -37,7 +37,7 @@ class CommentPagerFactory @Inject constructor(
                 return LoadResult.Error(RuntimeException("no page under 0"))
             }
 
-            val data = commentDataSource.getList(boulderingId, key)
+            val data = commentRepository.getList(boulderingId, key)
 
             return if (data.isNotEmpty()) {
                 LoadResult.Page(

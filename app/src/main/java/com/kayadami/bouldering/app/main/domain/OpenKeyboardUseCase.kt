@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.app.domain
+package com.kayadami.bouldering.app.main.domain
 
 import android.content.Context
 import android.view.View
@@ -9,7 +9,7 @@ import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
 
 @ActivityScoped
-class KeyboardOpenUseCase @Inject constructor(@ActivityContext val context: Context) {
+class OpenKeyboardUseCase @Inject constructor(@ActivityContext val context: Context) {
 
     operator fun invoke(view: View) {
         if (!view.isFocusableInTouchMode) {

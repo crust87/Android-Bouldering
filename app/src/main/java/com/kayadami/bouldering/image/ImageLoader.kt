@@ -12,6 +12,16 @@ import java.io.File
 
 abstract class ImageLoader() {
 
+    fun load(imageView: ImageView, thumb: String, updatedAt: Long): Int {
+        GlideApp.with(imageView)
+                .load(File(thumb))
+                .fitCenter()
+                .signature(ObjectKey(updatedAt.toString()))
+                .into(imageView)
+
+        return 0
+    }
+
     fun load(imageView: ImageView, bouldering: Bouldering): Int {
         GlideApp.with(imageView)
                 .load(File(bouldering.thumb))

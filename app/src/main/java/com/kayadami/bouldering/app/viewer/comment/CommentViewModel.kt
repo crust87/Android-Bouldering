@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.kayadami.bouldering.app.MainDispatcher
-import com.kayadami.bouldering.app.viewer.comment.domain.CommentAdditionUseCase
-import com.kayadami.bouldering.app.viewer.comment.domain.CommentDeletionUseCase
+import com.kayadami.bouldering.app.viewer.comment.domain.AddCommentUseCase
+import com.kayadami.bouldering.app.viewer.comment.domain.DeleteCommentUseCase
 import com.kayadami.bouldering.app.viewer.comment.domain.CommentPagerFactory
 import com.kayadami.bouldering.data.comment.type.Comment
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,8 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CommentViewModel @Inject constructor(
     private val commentPagerFactory: CommentPagerFactory,
-    private val commentAdditionUseCase: CommentAdditionUseCase,
-    private val commentDeletionUseCase: CommentDeletionUseCase,
+    private val addCommentUseCase: AddCommentUseCase,
+    private val deleteCommentUseCase: DeleteCommentUseCase,
     @MainDispatcher val mainDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
@@ -52,7 +52,7 @@ class CommentViewModel @Inject constructor(
     fun addComment() = viewModelScope.launch(mainDispatcher) {
         comment.value?.toString()?.let {
             if (it.isNotBlank()) {
-                commentAdditionUseCase(it, _boulderingId)
+                addCommentUseCase(it, _boulderingId)
 
                 comment.value = ""
 
@@ -64,7 +64,7 @@ class CommentViewModel @Inject constructor(
     }
 
     fun deleteComment(commentId: Long) = viewModelScope.launch(mainDispatcher) {
-        commentDeletionUseCase(commentId)
+        deleteCommentUseCase(commentId)
 
         _eventChannel.tryEmit(OnDeleteCommentEvent)
     }

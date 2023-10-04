@@ -5,9 +5,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class OpenSourceRepository @Inject constructor(): OpenSourceDataSource {
+class OpenSourceRepository @Inject constructor() {
 
-    override fun getList(): List<OpenSourceLicense> {
+    fun getList(): List<OpenSourceLicense> {
         return listOf(
             OpenSourceLicense(
                 "Android Architecture Blueprints",

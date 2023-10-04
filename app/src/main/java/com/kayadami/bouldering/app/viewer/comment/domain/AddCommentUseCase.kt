@@ -1,16 +1,16 @@
 package com.kayadami.bouldering.app.viewer.comment.domain
 
-import com.kayadami.bouldering.data.comment.CommentDataSource
+import com.kayadami.bouldering.data.comment.CommentRepository
 import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
 @ViewModelScoped
-class CommentAdditionUseCase @Inject constructor(
-    private val commentDataSource: CommentDataSource
+class AddCommentUseCase @Inject constructor(
+    private val commentRepository: CommentRepository
 ) {
 
     suspend operator fun invoke(text: String, boulderingId: Long) {
-        commentDataSource.addComment(
+        commentRepository.addComment(
             text.trim(),
             boulderingId
         )

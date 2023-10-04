@@ -48,8 +48,7 @@
                             android:layout_width="100dp"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="42dp"
-                            android:background="?android:attr/selectableItemBackgroundBorderless"
-                            android:onClick="@{() -> viewModel.openCamera()}">
+                            android:background="?android:attr/selectableItemBackgroundBorderless">
 
                             <ImageView
                                 android:id="@+id/imageCamera"
@@ -82,8 +81,7 @@
                             android:layout_width="100dp"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="42dp"
-                            android:background="?android:attr/selectableItemBackgroundBorderless"
-                            android:onClick="@{() -> viewModel.openGallery()}">
+                            android:background="?android:attr/selectableItemBackgroundBorderless">
 
                             <ImageView
                                 android:id="@+id/imageGallery"
