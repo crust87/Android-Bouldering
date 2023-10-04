@@ -1,19 +1,20 @@
 package com.kayadami.bouldering.app.main
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.kayadami.bouldering.app.domain.OpenCameraUseCase
 import com.kayadami.bouldering.app.domain.OpenGalleryUseCase
+import com.kayadami.bouldering.app.main.type.BoulderingListItem
+import com.kayadami.bouldering.app.main.type.EmptyListItem
 import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
 import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,7 +27,15 @@ class MainViewModel @Inject constructor(
     val listSort = MutableLiveData(BoulderingDataSource.ListSort.DESC)
 
     val list = listSort.switchMap {
-        repository.list(it).asLiveData(viewModelScope.coroutineContext)
+        repository.list(it).map {  list ->
+            if (list.isNotEmpty()) {
+                list.map {  bouldering ->
+                    BoulderingListItem(bouldering)
+                }
+            } else {
+                listOf(EmptyListItem)
+            }
+        }.asLiveData(viewModelScope.coroutineContext)
     }
 
     private val _eventChannel = MutableSharedFlow<MainViewModelEvent>(

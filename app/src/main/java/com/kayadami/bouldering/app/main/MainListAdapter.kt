@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.kayadami.bouldering.app.main.type.BoulderingListItem
+import com.kayadami.bouldering.app.main.type.MainListItem
 import com.kayadami.bouldering.constants.Orientation
 import com.kayadami.bouldering.databinding.BoulderingCellBinding
 import com.kayadami.bouldering.databinding.EmptyCellBinding
@@ -19,7 +21,7 @@ import dagger.hilt.android.scopes.FragmentScoped
 import javax.inject.Inject
 
 @FragmentScoped
-class BoulderingAdapter @Inject constructor(
+class MainListAdapter @Inject constructor(
         @FragmentImageLoader val imageLoader: ImageLoader
 ) : RecyclerView.Adapter<ViewHolder>() {
 
@@ -27,7 +29,7 @@ class BoulderingAdapter @Inject constructor(
 
     private var _listener: BoulderingItemEvent? = null
 
-    fun setList(newList: List<Bouldering>) {
+    fun setList(newList: List<MainListItem>) {
         asyncListDiffer.submitList(newList)
     }
 
@@ -58,7 +60,7 @@ class BoulderingAdapter @Inject constructor(
         }
     }
 
-    override fun getItemViewType(position: Int) = asyncListDiffer.currentList[position].viewType
+    override fun getItemViewType(position: Int) = asyncListDiffer.currentList[position].type
 
     override fun getItemCount() = asyncListDiffer.currentList.size
 
@@ -81,7 +83,9 @@ class BoulderingAdapter @Inject constructor(
         }
 
         override fun bind(position: Int) {
-            val itemData = asyncListDiffer.currentList[position].also {
+            val itemData = asyncListDiffer.currentList[position].let {
+                (it as BoulderingListItem).bouldering
+            }.also {
                 data = it
             }
 
@@ -127,12 +131,12 @@ class BoulderingAdapter @Inject constructor(
     }
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Bouldering>() {
-            override fun areItemsTheSame(oldItem: Bouldering, newItem: Bouldering): Boolean {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<MainListItem>() {
+            override fun areItemsTheSame(oldItem: MainListItem, newItem: MainListItem): Boolean {
                 return oldItem.id == newItem.id
             }
 
-            override fun areContentsTheSame(oldItem: Bouldering, newItem: Bouldering): Boolean {
+            override fun areContentsTheSame(oldItem: MainListItem, newItem: MainListItem): Boolean {
                 return oldItem.id == newItem.id && oldItem.updatedAt == newItem.updatedAt
             }
         }

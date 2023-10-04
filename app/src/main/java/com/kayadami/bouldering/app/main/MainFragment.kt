@@ -49,7 +49,7 @@ class MainFragment : Fragment() {
     lateinit var layoutManager: StaggeredGridLayoutManager
 
     @Inject
-    lateinit var adapter: BoulderingAdapter
+    lateinit var adapter: MainListAdapter
 
     lateinit var binding: MainFragmentBinding
 

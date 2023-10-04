@@ -3,6 +3,7 @@ package com.kayadami.bouldering.app.editor
 import android.content.res.Resources
 import android.view.View
 import com.kayadami.bouldering.InstantExecutorListener
+import com.kayadami.bouldering.MainDispatcherListener
 import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
 import com.kayadami.bouldering.editor.HolderBox
 import com.kayadami.bouldering.editor.Options
@@ -10,14 +11,18 @@ import com.kayadami.bouldering.getOrAwaitValue
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class EditorViewModelTest : BehaviorSpec({
     listener(InstantExecutorListener())
+    listener(MainDispatcherListener())
 
     val repository = mockk<BoulderingDataSource>()
     val resources = mockk<Resources>()
 
-    val viewModel = EditorViewModel(repository, resources)
+    val viewModel = EditorViewModel(repository, resources, UnconfinedTestDispatcher(), UnconfinedTestDispatcher())
 
     given("홀더가 선택되어 있지 않으면") {
         viewModel.selectedHolder.value = null
