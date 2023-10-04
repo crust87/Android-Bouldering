@@ -11,6 +11,7 @@ import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -63,10 +64,11 @@ class EditorViewModel @Inject constructor(
 
     val isProgress = MutableLiveData(false)
 
-    val eventChannel = MutableSharedFlow<EditorViewModelEvent>(
+    private val _eventChannel = MutableSharedFlow<EditorViewModelEvent>(
         replay = 0,
         extraBufferCapacity = 1,
     )
+    val eventChannel: SharedFlow<EditorViewModelEvent> = _eventChannel
 
     fun init(path: String, id: Long) = viewModelScope.launch(Dispatchers.Main) {
         try {
@@ -76,7 +78,7 @@ class EditorViewModel @Inject constructor(
                 else -> null
             } ?: throw Exception("NO BOULDERING HAS BEEN FOUND")
         } catch (e: Exception) {
-            eventChannel.tryEmit(ToastEvent(e.message))
+            _eventChannel.tryEmit(ToastEvent(e.message))
         }
     }
 
@@ -98,15 +100,15 @@ class EditorViewModel @Inject constructor(
                 }
             }
 
-            eventChannel.tryEmit(NavigateUpEvent)
+            _eventChannel.tryEmit(NavigateUpEvent)
         } catch (e: Exception) {
-            eventChannel.tryEmit(ToastEvent(e.message))
+            _eventChannel.tryEmit(ToastEvent(e.message))
         }
 
         isProgress.value = false
     }
 
     fun openColorPicker() {
-        eventChannel.tryEmit(OpenColorPickerEvent)
+        _eventChannel.tryEmit(OpenColorPickerEvent)
     }
 }

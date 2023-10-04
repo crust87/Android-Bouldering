@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.kayadami.bouldering.app.viewer.comment.domain.CommentAdditionUseCase
@@ -15,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,10 +33,11 @@ class CommentViewModel @Inject constructor(
 
     private var _boulderingId: Long = 0
 
-    val eventChannel = MutableSharedFlow<CommentViewModelEvent>(
+    private val _eventChannel = MutableSharedFlow<CommentViewModelEvent>(
         replay = 0,
         extraBufferCapacity = 1
     )
+    val eventChannel: SharedFlow<CommentViewModelEvent> = _eventChannel
 
     fun init(boulderingId: Long): Flow<PagingData<Comment>> {
         _boulderingId = boulderingId
@@ -50,13 +51,13 @@ class CommentViewModel @Inject constructor(
         if (commentAdditionUseCase(text, _boulderingId)) {
             comment.value = ""
 
-            eventChannel.tryEmit(OnNewCommentEvent)
+            _eventChannel.tryEmit(OnNewCommentEvent)
         }
     }
 
     fun deleteComment(commentId: Long) = viewModelScope.launch(Dispatchers.Main) {
         commentDeletionUseCase(commentId)
 
-        eventChannel.tryEmit(OnDeleteCommentEvent)
+        _eventChannel.tryEmit(OnDeleteCommentEvent)
     }
 }

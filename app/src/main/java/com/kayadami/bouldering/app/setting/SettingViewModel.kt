@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -11,16 +12,17 @@ class SettingViewModel @Inject constructor() : ViewModel() {
 
     val progressVisibility = MutableLiveData<Int>()
 
-    val eventChannel = MutableSharedFlow<SettingViewModelEvent>(
+    private val _eventChannel = MutableSharedFlow<SettingViewModelEvent>(
         replay = 0,
         extraBufferCapacity = 1,
     )
+    val eventChannel: SharedFlow<SettingViewModelEvent> = _eventChannel
 
     fun navigateUp() {
-        eventChannel.tryEmit(NavigateUpEvent)
+        _eventChannel.tryEmit(NavigateUpEvent)
     }
 
     fun openOpenSourceLicense() {
-        eventChannel.tryEmit(OpenOpensourceLicenseEvent)
+        _eventChannel.tryEmit(OpenOpensourceLicenseEvent)
     }
 }

@@ -18,6 +18,7 @@ import com.kayadami.bouldering.utils.toShareIntent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
@@ -50,10 +51,11 @@ class ViewerViewModel @Inject constructor(
 
     val infoVisibility = MutableLiveData(View.VISIBLE)
 
-    val eventChannel = MutableSharedFlow<ViewerViewModelEvent>(
+    private val _eventChannel = MutableSharedFlow<ViewerViewModelEvent>(
         replay = 0,
         extraBufferCapacity = 1,
     )
+    val eventChannel: SharedFlow<ViewerViewModelEvent> = _eventChannel
 
     fun init(id: Long) = viewModelScope.launch(Dispatchers.Main) {
         bouldering.value = repository.get(id)
@@ -61,7 +63,7 @@ class ViewerViewModel @Inject constructor(
 
     fun openEditor() {
         bouldering.value?.let {
-            eventChannel.tryEmit(OpenEditorEvent(it))
+            _eventChannel.tryEmit(OpenEditorEvent(it))
         }
     }
 
@@ -85,7 +87,7 @@ class ViewerViewModel @Inject constructor(
                 repository.remove(it)
             }
 
-            eventChannel.tryEmit(NavigateUpEvent)
+            _eventChannel.tryEmit(NavigateUpEvent)
         }
     }
 
@@ -99,7 +101,7 @@ class ViewerViewModel @Inject constructor(
     }
 
     fun openComment() {
-        eventChannel.tryEmit(OpenCommentEvent)
+        _eventChannel.tryEmit(OpenCommentEvent)
     }
 
     fun openShare() = viewModelScope.launch(Dispatchers.Main) {
@@ -110,11 +112,11 @@ class ViewerViewModel @Inject constructor(
 
             val intent = uri.toShareIntent()
 
-            eventChannel.tryEmit(OpenShareEvent(intent))
+            _eventChannel.tryEmit(OpenShareEvent(intent))
         } catch (e: Exception) {
             e.printStackTrace()
 
-            eventChannel.tryEmit(ToastEvent(e.message))
+            _eventChannel.tryEmit(ToastEvent(e.message))
         }
 
         isProgress.value = false
@@ -126,11 +128,11 @@ class ViewerViewModel @Inject constructor(
         try {
             val uri = saveImageUseCase(bouldering.value!!)
 
-            eventChannel.tryEmit(FinishSaveEvent(uri.path))
+            _eventChannel.tryEmit(FinishSaveEvent(uri.path))
         } catch (e: Exception) {
             e.printStackTrace()
 
-            eventChannel.tryEmit(ToastEvent(e.message))
+            _eventChannel.tryEmit(ToastEvent(e.message))
         }
 
         isProgress.value = false
@@ -148,11 +150,11 @@ class ViewerViewModel @Inject constructor(
     }
 
     fun startEditTitle(view: EditText) {
-        eventChannel.tryEmit(OpenKeyboardEvent(view))
+        _eventChannel.tryEmit(OpenKeyboardEvent(view))
     }
 
     fun finishEditTitle(view: EditText) = viewModelScope.launch(Dispatchers.Main) {
-        eventChannel.tryEmit(HideKeyboardEvent(view))
+        _eventChannel.tryEmit(HideKeyboardEvent(view))
         bouldering.value?.let {
             it.title = view.text.toString()
             bouldering.value = it

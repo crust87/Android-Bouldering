@@ -13,6 +13,7 @@ import com.kayadami.bouldering.data.bouldering.BoulderingDataSource
 import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,10 +29,11 @@ class MainViewModel @Inject constructor(
         repository.list(it).asLiveData(viewModelScope.coroutineContext)
     }
 
-    val eventChannel = MutableSharedFlow<MainViewModelEvent>(
+    private val _eventChannel = MutableSharedFlow<MainViewModelEvent>(
         replay = 0,
         extraBufferCapacity = 1,
     )
+    val eventChannel: SharedFlow<MainViewModelEvent> = _eventChannel
 
     var photoPath: String?
         get() = openCameraUseCase.photoPath
@@ -42,26 +44,26 @@ class MainViewModel @Inject constructor(
     fun setSort(sort: BoulderingDataSource.ListSort) {
         listSort.value = sort
 
-        eventChannel.tryEmit(ListSortChangeEvent)
+        _eventChannel.tryEmit(ListSortChangeEvent)
     }
 
     fun openSetting() {
-        eventChannel.tryEmit(OpenSettingEvent)
+        _eventChannel.tryEmit(OpenSettingEvent)
     }
 
     fun openViewer(data: Bouldering) {
-        eventChannel.tryEmit(OpenViewerEvent(data))
+        _eventChannel.tryEmit(OpenViewerEvent(data))
     }
 
     fun openEditor(path: String) {
-        eventChannel.tryEmit(OpenEditorEvent(path))
+        _eventChannel.tryEmit(OpenEditorEvent(path))
     }
 
     fun openCamera() {
-        eventChannel.tryEmit(OpenCameraEvent(openCameraUseCase()))
+        _eventChannel.tryEmit(OpenCameraEvent(openCameraUseCase()))
     }
 
     fun openGallery() {
-        eventChannel.tryEmit(OpenGalleryEvent(openGalleryUseCae()))
+        _eventChannel.tryEmit(OpenGalleryEvent(openGalleryUseCae()))
     }
 }
