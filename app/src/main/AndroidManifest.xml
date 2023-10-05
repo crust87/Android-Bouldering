@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.kayadami.bouldering">
+    package="com.crust87.bouldering">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -18,7 +18,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name="com.kayadami.bouldering.app.MainActivity"
+            android:name="com.crust87.bouldering.app.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true">
             <intent-filter>
@@ -30,7 +30,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.kayadami.bouldering.fileprovider"
+            android:authorities="com.crust87.bouldering.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

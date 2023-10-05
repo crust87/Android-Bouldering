@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.kayadami.bouldering.app.main.MainFragment"
+        android:name="com.crust87.bouldering.app.main.MainFragment"
         android:label="main_fragment"
         tools:layout="@layout/main_fragment">
 
@@ -27,7 +27,7 @@
 
     <fragment
         android:id="@+id/settingFragment"
-        android:name="com.kayadami.bouldering.app.setting.SettingFragment"
+        android:name="com.crust87.bouldering.app.setting.SettingFragment"
         android:label="setting_fragment"
         tools:layout="@layout/setting_fragment">
 
@@ -39,13 +39,13 @@
 
     <fragment
         android:id="@+id/openSourceLicenseFragment"
-        android:name="com.kayadami.bouldering.app.setting.opensourcelicense.OpenSourceLicenseFragment"
+        android:name="com.crust87.bouldering.app.setting.opensourcelicense.OpenSourceLicenseFragment"
         android:label="open_source_license_fragment"
         tools:layout="@layout/open_source_license_fragment" />
 
     <fragment
         android:id="@+id/viewerFragment"
-        android:name="com.kayadami.bouldering.app.viewer.ViewerFragment"
+        android:name="com.crust87.bouldering.app.viewer.ViewerFragment"
         android:label="viewer_fragment"
         tools:layout="@layout/viewer_fragment">
 
@@ -68,7 +68,7 @@
 
     <fragment
         android:id="@+id/editorFragment"
-        android:name="com.kayadami.bouldering.app.editor.EditorFragment"
+        android:name="com.crust87.bouldering.app.editor.EditorFragment"
         android:label="editor_fragment"
         tools:layout="@layout/editor_fragment">
 

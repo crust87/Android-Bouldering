@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="com.kayadami.bouldering.app.viewer.ViewerViewModel" />
+            type="com.crust87.bouldering.app.viewer.ViewerViewModel" />
 
     </data>
 
@@ -62,7 +62,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent" />
 
-        <com.kayadami.bouldering.utils.KeyboardDetectableEditText
+        <com.crust87.bouldering.utils.KeyboardDetectableEditText
             android:id="@+id/textTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

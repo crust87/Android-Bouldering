@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.kayadami.bouldering.editor'
+    namespace 'com.crust87.bouldering.editor'
     compileSdk 33
 
     defaultConfig {

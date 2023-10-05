@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace "com.kayadami.bouldering"
+    namespace "com.crust87.bouldering"
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.kayadami.bouldering"
+        applicationId "com.crust87.bouldering"
         minSdk 24
         targetSdk 33
         versionCode 1

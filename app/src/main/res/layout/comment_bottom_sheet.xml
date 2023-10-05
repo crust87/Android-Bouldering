@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="com.kayadami.bouldering.app.viewer.comment.CommentViewModel" />
+            type="com.crust87.bouldering.app.viewer.comment.CommentViewModel" />
 
     </data>
 
