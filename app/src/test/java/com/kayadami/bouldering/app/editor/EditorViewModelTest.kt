@@ -2,9 +2,9 @@ package com.kayadami.bouldering.app.editor
 
 import android.content.res.Resources
 import android.view.View
+import com.crust87.bouldering.data.BoulderingRepository
 import com.kayadami.bouldering.InstantExecutorListener
 import com.kayadami.bouldering.MainDispatcherListener
-import com.kayadami.bouldering.data.BoulderingRepository
 import com.kayadami.bouldering.editor.HolderBox
 import com.kayadami.bouldering.editor.Options
 import com.kayadami.bouldering.getOrAwaitValue

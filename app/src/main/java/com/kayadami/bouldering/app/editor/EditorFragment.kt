@@ -14,10 +14,9 @@ import androidx.navigation.fragment.navArgs
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigateUp
+import com.kayadami.bouldering.data.asEditorBouldering
 import com.kayadami.bouldering.databinding.EditorFragmentBinding
-import com.kayadami.bouldering.editor.EditorView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -68,11 +67,11 @@ class EditorFragment : Fragment() {
 
         viewModel.uiState.map { it.data }.distinctUntilChanged().observe(viewLifecycleOwner) {
             it?.let {
-                binding.editorView.setProblem(it)
+                binding.editorView.setProblem(it.asEditorBouldering())
             }
         }
 
-        binding.editorView.setOnProblemListener(object: EditorView.OnProblemListener{
+        binding.editorView.setOnProblemListener(object: com.kayadami.bouldering.editor.EditorView.OnProblemListener{
             override fun onLoadingStart() {
                 viewModel.setLoading(true)
             }
@@ -92,13 +91,7 @@ class EditorFragment : Fragment() {
                 is NavigateUpEvent -> navigateUp()
                 is ToastEvent -> Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
             }
-        }.launchIn(lifecycleScope)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        lifecycleScope.coroutineContext.cancelChildren()
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

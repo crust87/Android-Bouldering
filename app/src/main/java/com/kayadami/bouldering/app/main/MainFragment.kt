@@ -23,18 +23,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.crust87.bouldering.data.bouldering.ListSort
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.MainFragmentComponent
 import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
-import com.kayadami.bouldering.data.bouldering.ListSort
 import com.kayadami.bouldering.databinding.MainFragmentBinding
 import com.kayadami.bouldering.image.FragmentImageLoader
 import com.kayadami.bouldering.image.ImageLoader
-import com.kayadami.bouldering.utils.FileUtil
+import com.crust87.util.FileUtil
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -166,13 +165,11 @@ class MainFragment : Fragment() {
 
                 is ListSortChangeEvent -> activity?.invalidateOptionsMenu()
             }
-        }.launchIn(lifecycleScope)
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-
-        lifecycleScope.coroutineContext.cancelChildren()
 
         binding.recyclerView.layoutManager = null
         binding.appBar.removeOnOffsetChangedListener(appBarManager)

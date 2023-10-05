@@ -6,8 +6,9 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
+import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
 import com.kayadami.bouldering.app.IODispatcher
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.kayadami.bouldering.data.asEditorBouldering
 import com.kayadami.bouldering.editor.ImageGenerator
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.CoroutineDispatcher
@@ -22,9 +23,9 @@ class SaveImageUseCase @Inject constructor(
     @IODispatcher val ioDispatcher: CoroutineDispatcher
 ) {
 
-    suspend operator fun invoke(bouldering: Bouldering, extraName: String = ""): Uri {
+    suspend operator fun invoke(bouldering: BoulderingEntity, extraName: String = ""): Uri {
         return withContext(ioDispatcher) {
-            val bitmap = imageGenerator.createImage(bouldering)
+            val bitmap = imageGenerator.createImage(bouldering.asEditorBouldering())
 
             val contentValues = ContentValues().apply {
                 put(

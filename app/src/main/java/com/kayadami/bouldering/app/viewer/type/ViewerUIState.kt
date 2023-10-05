@@ -1,11 +1,11 @@
 package com.kayadami.bouldering.app.viewer.type
 
 import android.view.View
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
 
 data class ViewerUIState(
     val id: Long = 0,
-    val data: Bouldering? = null,
+    val data: BoulderingEntity? = null,
     val title: String = "",
     val lastModify: String = "",
     val isSolved: Boolean = false,

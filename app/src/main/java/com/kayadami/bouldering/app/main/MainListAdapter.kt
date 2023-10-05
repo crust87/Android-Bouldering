@@ -8,20 +8,19 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.kayadami.bouldering.app.main.type.MainItemType
 import com.kayadami.bouldering.app.main.type.MainItemUiState
-import com.kayadami.bouldering.constants.Orientation
 import com.kayadami.bouldering.databinding.BoulderingCellBinding
 import com.kayadami.bouldering.databinding.EmptyCellBinding
 import com.kayadami.bouldering.image.FragmentImageLoader
 import com.kayadami.bouldering.image.ImageLoader
-import com.kayadami.bouldering.list.ViewHolder
 import dagger.hilt.android.scopes.FragmentScoped
 import javax.inject.Inject
 
 @FragmentScoped
 class MainListAdapter @Inject constructor(
         @FragmentImageLoader val imageLoader: ImageLoader
-) : RecyclerView.Adapter<ViewHolder>() {
+) : RecyclerView.Adapter<MainListAdapter.MainViewHolder>() {
 
     private val asyncListDiffer = AsyncListDiffer(this, DIFF_CALLBACK)
 
@@ -29,11 +28,11 @@ class MainListAdapter @Inject constructor(
         asyncListDiffer.submitList(newList)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val ratio = when (viewType) {
-            Orientation.ORIENTATION_PORT -> "3:4"
-            Orientation.ORIENTATION_LAND -> "4:3"
-            Orientation.ORIENTATION_SQUARE -> "1:1"
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
+        val ratio = when (MainItemType.values()[viewType]) {
+            MainItemType.Portrait -> "3:4"
+            MainItemType.Landscape -> "4:3"
+            MainItemType.Square -> "1:1"
             else -> null
         }
 
@@ -56,17 +55,23 @@ class MainListAdapter @Inject constructor(
         }
     }
 
-    override fun getItemViewType(position: Int) = asyncListDiffer.currentList[position].type
+    override fun getItemViewType(position: Int) = asyncListDiffer.currentList[position].type.ordinal
 
     override fun getItemCount() = asyncListDiffer.currentList.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         holder.bind(position)
+    }
+
+    sealed class MainViewHolder(view: View): RecyclerView.ViewHolder(view) {
+        abstract fun bind(position : Int)
+
+        abstract fun recycle()
     }
 
     inner class BoulderingViewHolder(
             val binding: BoulderingCellBinding
-    ) : ViewHolder(binding.root) {
+    ) : MainViewHolder(binding.root) {
 
         var data: MainItemUiState? = null
 
@@ -99,7 +104,7 @@ class MainListAdapter @Inject constructor(
 
     class EmptyViewHolder(
             binding: EmptyCellBinding
-    ) : ViewHolder(binding.root) {
+    ) : MainViewHolder(binding.root) {
         override fun bind(position: Int) {
             // DO NOTHING
         }

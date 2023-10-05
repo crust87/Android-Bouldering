@@ -10,7 +10,7 @@ import com.kayadami.bouldering.app.MainDispatcher
 import com.kayadami.bouldering.app.viewer.comment.domain.AddCommentUseCase
 import com.kayadami.bouldering.app.viewer.comment.domain.DeleteCommentUseCase
 import com.kayadami.bouldering.app.viewer.comment.domain.CommentPagerFactory
-import com.kayadami.bouldering.data.comment.type.Comment
+import com.crust87.bouldering.data.comment.type.Comment
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow

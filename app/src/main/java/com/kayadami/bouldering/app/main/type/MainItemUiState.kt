@@ -1,7 +1,15 @@
 package com.kayadami.bouldering.app.main.type
 
-import com.kayadami.bouldering.constants.Orientation
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
+import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
+import com.kayadami.bouldering.data.getDate
+import com.kayadami.bouldering.editor.Orientation
+
+enum class MainItemType {
+    Empty,
+    Square,
+    Landscape,
+    Portrait,
+}
 
 sealed class MainItemUiState(
     val id: Long,
@@ -9,19 +17,24 @@ sealed class MainItemUiState(
     val isSolved: Boolean,
     val displayDate: String,
     val updatedAt: Long,
-    val type: Int,
+    val type: MainItemType,
     val onClick: () -> Unit
 )
 
-class BoulderingItemUiState(bouldering: Bouldering, onClick: () -> Unit) :
+class BoulderingItemUiState(bouldering: BoulderingEntity, onClick: () -> Unit) :
     MainItemUiState(
         bouldering.id,
         bouldering.thumb,
         bouldering.isSolved,
         bouldering.getDate(),
         bouldering.updatedAt,
-        bouldering.viewType,
-        onClick)
+        when (bouldering.orientation) {
+            Orientation.ORIENTATION_LAND -> MainItemType.Landscape
+            Orientation.ORIENTATION_PORT -> MainItemType.Portrait
+            else -> MainItemType.Square
+        },
+        onClick
+    )
 
-object EmptyItemUiState : MainItemUiState(-1, "", false, "", 0, Orientation.NONE, {})
+object EmptyItemUiState : MainItemUiState(-1, "", false, "", 0, MainItemType.Empty, {})
 

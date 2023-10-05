@@ -15,3 +15,6 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Android-Boldering"
 include ':app'
+include ':editor'
+include ':util'
+include ':data'

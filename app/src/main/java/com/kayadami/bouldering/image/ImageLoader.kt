@@ -6,8 +6,8 @@ import android.util.Log
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.signature.ObjectKey
+import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
 import com.kayadami.bouldering.app.GlideApp
-import com.kayadami.bouldering.data.bouldering.type.Bouldering
 import java.io.File
 
 abstract class ImageLoader() {
@@ -22,7 +22,7 @@ abstract class ImageLoader() {
         return 0
     }
 
-    fun load(imageView: ImageView, bouldering: Bouldering): Int {
+    fun load(imageView: ImageView, bouldering: BoulderingEntity): Int {
         GlideApp.with(imageView)
                 .load(File(bouldering.thumb))
                 .fitCenter()
