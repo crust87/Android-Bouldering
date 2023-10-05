@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.kayadami.bouldering.data.comment.type.Comment
+import com.crust87.bouldering.data.comment.type.Comment
 import com.kayadami.bouldering.databinding.CommentBottomSheetCellBinding
 import com.kayadami.bouldering.utils.DateUtils
 

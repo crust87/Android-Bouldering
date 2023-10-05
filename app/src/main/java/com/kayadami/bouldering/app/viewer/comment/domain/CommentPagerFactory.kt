@@ -4,9 +4,9 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.kayadami.bouldering.constants.COMMENT_PAGE_LIMIT
-import com.kayadami.bouldering.data.comment.CommentRepository
-import com.kayadami.bouldering.data.comment.type.Comment
+import com.crust87.bouldering.data.COMMENT_PAGE_LIMIT
+import com.crust87.bouldering.data.comment.CommentRepository
+import com.crust87.bouldering.data.comment.type.Comment
 import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 

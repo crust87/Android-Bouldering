@@ -7,11 +7,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.crust87.bouldering.data.BoulderingRepository
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.MainDispatcher
 import com.kayadami.bouldering.app.main.domain.SaveImageUseCase
 import com.kayadami.bouldering.app.viewer.type.ViewerUIState
-import com.kayadami.bouldering.data.BoulderingRepository
 import com.kayadami.bouldering.utils.DateUtils
 import com.kayadami.bouldering.utils.toShareIntent
 import dagger.hilt.android.lifecycle.HiltViewModel

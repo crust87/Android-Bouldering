@@ -5,13 +5,14 @@ import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.crust87.bouldering.data.BoulderingRepository
+import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.IODispatcher
 import com.kayadami.bouldering.app.MainDispatcher
 import com.kayadami.bouldering.app.editor.type.EditorUIState
-import com.kayadami.bouldering.data.BoulderingRepository
-import com.kayadami.bouldering.data.bouldering.type.BoulderingEntity
-import com.kayadami.bouldering.data.bouldering.type.asHolder
+import com.kayadami.bouldering.data.asBoulderingEntity
+import com.kayadami.bouldering.editor.EditorView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -55,7 +56,18 @@ class EditorViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             id = 0,
-                            data = BoulderingEntity(0, path, path, null, false,null, -1, -1, ArrayList(), 0),
+                            data = BoulderingEntity(
+                                0,
+                                path,
+                                path,
+                                null,
+                                false,
+                                null,
+                                -1,
+                                -1,
+                                ArrayList(),
+                                0
+                            ),
                             title = resources.getString(R.string.editor_create),
                         )
                     }
@@ -67,7 +79,7 @@ class EditorViewModel @Inject constructor(
         }
     }
 
-    fun done(editorView: com.kayadami.bouldering.editor.EditorView) = viewModelScope.launch(mainDispatcher) {
+    fun done(editorView: EditorView) = viewModelScope.launch(mainDispatcher) {
         _uiState.update {
             it.copy(problemToolVisibility = View.VISIBLE)
         }
@@ -78,36 +90,14 @@ class EditorViewModel @Inject constructor(
                     editorView.modify()
                 }.let { new ->
                     _uiState.value.data?.let { old ->
-                        boulderingRepository.update(BoulderingEntity(
-                            id = old.id,
-                            path = new.path,
-                            thumb = new.thumb,
-                            title = old.title,
-                            isSolved = old.isSolved,
-                            color = new.color,
-                            createdAt = new.createdAt,
-                            updatedAt = new.updatedAt,
-                            holderList = new.holderList.map { it.asHolder() },
-                            orientation = new.orientation,
-                        ))
+                        boulderingRepository.update(new.asBoulderingEntity(old))
                     }
                 }
             } else {
                 withContext(ioDispatcher) {
                     editorView.create()
                 }.let {new ->
-                    boulderingRepository.add(BoulderingEntity(
-                        id = 0,
-                        path = new.path,
-                        thumb = new.thumb,
-                        title = "",
-                        isSolved = false,
-                        color = new.color,
-                        createdAt = new.createdAt,
-                        updatedAt = new.updatedAt,
-                        holderList = new.holderList.map { it.asHolder() },
-                        orientation = new.orientation,
-                    ))
+                    boulderingRepository.add(new.asBoulderingEntity(null))
                 }
             }
 

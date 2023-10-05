@@ -14,7 +14,7 @@ import androidx.navigation.fragment.navArgs
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigateUp
-import com.kayadami.bouldering.data.bouldering.type.asEditorBouldering
+import com.kayadami.bouldering.data.asEditorBouldering
 import com.kayadami.bouldering.databinding.EditorFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn

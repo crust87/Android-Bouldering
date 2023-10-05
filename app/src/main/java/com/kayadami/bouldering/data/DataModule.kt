@@ -2,6 +2,11 @@ package com.kayadami.bouldering.data
 
 import android.content.Context
 import androidx.room.Room
+import com.crust87.bouldering.data.AppDatabase
+import com.crust87.bouldering.data.Migration
+import com.crust87.bouldering.data.comment.CommentDao
+import com.crust87.bouldering.data.comment.CommentRepository
+import com.crust87.bouldering.data.opensource.OpenSourceRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,4 +32,16 @@ object DataModule {
 
     @Provides
     fun provideCommentDao(database: AppDatabase) = database.commentDao()
+
+    @Provides
+    @Singleton
+    fun provideCommentRepository(commentDao: CommentDao): CommentRepository {
+        return CommentRepository(commentDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOpenSourceRepository(): OpenSourceRepository {
+        return OpenSourceRepository()
+    }
 }

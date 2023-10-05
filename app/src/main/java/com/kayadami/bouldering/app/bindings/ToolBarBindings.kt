@@ -5,7 +5,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.BindingAdapter
-import com.kayadami.bouldering.R
 
 
 object ToolBarBindings {

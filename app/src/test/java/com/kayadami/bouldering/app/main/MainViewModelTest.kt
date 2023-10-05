@@ -1,11 +1,11 @@
 package com.kayadami.bouldering.app.main
 
 import android.content.Context
+import com.crust87.bouldering.data.BoulderingRepository
+import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
 import com.kayadami.bouldering.InstantExecutorListener
 import com.kayadami.bouldering.MainDispatcherListener
 import com.kayadami.bouldering.app.main.type.EmptyItemUiState
-import com.kayadami.bouldering.data.BoulderingRepository
-import com.kayadami.bouldering.data.bouldering.type.BoulderingEntity
 import com.kayadami.bouldering.getOrAwaitValue
 import com.kayadami.bouldering.utils.DateUtils
 import io.kotest.core.spec.style.BehaviorSpec

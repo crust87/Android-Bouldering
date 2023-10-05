@@ -10,7 +10,7 @@ import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.setSupportActionBar
 import com.kayadami.bouldering.app.supportActionBar
-import com.kayadami.bouldering.data.opensource.OpenSourceRepository
+import com.crust87.bouldering.data.opensource.OpenSourceRepository
 import com.kayadami.bouldering.databinding.OpenSourceLicenseFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

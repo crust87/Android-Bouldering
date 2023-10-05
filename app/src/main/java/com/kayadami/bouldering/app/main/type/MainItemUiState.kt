@@ -1,7 +1,8 @@
 package com.kayadami.bouldering.app.main.type
 
 import com.kayadami.bouldering.constants.Orientation
-import com.kayadami.bouldering.data.bouldering.type.BoulderingEntity
+import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
+import com.kayadami.bouldering.data.getDate
 
 sealed class MainItemUiState(
     val id: Long,

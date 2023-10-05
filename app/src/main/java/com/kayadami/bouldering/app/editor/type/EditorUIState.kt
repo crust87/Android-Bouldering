@@ -1,7 +1,7 @@
 package com.kayadami.bouldering.app.editor.type
 
 import android.view.View
-import com.kayadami.bouldering.data.bouldering.type.BoulderingEntity
+import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
 import com.kayadami.bouldering.editor.HolderBox
 
 data class EditorUIState(

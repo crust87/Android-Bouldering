@@ -1,6 +1,6 @@
 package com.kayadami.bouldering.app.viewer.comment.domain
 
-import com.kayadami.bouldering.data.comment.CommentRepository
+import com.crust87.bouldering.data.comment.CommentRepository
 import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 

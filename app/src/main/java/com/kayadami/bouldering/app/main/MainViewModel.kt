@@ -5,10 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.crust87.bouldering.data.BoulderingRepository
+import com.crust87.bouldering.data.bouldering.ListSort
 import com.kayadami.bouldering.app.main.type.BoulderingItemUiState
 import com.kayadami.bouldering.app.main.type.EmptyItemUiState
-import com.kayadami.bouldering.data.BoulderingRepository
-import com.kayadami.bouldering.data.bouldering.ListSort
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow

@@ -7,7 +7,7 @@
 
         <variable
             name="openSourceLicense"
-            type="com.kayadami.bouldering.data.opensource.type.OpenSourceLicense" />
+            type="com.crust87.bouldering.data.opensource.type.OpenSourceLicense" />
 
     </data>
 

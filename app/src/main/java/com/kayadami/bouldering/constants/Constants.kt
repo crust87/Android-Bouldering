@@ -6,5 +6,3 @@ object Orientation {
     const val ORIENTATION_LAND = 2
     const val ORIENTATION_PORT = 3
 }
-
-const val COMMENT_PAGE_LIMIT = 10

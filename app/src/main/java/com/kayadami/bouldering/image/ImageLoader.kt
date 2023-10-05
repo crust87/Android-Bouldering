@@ -6,8 +6,8 @@ import android.util.Log
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.signature.ObjectKey
+import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
 import com.kayadami.bouldering.app.GlideApp
-import com.kayadami.bouldering.data.bouldering.type.BoulderingEntity
 import java.io.File
 
 abstract class ImageLoader() {
