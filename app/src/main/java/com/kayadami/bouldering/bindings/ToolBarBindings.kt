@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.app.bindings
+package com.kayadami.bouldering.bindings
 
 import android.view.View
 import androidx.annotation.DrawableRes

@@ -41,9 +41,6 @@ class BoulderingEntity(
     var orientation: Int
 ) : Comparable<BoulderingEntity> {
 
-    val viewType: Int
-        get() = orientation
-
     override fun equals(other: Any?): Boolean {
         if (other != null && other is BoulderingEntity) {
             return id == other.id && updatedAt == other.updatedAt

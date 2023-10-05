@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.crust87.bouldering.data.opensource.type.OpenSourceLicense
 import com.kayadami.bouldering.databinding.OpenSourceLicenseCellBinding
-import com.kayadami.bouldering.list.ViewHolder
 
 class OpenSourceLicenseAdapter(
         val list: List<OpenSourceLicense>
@@ -21,12 +20,9 @@ class OpenSourceLicenseAdapter(
         holder.bind(position)
     }
 
-    inner class OpenSourceLicenseViewHolder(val binding: OpenSourceLicenseCellBinding) : ViewHolder(binding.root) {
-        override fun bind(position: Int) {
+    inner class OpenSourceLicenseViewHolder(val binding: OpenSourceLicenseCellBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(position: Int) {
             binding.openSourceLicense = list[position]
-        }
-
-        override fun recycle() {
         }
     }
 }
