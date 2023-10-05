@@ -1,10 +1,12 @@
-package com.kayadami.bouldering.editor
+package com.crust87.bouldering.editor.canvas
 
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PointF
+import com.crust87.bouldering.editor.EditorConfigurations
+import com.crust87.bouldering.editor.Options
 
-class Anchor(var options: Options) {
+internal class Anchor(var options: Options) {
 
     private val mPaint: Paint = Paint()
     private var point: PointF = PointF(0f, 0f)

@@ -1,6 +1,7 @@
-package com.kayadami.bouldering.editor
+package com.crust87.bouldering.editor
 
 import android.content.Context
+import com.kayadami.bouldering.editor.R
 
 object EditorConfigurations {
 

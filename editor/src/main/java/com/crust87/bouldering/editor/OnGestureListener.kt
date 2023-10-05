@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.kayadami.bouldering.editor
+package com.crust87.bouldering.editor
 
 internal interface OnGestureListener {
     fun onDrag(dx: Float, dy: Float)

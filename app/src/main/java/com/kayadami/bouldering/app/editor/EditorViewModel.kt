@@ -12,7 +12,8 @@ import com.kayadami.bouldering.app.IODispatcher
 import com.kayadami.bouldering.app.MainDispatcher
 import com.kayadami.bouldering.app.editor.type.EditorUIState
 import com.kayadami.bouldering.data.asBoulderingEntity
-import com.kayadami.bouldering.editor.EditorView
+import com.crust87.bouldering.editor.EditorView
+import com.crust87.bouldering.editor.data.Holder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -127,7 +128,7 @@ class EditorViewModel @Inject constructor(
         _eventChannel.tryEmit(OpenColorPickerEvent)
     }
 
-    fun setHolder(holder: com.kayadami.bouldering.editor.HolderBox?) {
+    fun setHolder(holder: Holder?) {
         _uiState.update {
             it.copy(
                 selected = holder,

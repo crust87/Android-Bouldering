@@ -2,9 +2,8 @@ package com.kayadami.bouldering.data
 
 import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
 import com.crust87.bouldering.data.bouldering.type.HolderData
-import com.kayadami.bouldering.editor.Bouldering
-import com.kayadami.bouldering.editor.Holder
-import com.crust87.util.DateUtils
+import com.crust87.bouldering.editor.data.Bouldering
+import com.crust87.bouldering.editor.data.Holder
 
 fun BoulderingEntity.asEditorBouldering() = Bouldering(
     path = path,

@@ -1,8 +1,11 @@
-package com.kayadami.bouldering.editor
+package com.crust87.bouldering.editor.canvas
 
 import android.graphics.*
+import com.crust87.bouldering.editor.EditorConfigurations
+import com.crust87.bouldering.editor.Options
+import com.crust87.bouldering.editor.data.Holder
 
-class HolderBox constructor(private var options: Options) : Holder(), Comparable<HolderBox> {
+internal class HolderBox constructor(private var options: Options) : Holder(), Comparable<HolderBox> {
 
     enum class Action {
         RESIZE, MOVE, NONE

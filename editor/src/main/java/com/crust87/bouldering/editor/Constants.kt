@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.editor
+package com.crust87.bouldering.editor
 
 object Orientation {
     const val ORIENTATION_SQUARE = 1

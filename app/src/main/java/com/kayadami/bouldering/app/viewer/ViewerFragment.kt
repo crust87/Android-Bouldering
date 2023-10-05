@@ -21,7 +21,7 @@ import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.app.viewer.comment.CommentBottomSheet
 import com.kayadami.bouldering.data.asEditorBouldering
 import com.kayadami.bouldering.databinding.ViewerFragmentBinding
-import com.kayadami.bouldering.editor.EditorView
+import com.crust87.bouldering.editor.EditorView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

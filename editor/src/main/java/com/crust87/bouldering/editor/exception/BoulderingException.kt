@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.editor
+package com.crust87.bouldering.editor.exception
 
 import java.lang.Exception
 

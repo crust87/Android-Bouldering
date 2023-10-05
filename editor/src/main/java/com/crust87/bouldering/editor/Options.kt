@@ -1,4 +1,4 @@
-package com.kayadami.bouldering.editor
+package com.crust87.bouldering.editor
 
 import android.graphics.Color
 import android.graphics.Rect

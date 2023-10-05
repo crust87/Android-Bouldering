@@ -2,7 +2,7 @@ package com.kayadami.bouldering.app.main.type
 
 import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
 import com.kayadami.bouldering.data.getDate
-import com.kayadami.bouldering.editor.Orientation
+import com.crust87.bouldering.editor.Orientation
 
 enum class MainItemType {
     Empty,

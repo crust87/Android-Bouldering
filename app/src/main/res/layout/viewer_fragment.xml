@@ -18,7 +18,7 @@
         android:layout_height="match_parent"
         tools:context=".app.viewer.ViewerFragment">
 
-        <com.kayadami.bouldering.editor.EditorView
+        <com.crust87.bouldering.editor.EditorView
             android:id="@+id/editorView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

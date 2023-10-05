@@ -11,6 +11,7 @@ import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.map
 import androidx.navigation.fragment.navArgs
+import com.crust87.bouldering.editor.EditorView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
 import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.navigateUp
@@ -71,7 +72,7 @@ class EditorFragment : Fragment() {
             }
         }
 
-        binding.editorView.setOnProblemListener(object: com.kayadami.bouldering.editor.EditorView.OnProblemListener{
+        binding.editorView.setOnProblemListener(object: EditorView.OnProblemListener{
             override fun onLoadingStart() {
                 viewModel.setLoading(true)
             }

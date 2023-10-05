@@ -1,8 +1,11 @@
-package com.kayadami.bouldering.editor
+package com.crust87.bouldering.editor
 
 import android.graphics.*
 import androidx.exifinterface.media.ExifInterface
 import android.view.WindowManager
+import com.crust87.bouldering.editor.canvas.Mask
+import com.crust87.bouldering.editor.data.Bouldering
+import com.crust87.bouldering.editor.exception.ImageGenerateException
 import java.io.FileInputStream
 import java.io.InputStream
 import java.lang.NullPointerException

@@ -1,10 +1,15 @@
-package com.kayadami.bouldering.editor
+package com.crust87.bouldering.editor
 
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.*
 import androidx.exifinterface.media.ExifInterface
+import com.crust87.bouldering.editor.canvas.HolderBox
+import com.crust87.bouldering.editor.canvas.Mask
+import com.crust87.bouldering.editor.data.Bouldering
+import com.crust87.bouldering.editor.exception.BoulderingException
+import com.crust87.bouldering.editor.data.Holder
 import com.crust87.util.FileUtil
 import kotlinx.coroutines.*
 import java.io.File
@@ -49,12 +54,10 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
     private var isAbleOpen: Boolean = false
 
     private var _selectedHolderBox: HolderBox? = null
-    val selectedHolderBox: HolderBox?
-        get() = _selectedHolderBox
 
     // Interface
     interface OnSelectedChangeListener {
-        fun onSelectedChange(selectedHolder: HolderBox?)
+        fun onSelectedChange(selectedHolder: Holder?)
     }
 
     interface OnProblemListener {
@@ -589,9 +592,9 @@ class EditorView : SurfaceView, SurfaceHolder.Callback, OnGestureListener {
         onProblemListener = listener
     }
 
-    fun setOnSelectedChangeListener(action: (HolderBox?) -> Unit) {
+    fun setOnSelectedChangeListener(action: (Holder?) -> Unit) {
         onSelectedChangeListener = object : OnSelectedChangeListener {
-            override fun onSelectedChange(selectedHolder: HolderBox?) {
+            override fun onSelectedChange(selectedHolder: Holder?) {
                 action(selectedHolder)
             }
         }

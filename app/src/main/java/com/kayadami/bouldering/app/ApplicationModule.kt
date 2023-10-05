@@ -3,7 +3,7 @@ package com.kayadami.bouldering.app
 import android.content.Context
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
-import com.kayadami.bouldering.editor.ImageGenerator
+import com.crust87.bouldering.editor.ImageGenerator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,8 +1,10 @@
-package com.kayadami.bouldering.editor
+package com.crust87.bouldering.editor.canvas
 
 import android.graphics.*
+import com.crust87.bouldering.editor.Options
+import com.crust87.bouldering.editor.data.Holder
 
-class Mask (private var options: Options) {
+internal class Mask (private var options: Options) {
 
     private var backgroundPaint = Paint()
     private var maskPaint = Paint()
