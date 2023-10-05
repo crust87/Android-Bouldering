@@ -8,7 +8,6 @@ data class EditorUIState(
     val id: Long = 0,
     val data: BoulderingEntity? = null,
     val selected: Holder? = null,
-    val title: String = "",
     val isNumberHolder: Boolean = false,
     val isSpecialHolder: Boolean = false,
     val isNumberEnabled: Boolean = false,

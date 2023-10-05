@@ -1,7 +1,9 @@
 package com.crust87.bouldering.data
 
+import com.crust87.bouldering.app.main.type.MainItemType
 import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
 import com.crust87.bouldering.data.bouldering.type.HolderData
+import com.crust87.bouldering.editor.Orientation
 import com.crust87.bouldering.editor.data.Bouldering
 import com.crust87.bouldering.editor.data.Holder
 import com.crust87.util.asDateText
@@ -49,4 +51,10 @@ fun Holder.asHolderData() = HolderData(
 
 fun BoulderingEntity.getCreatedAtText(): String {
     return createdAt.asDateText()
+}
+
+fun BoulderingEntity.getItemType() = when (orientation) {
+    Orientation.ORIENTATION_LAND -> MainItemType.Landscape
+    Orientation.ORIENTATION_PORT -> MainItemType.Portrait
+    else -> MainItemType.Square
 }

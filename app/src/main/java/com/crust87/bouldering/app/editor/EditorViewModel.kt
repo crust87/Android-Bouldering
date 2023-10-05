@@ -1,13 +1,11 @@
 package com.crust87.bouldering.app.editor
 
-import android.content.res.Resources
 import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.crust87.bouldering.data.BoulderingRepository
 import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
-import com.crust87.bouldering.R
 import com.crust87.bouldering.app.IODispatcher
 import com.crust87.bouldering.app.editor.type.EditorUIState
 import com.crust87.bouldering.data.asBoulderingEntity
@@ -24,7 +22,6 @@ import javax.inject.Inject
 @HiltViewModel
 class EditorViewModel @Inject constructor(
     val boulderingRepository: BoulderingRepository,
-    val resources: Resources,
     @IODispatcher val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
@@ -39,7 +36,6 @@ class EditorViewModel @Inject constructor(
                         it.copy(
                             id = id,
                             data = data,
-                            title = resources.getString(R.string.editor_edit),
                         )
                     }
                 }
@@ -59,7 +55,6 @@ class EditorViewModel @Inject constructor(
                                 ArrayList(),
                                 0
                             ),
-                            title = resources.getString(R.string.editor_create),
                         )
                     }
                 }

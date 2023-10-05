@@ -1,14 +1,11 @@
 package com.crust87.bouldering.app.main
 
 import androidx.lifecycle.ViewModel
-import com.crust87.bouldering.app.main.type.BoulderingItemUIState
-import com.crust87.bouldering.app.main.type.EmptyItemUIState
-import com.crust87.bouldering.app.main.type.MainItemType
 import com.crust87.bouldering.app.main.type.MainItemUIState
 import com.crust87.bouldering.app.main.type.MainUIState
 import com.crust87.bouldering.data.BoulderingRepository
 import com.crust87.bouldering.data.bouldering.ListSort
-import com.crust87.bouldering.editor.Orientation
+import com.crust87.bouldering.data.getItemType
 import com.crust87.util.asDateText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,23 +32,19 @@ class MainViewModel @Inject constructor(
         boulderingRepository.list(it.sort).map { list ->
             if (list.isNotEmpty()) {
                 list.map { bouldering ->
-                    BoulderingItemUIState(
+                    MainItemUIState(
                         bouldering.id,
                         bouldering.thumb,
                         bouldering.isSolved,
                         bouldering.createdAt.asDateText(),
                         bouldering.updatedAt,
-                        when (bouldering.orientation) {
-                            Orientation.ORIENTATION_LAND -> MainItemType.Landscape
-                            Orientation.ORIENTATION_PORT -> MainItemType.Portrait
-                            else -> MainItemType.Square
-                        }
+                        bouldering.getItemType()
                     ) {
                         _eventChannel.tryEmit(OpenViewerEvent(bouldering.id))
                     }
                 }
             } else {
-                listOf(EmptyItemUIState)
+                listOf(MainItemUIState())
             }
         }
     }

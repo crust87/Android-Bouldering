@@ -1,28 +1,12 @@
 package com.crust87.bouldering.app.main.type
 
-enum class MainItemType {
-    Empty,
-    Square,
-    Landscape,
-    Portrait,
-}
-
-sealed class MainItemUIState(
-    val id: Long,
-    val updatedAt: Long,
-    val type: MainItemType,
+data class MainItemUIState(
+    val id: Long = 0,
+    val thumb: String = "",
+    val isSolved: Boolean = false,
+    val displayDate: String = "",
+    val updatedAt: Long = -1,
+    val type: MainItemType = MainItemType.Empty,
+    val onClick: () -> Unit = {}
 )
-
-class BoulderingItemUIState(
-    id: Long,
-    val thumb: String,
-    val isSolved: Boolean,
-    val displayDate: String,
-    updatedAt: Long,
-    type: MainItemType,
-    val onClick: () -> Unit
-) :
-    MainItemUIState(id, updatedAt, type)
-
-object EmptyItemUIState : MainItemUIState(0, -1, MainItemType.Empty)
 

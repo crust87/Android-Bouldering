@@ -25,7 +25,7 @@ class EditorFragment : Fragment() {
 
     val viewModel: EditorViewModel by viewModels()
 
-    val aras: EditorFragmentArgs by navArgs()
+    val args: EditorFragmentArgs by navArgs()
 
     var colorPickerDialog: AlertDialog? = null
 
@@ -61,7 +61,12 @@ class EditorFragment : Fragment() {
             }
         }
 
-        viewModel.init(aras.imagePath, aras.boulderingId)
+        binding.toolbar.setTitle(when(args.boulderingId > 0) {
+            true -> R.string.editor_edit
+            else -> R.string.editor_create
+        })
+
+        viewModel.init(args.imagePath, args.boulderingId)
 
         viewModel.uiState.map { it.data }.distinctUntilChanged().observe(viewLifecycleOwner) {
             it?.let {

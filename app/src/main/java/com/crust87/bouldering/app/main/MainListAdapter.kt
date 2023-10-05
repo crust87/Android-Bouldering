@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.crust87.bouldering.app.main.type.BoulderingItemUIState
 import com.crust87.bouldering.app.main.type.MainItemType
 import com.crust87.bouldering.app.main.type.MainItemUIState
 import com.crust87.bouldering.databinding.BoulderingCellBinding
@@ -78,7 +77,7 @@ class MainListAdapter @Inject constructor(
             val binding: BoulderingCellBinding
     ) : MainViewHolder(binding.root) {
 
-        var data: BoulderingItemUIState? = null
+        var data: MainItemUIState? = null
 
         init {
             binding.layoutContainer.setOnClickListener {
@@ -90,17 +89,15 @@ class MainListAdapter @Inject constructor(
 
         override fun bind(position: Int) {
             val item = asyncListDiffer.currentList[position]
-            if (item is BoulderingItemUIState) {
-                data = item
+            data = item
 
-                imageLoader.load(binding.imageThumbnail, item.thumb, item.updatedAt)
+            imageLoader.load(binding.imageThumbnail, item.thumb, item.updatedAt)
 
-                binding.textDate.text = item.displayDate
+            binding.textDate.text = item.displayDate
 
-                binding.textSolved.visibility = when (item.isSolved) {
-                    true -> View.VISIBLE
-                    else -> View.GONE
-                }
+            binding.textSolved.visibility = when (item.isSolved) {
+                true -> View.VISIBLE
+                else -> View.GONE
             }
         }
 

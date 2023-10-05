@@ -26,8 +26,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:theme="@style/toolbarDark"
-            app:title="@{viewModel.uiState.title}" />
+            app:theme="@style/toolbarDark" />
 
         <com.crust87.bouldering.editor.EditorView
             android:id="@+id/editorView"
