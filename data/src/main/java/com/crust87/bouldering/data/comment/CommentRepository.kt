@@ -3,7 +3,7 @@ package com.crust87.bouldering.data.comment
 import com.crust87.bouldering.data.comment.type.Comment
 
 class CommentRepository(
-    val commentDao: CommentDao
+    private val commentDao: CommentDao
 ) {
 
     suspend fun getList(boulderingId: Long, page: Int): List<Comment> {

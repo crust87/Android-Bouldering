@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="com.kayadami.bouldering.app.editor.EditorViewModel" />
+            type="com.crust87.bouldering.app.editor.EditorViewModel" />
 
     </data>
 
@@ -29,7 +29,7 @@
             app:theme="@style/toolbarDark"
             app:title="@{viewModel.uiState.title}" />
 
-        <com.kayadami.bouldering.editor.EditorView
+        <com.crust87.bouldering.editor.EditorView
             android:id="@+id/editorView"
             android:layout_width="0dp"
             android:layout_height="0dp"
