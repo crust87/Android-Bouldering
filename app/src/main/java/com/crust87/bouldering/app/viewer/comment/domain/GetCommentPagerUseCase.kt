@@ -11,11 +11,11 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
 @ViewModelScoped
-class CommentPagerFactory @Inject constructor(
+class GetCommentPagerUseCase @Inject constructor(
     private val commentRepository: CommentRepository
 ) {
 
-    fun create(boulderingId: Long, pagerFlagWrapper: PagerFlagWrapper): Pager<Int, Comment> {
+    operator fun invoke(boulderingId: Long, pagerFlagWrapper: PagerFlagWrapper): Pager<Int, Comment> {
         return Pager(
             config = PagingConfig(
                 pageSize = COMMENT_PAGE_LIMIT,

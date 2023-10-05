@@ -52,9 +52,7 @@ class CommentBottomSheet : BottomSheetDialogFragment() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
                 if (viewHolder is CommentAdapter.CommentViewHolder) {
-                    viewHolder.data?.id?.let {
-                        viewModel.deleteComment(it)
-                    }
+                    viewHolder.delete()
                 }
             }
         }).apply {

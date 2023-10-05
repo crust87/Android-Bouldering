@@ -2,14 +2,10 @@ package com.crust87.bouldering.app.setting.opensourcelicense
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.crust87.bouldering.R
 import com.crust87.bouldering.app.navigateUp
-import com.crust87.bouldering.app.setSupportActionBar
-import com.crust87.bouldering.app.supportActionBar
 import com.crust87.bouldering.data.opensource.OpenSourceRepository
 import com.crust87.bouldering.databinding.OpenSourceLicenseFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,43 +17,21 @@ class OpenSourceLicenseFragment : Fragment() {
     @Inject
     lateinit var repository: OpenSourceRepository
 
-    lateinit var fragmentBinding: OpenSourceLicenseFragmentBinding
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setHasOptionsMenu(true)
-    }
+    lateinit var binding: OpenSourceLicenseFragmentBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        fragmentBinding = OpenSourceLicenseFragmentBinding.inflate(inflater, container, false)
+        binding = OpenSourceLicenseFragmentBinding.inflate(inflater, container, false)
 
-        return fragmentBinding.root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setSupportActionBar(fragmentBinding.toolbar)
-        supportActionBar?.run {
-            setTitle(R.string.open_source_license)
-            setDisplayHomeAsUpEnabled(true)
-            setDisplayShowTitleEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_back)
+        binding.toolbar.setNavigationOnClickListener {
+            navigateUp()
         }
 
-        fragmentBinding.recyclerView.adapter = OpenSourceLicenseAdapter(repository.getList())
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                navigateUp()
-
-                return true
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
+        binding.recyclerView.adapter = OpenSourceLicenseAdapter(repository.getList())
     }
 }

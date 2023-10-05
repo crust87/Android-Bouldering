@@ -1,18 +1,25 @@
 package com.crust87.bouldering.app.main
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.switchMap
-import androidx.lifecycle.viewModelScope
+import com.crust87.bouldering.app.main.type.BoulderingItemUIState
+import com.crust87.bouldering.app.main.type.EmptyItemUIState
+import com.crust87.bouldering.app.main.type.MainItemType
+import com.crust87.bouldering.app.main.type.MainItemUIState
+import com.crust87.bouldering.app.main.type.MainUIState
 import com.crust87.bouldering.data.BoulderingRepository
 import com.crust87.bouldering.data.bouldering.ListSort
-import com.crust87.bouldering.app.main.type.BoulderingItemUiState
-import com.crust87.bouldering.app.main.type.EmptyItemUiState
+import com.crust87.bouldering.editor.Orientation
+import com.crust87.util.asDateText
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,20 +27,33 @@ class MainViewModel @Inject constructor(
     val boulderingRepository: BoulderingRepository,
 ) : ViewModel() {
 
-    val listSort = MutableLiveData(ListSort.DESC)
+    private val _uiState = MutableStateFlow(MainUIState())
+    val uiState = _uiState.asStateFlow()
 
-    val boulderingListUiItems = listSort.switchMap {
-        boulderingRepository.list(it).map { list ->
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val mainListUiItems: Flow<List<MainItemUIState>> = _uiState.flatMapLatest {
+        boulderingRepository.list(it.sort).map { list ->
             if (list.isNotEmpty()) {
                 list.map { bouldering ->
-                    BoulderingItemUiState(bouldering, onClick = {
+                    BoulderingItemUIState(
+                        bouldering.id,
+                        bouldering.thumb,
+                        bouldering.isSolved,
+                        bouldering.createdAt.asDateText(),
+                        bouldering.updatedAt,
+                        when (bouldering.orientation) {
+                            Orientation.ORIENTATION_LAND -> MainItemType.Landscape
+                            Orientation.ORIENTATION_PORT -> MainItemType.Portrait
+                            else -> MainItemType.Square
+                        }
+                    ) {
                         _eventChannel.tryEmit(OpenViewerEvent(bouldering.id))
-                    })
+                    }
                 }
             } else {
-                listOf(EmptyItemUiState)
+                listOf(EmptyItemUIState)
             }
-        }.asLiveData(viewModelScope.coroutineContext)
+        }
     }
 
     private val _eventChannel = MutableSharedFlow<MainViewModelEvent>(
@@ -43,8 +63,8 @@ class MainViewModel @Inject constructor(
     val eventChannel: SharedFlow<MainViewModelEvent> = _eventChannel
 
     fun setSort(sort: ListSort) {
-        listSort.value = sort
-
-        _eventChannel.tryEmit(ListSortChangeEvent)
+        _uiState.update {
+            it.copy(sort = sort)
+        }
     }
 }

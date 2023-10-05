@@ -16,7 +16,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
-            app:theme="@style/toolbarDark" />
+            app:navigationIcon="@drawable/ic_back"
+            app:theme="@style/toolbarDark"
+            app:title="@string/open_source_license" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -24,8 +26,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="vertical"
-            tools:listitem="@layout/open_source_license_cell"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/open_source_license_cell" />
 
     </LinearLayout>
 

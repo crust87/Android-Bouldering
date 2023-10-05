@@ -18,7 +18,8 @@
 
 ## 사용 기술
 - Kotlin-MVVM
-- Kotlin Coroutine
+- Coroutine
+- Flow
 - Hilt
 - Navigation Component
 - Room

@@ -22,20 +22,25 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.crust87.bouldering.data.bouldering.ListSort
 import com.crust87.bouldering.R
 import com.crust87.bouldering.app.MainFragmentComponent
 import com.crust87.bouldering.app.navigate
 import com.crust87.bouldering.app.setSupportActionBar
 import com.crust87.bouldering.app.supportActionBar
+import com.crust87.bouldering.data.bouldering.ListSort
 import com.crust87.bouldering.databinding.MainFragmentBinding
 import com.crust87.bouldering.image.FragmentImageLoader
 import com.crust87.bouldering.image.ImageLoader
 import com.crust87.util.FileUtil
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -119,10 +124,8 @@ class MainFragment : Fragment() {
             override fun onPrepareMenu(menu: Menu) {
                 menu.getItem(0)?.isVisible = !appBarManager.appBarExpanded
                 menu.getItem(1)?.isVisible = !appBarManager.appBarExpanded
-                menu.getItem(3)?.isVisible =
-                    viewModel.listSort.value != ListSort.ASC
-                menu.getItem(4)?.isVisible =
-                    viewModel.listSort.value != ListSort.DESC
+                menu.getItem(3)?.isVisible = viewModel.uiState.value.sort != ListSort.ASC
+                menu.getItem(4)?.isVisible = viewModel.uiState.value.sort != ListSort.DESC
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
@@ -131,10 +134,6 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel.boulderingListUiItems.observe(viewLifecycleOwner) {
-            adapter.setList(it)
-        }
 
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.adapter = adapter
@@ -156,14 +155,27 @@ class MainFragment : Fragment() {
             openGallery()
         }
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.mainListUiItems.collectLatest {
+                    adapter.setList(it)
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.uiState.map { it.sort }.distinctUntilChanged().collectLatest {
+                    activity?.invalidateOptionsMenu()
+                }
+            }
+        }
+
         viewModel.eventChannel.onEach {
             when (it) {
                 is OpenViewerEvent -> navigate(
                     MainFragmentDirections.actionMainFragmentToViewerFragment().apply {
                         boulderingId = it.id
                     })
-
-                is ListSortChangeEvent -> activity?.invalidateOptionsMenu()
             }
         }.launchIn(viewLifecycleOwner.lifecycleScope)
     }

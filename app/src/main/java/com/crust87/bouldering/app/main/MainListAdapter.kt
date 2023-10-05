@@ -8,8 +8,9 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.crust87.bouldering.app.main.type.BoulderingItemUIState
 import com.crust87.bouldering.app.main.type.MainItemType
-import com.crust87.bouldering.app.main.type.MainItemUiState
+import com.crust87.bouldering.app.main.type.MainItemUIState
 import com.crust87.bouldering.databinding.BoulderingCellBinding
 import com.crust87.bouldering.databinding.EmptyCellBinding
 import com.crust87.bouldering.image.FragmentImageLoader
@@ -24,7 +25,7 @@ class MainListAdapter @Inject constructor(
 
     private val asyncListDiffer = AsyncListDiffer(this, DIFF_CALLBACK)
 
-    fun setList(newList: List<MainItemUiState>) {
+    fun setList(newList: List<MainItemUIState>) {
         asyncListDiffer.submitList(newList)
     }
 
@@ -63,6 +64,10 @@ class MainListAdapter @Inject constructor(
         holder.bind(position)
     }
 
+    override fun onViewRecycled(holder: MainViewHolder) {
+        holder.recycle()
+    }
+
     sealed class MainViewHolder(view: View): RecyclerView.ViewHolder(view) {
         abstract fun bind(position : Int)
 
@@ -73,7 +78,7 @@ class MainListAdapter @Inject constructor(
             val binding: BoulderingCellBinding
     ) : MainViewHolder(binding.root) {
 
-        var data: MainItemUiState? = null
+        var data: BoulderingItemUIState? = null
 
         init {
             binding.layoutContainer.setOnClickListener {
@@ -85,15 +90,17 @@ class MainListAdapter @Inject constructor(
 
         override fun bind(position: Int) {
             val item = asyncListDiffer.currentList[position]
-            data = item
+            if (item is BoulderingItemUIState) {
+                data = item
 
-            imageLoader.load(binding.imageThumbnail, item.thumb, item.updatedAt)
+                imageLoader.load(binding.imageThumbnail, item.thumb, item.updatedAt)
 
-            binding.textDate.text = item.displayDate
+                binding.textDate.text = item.displayDate
 
-            binding.textSolved.visibility = when (item.isSolved) {
-                true -> View.VISIBLE
-                else -> View.GONE
+                binding.textSolved.visibility = when (item.isSolved) {
+                    true -> View.VISIBLE
+                    else -> View.GONE
+                }
             }
         }
 
@@ -115,12 +122,12 @@ class MainListAdapter @Inject constructor(
     }
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<MainItemUiState>() {
-            override fun areItemsTheSame(oldItem: MainItemUiState, newItem: MainItemUiState): Boolean {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<MainItemUIState>() {
+            override fun areItemsTheSame(oldItem: MainItemUIState, newItem: MainItemUIState): Boolean {
                 return oldItem.id == newItem.id
             }
 
-            override fun areContentsTheSame(oldItem: MainItemUiState, newItem: MainItemUiState): Boolean {
+            override fun areContentsTheSame(oldItem: MainItemUIState, newItem: MainItemUIState): Boolean {
                 return oldItem.id == newItem.id && oldItem.updatedAt == newItem.updatedAt
             }
         }

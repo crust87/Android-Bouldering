@@ -1,4 +1,4 @@
-package com.crust87.bouldering.app.main.domain
+package com.crust87.bouldering.app.viewer.domain
 
 import android.content.ContentResolver
 import android.content.ContentValues

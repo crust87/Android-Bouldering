@@ -11,4 +11,7 @@ data class ViewerUIState(
     val isSolved: Boolean = false,
     val infoVisibility: Int = View.VISIBLE,
     val progressVisibility: Int = View.GONE,
+    val isKeyboardOpen: Boolean = false,
+    val message: String? = null,
+    val isRemoved: Boolean = false
 )

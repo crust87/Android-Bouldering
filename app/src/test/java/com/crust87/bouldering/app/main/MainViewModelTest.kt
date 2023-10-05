@@ -5,7 +5,7 @@ import com.crust87.bouldering.data.BoulderingRepository
 import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
 import com.crust87.bouldering.InstantExecutorListener
 import com.crust87.bouldering.MainDispatcherListener
-import com.crust87.bouldering.app.main.type.EmptyItemUiState
+import com.crust87.bouldering.app.main.type.EmptyItemUIState
 import com.crust87.bouldering.getOrAwaitValue
 import com.crust87.util.DateUtils
 import io.kotest.core.spec.style.BehaviorSpec
@@ -64,7 +64,7 @@ class MainViewModelTest : BehaviorSpec({
             val resultList = viewModel.boulderingListUiItems.getOrAwaitValue()
 
             resultList?.size shouldBe 1
-            resultList?.getOrNull(0) should beInstanceOf<EmptyItemUiState>()
+            resultList?.getOrNull(0) should beInstanceOf<EmptyItemUIState>()
         }
     }
 })

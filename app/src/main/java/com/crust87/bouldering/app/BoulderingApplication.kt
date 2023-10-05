@@ -10,6 +10,6 @@ class BoulderingApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        com.crust87.util.DateUtils.initialize(applicationContext)
+        DateUtils.initialize(applicationContext)
     }
 }

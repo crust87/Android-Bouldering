@@ -8,7 +8,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.distinctUntilChanged
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.map
 import androidx.navigation.fragment.navArgs
 import com.crust87.bouldering.editor.EditorView
@@ -18,8 +17,6 @@ import com.crust87.bouldering.app.navigateUp
 import com.crust87.bouldering.data.asEditorBouldering
 import com.crust87.bouldering.databinding.EditorFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class EditorFragment : Fragment() {
@@ -86,13 +83,25 @@ class EditorFragment : Fragment() {
             viewModel.setHolder(it)
         }
 
-        viewModel.eventChannel.onEach {
-            when(it) {
-                is OpenColorPickerEvent -> openColorPicker()
-                is NavigateUpEvent -> navigateUp()
-                is ToastEvent -> Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+        binding.buttonColor.setOnClickListener {
+            openColorPicker()
+        }
+
+        viewModel.uiState.map { it.message }.distinctUntilChanged().observe(viewLifecycleOwner) {
+            val newMessage = it ?: ""
+
+            if (newMessage.isNotBlank()) {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+
+                viewModel.consumeMessage()
             }
-        }.launchIn(viewLifecycleOwner.lifecycleScope)
+        }
+
+        viewModel.uiState.map { it.isEditDone }.distinctUntilChanged().observe(viewLifecycleOwner) {
+            if (it) {
+                navigateUp()
+            }
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

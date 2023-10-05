@@ -14,8 +14,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.map
 import androidx.navigation.fragment.navArgs
 import com.crust87.bouldering.R
-import com.crust87.bouldering.app.main.domain.HideKeyboardUseCase
-import com.crust87.bouldering.app.main.domain.OpenKeyboardUseCase
+import com.crust87.bouldering.app.viewer.domain.HideKeyboardUseCase
+import com.crust87.bouldering.app.viewer.domain.OpenKeyboardUseCase
 import com.crust87.bouldering.app.navigate
 import com.crust87.bouldering.app.navigateUp
 import com.crust87.bouldering.app.viewer.comment.CommentBottomSheet
@@ -111,7 +111,7 @@ class ViewerFragment : Fragment() {
                 if (id == EditorInfo.IME_ACTION_SEARCH || id == EditorInfo.IME_ACTION_DONE ||
                     e.action == KeyEvent.ACTION_DOWN && e.keyCode == KeyEvent.KEYCODE_ENTER
                 ) {
-                    viewModel.finishEditTitle(it)
+                    viewModel.finishEditTitle(it.text.toString())
                     true
                 } else {
                     false
@@ -119,7 +119,7 @@ class ViewerFragment : Fragment() {
             }
 
             it.setListener { _, _ ->
-                viewModel.finishEditTitle(it)
+                viewModel.finishEditTitle(it.text.toString())
             }
         }
 
@@ -141,6 +141,30 @@ class ViewerFragment : Fragment() {
             }
         })
 
+        viewModel.uiState.map { it.isKeyboardOpen }.distinctUntilChanged().observe(viewLifecycleOwner) {
+            if (it) {
+                openKeyboardUseCase(binding.textTitle)
+            } else {
+                hideKeyboardUseCase(binding.textTitle)
+            }
+        }
+
+        viewModel.uiState.map { it.message }.distinctUntilChanged().observe(viewLifecycleOwner) {
+            val newMessage = it ?: ""
+
+            if (newMessage.isNotBlank()) {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+
+                viewModel.consumeMessage()
+            }
+        }
+
+        viewModel.uiState.map { it.isRemoved }.distinctUntilChanged().observe(viewLifecycleOwner) {
+            if (it) {
+                navigateUp()
+            }
+        }
+
         viewModel.eventChannel.onEach {
             when (it) {
                 is OpenEditorEvent -> navigate(
@@ -148,16 +172,11 @@ class ViewerFragment : Fragment() {
                 )
                 is OpenCommentEvent -> openComment()
                 is OpenShareEvent -> startActivity(it.intent)
-                is FinishSaveEvent -> Toast.makeText(context, it.path, Toast.LENGTH_SHORT).show()
-                is NavigateUpEvent -> navigateUp()
-                is OpenKeyboardEvent -> openKeyboardUseCase(it.editText)
-                is HideKeyboardEvent -> hideKeyboardUseCase(it.editText)
-                is ToastEvent -> Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
             }
         }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
-    fun openComment() {
+    private fun openComment() {
         CommentBottomSheet.create(
             args.boulderingId
         ).show(childFragmentManager, "CommentBottomSheet")

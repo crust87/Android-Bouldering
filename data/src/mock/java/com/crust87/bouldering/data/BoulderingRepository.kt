@@ -41,8 +41,13 @@ class BoulderingRepository(
     }
 
     suspend fun update(bouldering: BoulderingEntity) {
-        val index = boulderingList.indexOf(bouldering)
-        boulderingList[index] = bouldering
+        boulderingList.indexOfFirst { it.id == bouldering.id }.let {
+            if (it != -1) {
+                boulderingList[it] = bouldering.apply {
+                    updatedAt = System.currentTimeMillis()
+                }
+            }
+        }
 
         invalidate()
     }

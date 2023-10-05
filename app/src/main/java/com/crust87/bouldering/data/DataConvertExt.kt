@@ -4,6 +4,7 @@ import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
 import com.crust87.bouldering.data.bouldering.type.HolderData
 import com.crust87.bouldering.editor.data.Bouldering
 import com.crust87.bouldering.editor.data.Holder
+import com.crust87.util.asDateText
 
 fun BoulderingEntity.asEditorBouldering() = Bouldering(
     path = path,
@@ -46,6 +47,6 @@ fun Holder.asHolderData() = HolderData(
     index = index,
 )
 
-fun BoulderingEntity.getDate(): String {
-    return com.crust87.util.DateUtils.convertDate(createdAt)
+fun BoulderingEntity.getCreatedAtText(): String {
+    return createdAt.asDateText()
 }

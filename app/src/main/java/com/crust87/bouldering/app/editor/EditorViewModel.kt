@@ -9,16 +9,13 @@ import com.crust87.bouldering.data.BoulderingRepository
 import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
 import com.crust87.bouldering.R
 import com.crust87.bouldering.app.IODispatcher
-import com.crust87.bouldering.app.MainDispatcher
 import com.crust87.bouldering.app.editor.type.EditorUIState
 import com.crust87.bouldering.data.asBoulderingEntity
 import com.crust87.bouldering.editor.EditorView
 import com.crust87.bouldering.editor.data.Holder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -28,20 +25,13 @@ import javax.inject.Inject
 class EditorViewModel @Inject constructor(
     val boulderingRepository: BoulderingRepository,
     val resources: Resources,
-    @MainDispatcher val mainDispatcher: CoroutineDispatcher,
     @IODispatcher val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EditorUIState())
     val uiState = _uiState.asLiveData(viewModelScope.coroutineContext)
 
-    private val _eventChannel = MutableSharedFlow<EditorViewModelEvent>(
-        replay = 0,
-        extraBufferCapacity = 1,
-    )
-    val eventChannel: SharedFlow<EditorViewModelEvent> = _eventChannel
-
-    fun init(path: String, id: Long) = viewModelScope.launch(mainDispatcher) {
+    fun init(path: String, id: Long) = viewModelScope.launch {
         try {
             when {
                 id > 0 -> boulderingRepository.get(id)?.also { data ->
@@ -76,11 +66,13 @@ class EditorViewModel @Inject constructor(
                 else -> null
             } ?: throw Exception("NO BOULDERING HAS BEEN FOUND")
         } catch (e: Exception) {
-            _eventChannel.tryEmit(ToastEvent(e.message))
+            _uiState.update {
+                it.copy(message = e.message)
+            }
         }
     }
 
-    fun done(editorView: EditorView) = viewModelScope.launch(mainDispatcher) {
+    fun done(editorView: EditorView) = viewModelScope.launch {
         _uiState.update {
             it.copy(problemToolVisibility = View.VISIBLE)
         }
@@ -102,10 +94,15 @@ class EditorViewModel @Inject constructor(
                 }
             }
 
-            _eventChannel.tryEmit(NavigateUpEvent)
+            _uiState.update {
+                it.copy(isEditDone = true)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
-            _eventChannel.tryEmit(ToastEvent(e.message))
+
+            _uiState.update {
+                it.copy(message = e.message)
+            }
         }
 
         _uiState.update {
@@ -124,10 +121,6 @@ class EditorViewModel @Inject constructor(
         }
     }
 
-    fun openColorPicker() {
-        _eventChannel.tryEmit(OpenColorPickerEvent)
-    }
-
     fun setHolder(holder: Holder?) {
         _uiState.update {
             it.copy(
@@ -138,6 +131,12 @@ class EditorViewModel @Inject constructor(
                 isSpecialHolder = holder?.isSpecial ?: false,
                 isNumberEnabled = (holder?.isSpecial != true),
             )
+        }
+    }
+
+    fun consumeMessage() {
+        _uiState.update {
+            it.copy(message = null)
         }
     }
 }

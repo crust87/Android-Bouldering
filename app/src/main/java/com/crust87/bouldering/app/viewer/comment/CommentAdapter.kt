@@ -5,11 +5,10 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.crust87.bouldering.data.comment.type.Comment
+import com.crust87.bouldering.app.viewer.comment.type.CommentItemUIState
 import com.crust87.bouldering.databinding.CommentBottomSheetCellBinding
-import com.crust87.util.DateUtils
 
-class CommentAdapter: PagingDataAdapter<Comment, CommentAdapter.CommentViewHolder>(DIFF_CALLBACK) {
+class CommentAdapter: PagingDataAdapter<CommentItemUIState, CommentAdapter.CommentViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
         return CommentViewHolder(
@@ -22,31 +21,34 @@ class CommentAdapter: PagingDataAdapter<Comment, CommentAdapter.CommentViewHolde
     }
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
-        val item = getItem(position)
-        if(item != null) {
-            holder.bind(item)
+        getItem(position)?.let {
+            holder.bind(it)
         }
     }
 
     class CommentViewHolder(val binding: CommentBottomSheetCellBinding): ViewHolder(binding.root) {
 
-        var data: Comment? = null
+        var data: CommentItemUIState? = null
 
-        fun bind(item: Comment) {
+        fun bind(item: CommentItemUIState) {
             data = item
 
             binding.textComment.text = item.text
-            binding.textCreatedAt.text = com.crust87.util.DateUtils.convertDate(item.createdAt)
+            binding.textCreatedAt.text = item.createdAt
+        }
+
+        fun delete() {
+            data?.delete?.invoke()
         }
     }
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Comment>() {
-            override fun areItemsTheSame(oldItem: Comment, newItem: Comment): Boolean =
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<CommentItemUIState>() {
+            override fun areItemsTheSame(oldItem: CommentItemUIState, newItem: CommentItemUIState): Boolean =
                 oldItem.id == newItem.id
 
-            override fun areContentsTheSame(oldItem: Comment, newItem: Comment): Boolean =
-                oldItem.id == newItem.id && oldItem.text == newItem.text
+            override fun areContentsTheSame(oldItem: CommentItemUIState, newItem: CommentItemUIState): Boolean =
+                oldItem == newItem
         }
     }
 }

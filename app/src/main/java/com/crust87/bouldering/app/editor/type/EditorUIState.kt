@@ -15,4 +15,6 @@ data class EditorUIState(
     val problemToolVisibility: Int = View.VISIBLE,
     val holderToolVisibility: Int = View.GONE,
     val progressVisibility: Int = View.GONE,
+    val message: String? = null,
+    val isEditDone: Boolean = false
 )
