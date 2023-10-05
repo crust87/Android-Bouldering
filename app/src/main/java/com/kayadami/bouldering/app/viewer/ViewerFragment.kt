@@ -23,7 +23,6 @@ import com.kayadami.bouldering.data.bouldering.type.asEditorBouldering
 import com.kayadami.bouldering.databinding.ViewerFragmentBinding
 import com.kayadami.bouldering.editor.EditorView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -155,18 +154,12 @@ class ViewerFragment : Fragment() {
                 is HideKeyboardEvent -> hideKeyboardUseCase(it.editText)
                 is ToastEvent -> Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
             }
-        }.launchIn(lifecycleScope)
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     fun openComment() {
         CommentBottomSheet.create(
             args.boulderingId
         ).show(childFragmentManager, "CommentBottomSheet")
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        lifecycleScope.coroutineContext.cancelChildren()
     }
 }

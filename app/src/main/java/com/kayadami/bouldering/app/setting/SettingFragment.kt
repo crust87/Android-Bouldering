@@ -11,7 +11,6 @@ import com.kayadami.bouldering.app.navigate
 import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.databinding.SettingFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -41,12 +40,6 @@ class SettingFragment : Fragment() {
                 )
                 NavigateUpEvent -> navigateUp()
             }
-        }.launchIn(lifecycleScope)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        lifecycleScope.coroutineContext.cancelChildren()
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 }

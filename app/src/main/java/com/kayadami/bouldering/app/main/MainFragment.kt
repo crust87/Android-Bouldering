@@ -34,7 +34,6 @@ import com.kayadami.bouldering.image.FragmentImageLoader
 import com.kayadami.bouldering.image.ImageLoader
 import com.kayadami.util.FileUtil
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -166,13 +165,11 @@ class MainFragment : Fragment() {
 
                 is ListSortChangeEvent -> activity?.invalidateOptionsMenu()
             }
-        }.launchIn(lifecycleScope)
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-
-        lifecycleScope.coroutineContext.cancelChildren()
 
         binding.recyclerView.layoutManager = null
         binding.appBar.removeOnOffsetChangedListener(appBarManager)

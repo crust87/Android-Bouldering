@@ -17,7 +17,6 @@ import com.kayadami.bouldering.app.navigateUp
 import com.kayadami.bouldering.data.bouldering.type.asEditorBouldering
 import com.kayadami.bouldering.databinding.EditorFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -92,13 +91,7 @@ class EditorFragment : Fragment() {
                 is NavigateUpEvent -> navigateUp()
                 is ToastEvent -> Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
             }
-        }.launchIn(lifecycleScope)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        lifecycleScope.coroutineContext.cancelChildren()
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

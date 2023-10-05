@@ -82,19 +82,13 @@ class CommentBottomSheet : BottomSheetDialogFragment() {
                     adapter.refresh()
                 }
             }
-        }.launchIn(lifecycleScope)
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.init(boulderingId).collectLatest {
                 adapter.submitData(lifecycle, it)
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        lifecycleScope.coroutineContext.cancelChildren()
     }
 
     private val autoScroller = object : RecyclerView.AdapterDataObserver() {
