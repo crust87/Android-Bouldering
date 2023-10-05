@@ -1,8 +1,6 @@
-package com.kayadami.bouldering.utils
+package com.crust87.util
 
 import android.content.Context
-
-import com.kayadami.bouldering.R
 
 import java.text.SimpleDateFormat
 import java.util.Date

@@ -2,7 +2,7 @@ package com.crust87.bouldering.data
 
 import android.content.Context
 import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
-import com.kayadami.util.FileUtil
+import com.crust87.util.FileUtil
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import java.io.File

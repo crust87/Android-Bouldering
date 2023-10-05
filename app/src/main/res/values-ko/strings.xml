@@ -21,13 +21,6 @@
     <string name="desc">최신 순</string>
     <string name="backup">백업(베타)</string>
 
-    <string name="time_just_now">방금</string>
-    <string name="time_min">%d분 전</string>
-    <string name="time_hrs">%d시간 전</string>
-    <string name="time_day">%d일 전</string>
-    <string name="time_date">yy.MM.dd</string>
-    <string name="time_date_time">yyyy. MM. dd h:mma</string>
-
     <string name="editor_create">문제 추가하기</string>
     <string name="editor_edit">문제 수정하기</string>
     <string name="editor_clear">모두 지우기</string>

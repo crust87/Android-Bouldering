@@ -1,0 +1,10 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+    <string name="time_just_now">just now</string>
+    <string name="time_min">%d min</string>
+    <string name="time_hrs">%d hrs</string>
+    <string name="time_day">%d days</string>
+    <string name="time_date">yy.MM.dd</string>
+    <string name="time_date_time">MMM d yyyy h:mma</string>
+
+</resources>

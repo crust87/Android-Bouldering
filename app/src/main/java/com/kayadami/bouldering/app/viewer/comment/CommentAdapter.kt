@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.crust87.bouldering.data.comment.type.Comment
 import com.kayadami.bouldering.databinding.CommentBottomSheetCellBinding
-import com.kayadami.bouldering.utils.DateUtils
+import com.crust87.util.DateUtils
 
 class CommentAdapter: PagingDataAdapter<Comment, CommentAdapter.CommentViewHolder>(DIFF_CALLBACK) {
 
@@ -36,7 +36,7 @@ class CommentAdapter: PagingDataAdapter<Comment, CommentAdapter.CommentViewHolde
             data = item
 
             binding.textComment.text = item.text
-            binding.textCreatedAt.text = DateUtils.convertDate(item.createdAt)
+            binding.textCreatedAt.text = com.crust87.util.DateUtils.convertDate(item.createdAt)
         }
     }
 

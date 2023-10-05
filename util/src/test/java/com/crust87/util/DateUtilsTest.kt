@@ -1,7 +1,6 @@
-package com.kayadami.bouldering.utils
+package com.crust87.util
 
 import android.content.Context
-import com.kayadami.bouldering.R
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every

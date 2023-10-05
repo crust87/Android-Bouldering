@@ -1,4 +1,4 @@
-package com.kayadami.util
+package com.crust87.util
 
 import android.content.Context
 import android.database.Cursor

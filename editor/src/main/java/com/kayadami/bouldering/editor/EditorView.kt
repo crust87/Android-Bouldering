@@ -5,7 +5,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.*
 import androidx.exifinterface.media.ExifInterface
-import com.kayadami.util.FileUtil
+import com.crust87.util.FileUtil
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileInputStream

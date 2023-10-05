@@ -1,0 +1,9 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="time_just_now">방금</string>
+    <string name="time_min">%d분 전</string>
+    <string name="time_hrs">%d시간 전</string>
+    <string name="time_day">%d일 전</string>
+    <string name="time_date">yy.MM.dd</string>
+    <string name="time_date_time">yyyy. MM. dd h:mma</string>
+
+</resources>

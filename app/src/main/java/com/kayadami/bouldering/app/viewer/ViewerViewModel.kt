@@ -12,7 +12,7 @@ import com.kayadami.bouldering.R
 import com.kayadami.bouldering.app.MainDispatcher
 import com.kayadami.bouldering.app.main.domain.SaveImageUseCase
 import com.kayadami.bouldering.app.viewer.type.ViewerUIState
-import com.kayadami.bouldering.utils.DateUtils
+import com.crust87.util.DateUtils
 import com.kayadami.bouldering.utils.toShareIntent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -48,7 +48,7 @@ class ViewerViewModel @Inject constructor(
                     id = id,
                     data = data,
                     title = data.title.displayTitle(),
-                    lastModify = DateUtils.convertDateTime(data.updatedAt),
+                    lastModify = com.crust87.util.DateUtils.convertDateTime(data.updatedAt),
                     isSolved = data.isSolved
                 )
             }

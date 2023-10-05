@@ -4,7 +4,7 @@ import com.crust87.bouldering.data.bouldering.type.BoulderingEntity
 import com.crust87.bouldering.data.bouldering.type.HolderData
 import com.kayadami.bouldering.editor.Bouldering
 import com.kayadami.bouldering.editor.Holder
-import com.kayadami.bouldering.utils.DateUtils
+import com.crust87.util.DateUtils
 
 fun BoulderingEntity.asEditorBouldering() = Bouldering(
     path = path,
@@ -48,5 +48,5 @@ fun Holder.asHolderData() = HolderData(
 )
 
 fun BoulderingEntity.getDate(): String {
-    return DateUtils.convertDate(createdAt)
+    return com.crust87.util.DateUtils.convertDate(createdAt)
 }

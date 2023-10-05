@@ -7,7 +7,7 @@ import com.kayadami.bouldering.InstantExecutorListener
 import com.kayadami.bouldering.MainDispatcherListener
 import com.kayadami.bouldering.app.main.type.EmptyItemUiState
 import com.kayadami.bouldering.getOrAwaitValue
-import com.kayadami.bouldering.utils.DateUtils
+import com.crust87.util.DateUtils
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -26,7 +26,7 @@ class MainViewModelTest : BehaviorSpec({
     val mockContext = mockk<Context>()
 
     every { mockContext.getString(any()) } returns ""
-    DateUtils.initialize(mockContext)
+    com.crust87.util.DateUtils.initialize(mockContext)
 
     given("저장된 리스트가 있는 경우에는") {
         every { boulderingDataSource.list(any()) } returns flow {
