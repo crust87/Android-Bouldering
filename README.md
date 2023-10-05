@@ -13,8 +13,8 @@
    - '공유하기'를 통해 카카오톡 등으로 볼더링 문제를 공유할 수 있어요.
 
 ## Screenshot
-![Home Screenshot](./img/home.png "Home Screenshot")
-![Editor Screenshot](./img/editor.png "Editor Screenshot")
+![Home Screenshot](readme-img-home.png "Home Screenshot")
+![Editor Screenshot](readme-img-editor.png "Editor Screenshot")
 
 ## 사용 기술
 - Kotlin-MVVM
@@ -30,6 +30,9 @@
 - Kotest(unitTest)
 
 ## Update
+### 2023-10-05
+- 아키텍처 최신화
+- 리패키징
 ### 2023-10-03
 - 메모 작성 기능 추가
 - 메인 리스트 정렬 기능 추가
