@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace 'com.crust87.util'
-    compileSdk 33
+    compileSdk project.compileSdkVersion
 
     defaultConfig {
-        minSdk 24
-        targetSdk 33
+        minSdk project.minSdkVersion
+        targetSdk project.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -46,11 +46,9 @@ android {
 dependencies {
 
     // Kotest
-    def kotest_version = "4.3.2"
-    testImplementation "io.kotest:kotest-runner-junit5:$kotest_version"
-    testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version"
+    testImplementation "io.kotest:kotest-runner-junit5:$kotestVersion"
+    testImplementation "io.kotest:kotest-assertions-core-jvm:$kotestVersion"
 
     // MockK
-    def mockk_version = "1.13.8"
-    testImplementation "io.mockk:mockk:$mockk_version"
+    testImplementation "io.mockk:mockk:$mockkVersion"
 }

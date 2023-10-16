@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace 'com.crust87.bouldering.editor'
-    compileSdk 33
+    compileSdk project.compileSdkVersion
 
     defaultConfig {
-        minSdk 24
-        targetSdk 33
+        minSdk project.minSdkVersion
+        targetSdk project.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"

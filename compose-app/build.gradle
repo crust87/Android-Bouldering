@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.crust87.bouldering.compose'
-    compileSdk 34
+    compileSdk project.compileSdkVersion
 
     defaultConfig {
         applicationId "com.crust87.bouldering.compose"
-        minSdk 24
-        targetSdk 34
+        minSdk project.minSdkVersion
+        targetSdk project.targetSdkVersion
         versionCode 1
         versionName "1.0"
 

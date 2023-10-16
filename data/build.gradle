@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace 'com.crust87.bouldering.data'
-    compileSdk 33
+    compileSdk project.compileSdkVersion
 
     defaultConfig {
-        minSdk 24
-        targetSdk 33
+        minSdk project.minSdkVersion
+        targetSdk project.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -67,17 +67,14 @@ android {
 dependencies {
     implementation project(":util")
 
-    def moshi_version = "1.14.0"
-    implementation "com.squareup.moshi:moshi:$moshi_version"
-    implementation"com.squareup.moshi:moshi-kotlin:$moshi_version"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
+    implementation "com.squareup.moshi:moshi:$moshiVersion"
+    implementation"com.squareup.moshi:moshi-kotlin:$moshiVersion"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
 
-    def room_version = "2.5.0"
-    implementation "androidx.room:room-runtime:$room_version"
-    implementation "androidx.room:room-ktx:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
-
-    androidTestImplementation "androidx.room:room-testing:$room_version"
+    implementation "androidx.room:room-runtime:$roomVersion"
+    implementation "androidx.room:room-ktx:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    androidTestImplementation "androidx.room:room-testing:$roomVersion"
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
