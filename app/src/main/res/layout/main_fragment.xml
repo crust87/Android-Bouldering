@@ -23,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="206dp"
             android:fitsSystemWindows="true"
-            app:layout_behavior="com.crust87.bouldering.utils.FixAppBarLayoutBehavior">
+            app:layout_behavior="com.crust87.bouldering.widget.FixAppBarLayoutBehavior">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsingToolbarLayout"

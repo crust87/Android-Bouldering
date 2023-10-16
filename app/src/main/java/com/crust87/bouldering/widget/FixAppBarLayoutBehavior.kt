@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.crust87.bouldering.utils
+package com.crust87.bouldering.widget
 
 import android.content.Context
 import com.google.android.material.appbar.AppBarLayout

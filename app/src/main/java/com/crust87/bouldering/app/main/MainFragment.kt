@@ -31,8 +31,6 @@ import com.crust87.bouldering.app.setSupportActionBar
 import com.crust87.bouldering.app.supportActionBar
 import com.crust87.bouldering.data.bouldering.ListSort
 import com.crust87.bouldering.databinding.MainFragmentBinding
-import com.crust87.bouldering.image.FragmentImageLoader
-import com.crust87.bouldering.image.ImageLoader
 import com.crust87.util.FileUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -45,10 +43,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainFragment : Fragment() {
-
-    @Inject
-    @FragmentImageLoader
-    lateinit var imageLoader: ImageLoader
 
     @Inject
     lateinit var appBarManager: AppBarManager

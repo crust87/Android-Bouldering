@@ -11,7 +11,7 @@ import com.crust87.bouldering.app.viewer.comment.domain.AddCommentUseCase
 import com.crust87.bouldering.app.viewer.comment.domain.DeleteCommentUseCase
 import com.crust87.bouldering.app.viewer.comment.domain.GetCommentPagerUseCase
 import com.crust87.bouldering.app.viewer.comment.type.CommentItemUIState
-import com.crust87.util.asDateText
+import com.crust87.util.ext.asDateText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

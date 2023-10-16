@@ -1,4 +1,4 @@
-package com.crust87.bouldering.utils
+package com.crust87.util.ext
 
 import android.content.Intent
 import android.net.Uri

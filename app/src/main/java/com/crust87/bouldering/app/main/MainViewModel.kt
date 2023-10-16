@@ -6,7 +6,7 @@ import com.crust87.bouldering.app.main.type.MainUIState
 import com.crust87.bouldering.data.BoulderingRepository
 import com.crust87.bouldering.data.bouldering.ListSort
 import com.crust87.bouldering.data.getItemType
-import com.crust87.util.asDateText
+import com.crust87.util.ext.asDateText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
