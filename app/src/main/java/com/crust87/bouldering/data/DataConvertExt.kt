@@ -6,7 +6,7 @@ import com.crust87.bouldering.data.bouldering.type.HolderData
 import com.crust87.bouldering.editor.Orientation
 import com.crust87.bouldering.editor.data.Bouldering
 import com.crust87.bouldering.editor.data.Holder
-import com.crust87.util.asDateText
+import com.crust87.util.ext.asDateText
 
 fun BoulderingEntity.asEditorBouldering() = Bouldering(
     path = path,

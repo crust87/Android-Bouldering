@@ -1,4 +1,4 @@
-package com.crust87.bouldering.utils
+package com.crust87.bouldering.widget
 
 import android.content.Context
 import androidx.appcompat.widget.AppCompatEditText

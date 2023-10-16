@@ -13,8 +13,9 @@ dependencyResolutionManagement {
         maven { url "https://jitpack.io" }
     }
 }
-rootProject.name = "Android-Boldering"
+rootProject.name = "Android-Bouldering"
 include ':app'
 include ':editor'
 include ':util'
 include ':data'
+include ':compose-app'

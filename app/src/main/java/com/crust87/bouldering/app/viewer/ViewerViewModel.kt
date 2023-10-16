@@ -11,8 +11,8 @@ import com.crust87.bouldering.data.BoulderingRepository
 import com.crust87.bouldering.R
 import com.crust87.bouldering.app.viewer.domain.SaveImageUseCase
 import com.crust87.bouldering.app.viewer.type.ViewerUIState
-import com.crust87.bouldering.utils.toShareIntent
-import com.crust87.util.asDateText
+import com.crust87.util.ext.toShareIntent
+import com.crust87.util.ext.asDateText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
