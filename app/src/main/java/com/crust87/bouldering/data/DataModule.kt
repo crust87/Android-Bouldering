@@ -2,6 +2,7 @@ package com.crust87.bouldering.data
 
 import android.content.Context
 import androidx.room.Room
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.crust87.bouldering.data.comment.CommentDao
 import com.crust87.bouldering.data.comment.CommentRepository
 import com.crust87.bouldering.data.opensource.BoulderingService
@@ -13,6 +14,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
@@ -44,13 +46,18 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideApiClient(): Retrofit {
+    fun provideApiClient(@ApplicationContext context: Context): Retrofit {
+        val client = OkHttpClient.Builder()
+            .addInterceptor(ChuckerInterceptor(context))
+            .build()
+
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
 
         return Retrofit.Builder()
             .baseUrl("https://crust87.github.io/")
+            .client(client)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }
