@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-class OpenSourceLicense(
+data class OpenSourceLicense(
     @Json(name = "name")
     val name: String,
     @Json(name = "url")

@@ -2,6 +2,8 @@ package com.crust87.bouldering.app.setting.opensourcelicense
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.crust87.bouldering.data.opensource.type.OpenSourceLicense
 import com.crust87.bouldering.databinding.OpenSourceLicenseCellBinding
@@ -9,9 +11,10 @@ import dagger.hilt.android.scopes.FragmentScoped
 import javax.inject.Inject
 
 @FragmentScoped
-class OpenSourceLicenseAdapter @Inject constructor() : RecyclerView.Adapter<OpenSourceLicenseAdapter.OpenSourceLicenseViewHolder>() {
-
-    var list : List<OpenSourceLicense> = emptyList()
+class OpenSourceLicenseAdapter @Inject constructor() :
+    PagingDataAdapter<OpenSourceLicense, OpenSourceLicenseAdapter.OpenSourceLicenseViewHolder>(
+        DIFF_CALLBACK
+    ) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         OpenSourceLicenseCellBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -19,16 +22,26 @@ class OpenSourceLicenseAdapter @Inject constructor() : RecyclerView.Adapter<Open
                 OpenSourceLicenseViewHolder(this)
             }
 
-    override fun getItemCount() = list.size
-
     override fun onBindViewHolder(holder: OpenSourceLicenseViewHolder, position: Int) {
-        holder.bind(position)
+        getItem(position)?.let {
+            holder.bind(it)
+        }
     }
 
     inner class OpenSourceLicenseViewHolder(val binding: OpenSourceLicenseCellBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(position: Int) {
-            binding.openSourceLicense = list[position]
+        fun bind(openSourceLicense: OpenSourceLicense) {
+            binding.openSourceLicense = openSourceLicense
+        }
+    }
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<OpenSourceLicense>() {
+            override fun areItemsTheSame(oldItem: OpenSourceLicense, newItem: OpenSourceLicense): Boolean =
+                oldItem.name == newItem.name
+
+            override fun areContentsTheSame(oldItem: OpenSourceLicense, newItem: OpenSourceLicense): Boolean =
+                oldItem == newItem
         }
     }
 }
