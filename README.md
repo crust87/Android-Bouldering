@@ -24,6 +24,7 @@
 - Navigation Component
 - Room
 - Paging
+- Retrofit2
 - Moshi
 - Glide
 - Canvas
@@ -31,6 +32,8 @@
 - Kotest(unitTest)
 
 ## Update
+### 2023-11-16
+- Retrofit2 간단 예제 추가
 ### 2023-10-05
 - 아키텍처 최신화
 - 리패키징
