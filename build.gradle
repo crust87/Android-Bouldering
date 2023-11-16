@@ -4,6 +4,7 @@ buildscript {
         minSdkVersion = 24
         targetSdkVersion = 34
 
+        retrofitVersion = "2.9.0"
         moshiVersion = "1.14.0"
         roomVersion = "2.5.2"
 

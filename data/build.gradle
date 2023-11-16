@@ -67,6 +67,8 @@ android {
 dependencies {
     implementation project(":util")
 
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+
     implementation "com.squareup.moshi:moshi:$moshiVersion"
     implementation"com.squareup.moshi:moshi-kotlin:$moshiVersion"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
